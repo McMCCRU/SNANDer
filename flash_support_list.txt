@@ -1,5 +1,5 @@
 
-SNANDer - Spi Nor/nAND programmER v.1.4 by McMCC <mcmcc@mail.ru>
+SNANDer - Spi Nor/nAND programmER v.1.4 by McMCC <mcmcc_at_mail.ru>
 
 SPI NAND Flash Support List:
 001. GIGADEVICE GD5F1GQ4UA
