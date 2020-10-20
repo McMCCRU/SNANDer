@@ -1,0 +1,29 @@
+# To assist in cross-compiling
+CC=x86_64-w64-mingw32-gcc
+LDFLAGS=-pthread -L./lusb_build_win/lib -lusb-1.0
+TOPDIR=$(shell pwd)
+
+BIGFILES=-D_FILE_OFFSET_BITS=64
+CFLAGS=-O2 -std=gnu99 -posix -static -Wall -I./lusb_build_win/include $(BIGFILES)
+
+OBJS= flashcmd_api.o spi_controller.o spi_nand_flash.o spi_nor_flash.o ch341a_spi.o main.o
+
+all: SNANDer.exe
+
+.lusb_install_win:
+	mkdir -p lusb_build_win
+	cd lusb_build_win; \
+	../libusb-1.0.22/configure --host=x86_64-w64-mingw32 --prefix=$(TOPDIR)/lusb_build_win; \
+	make; \
+	make install
+	touch $@
+
+SNANDer.exe: .lusb_install_win $(OBJS)
+	$(CC) $(CFLAGS) -s -o $@ $(OBJS) $(LDFLAGS)
+
+.c.o:
+	$(CC) $(CFLAGS) -c $<
+
+clean: 
+	rm -f *.o SNANDer.exe .lusb_install_win
+	rm -rf lusb_build_win
