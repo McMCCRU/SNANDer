@@ -55,7 +55,7 @@ install-udev-rule:
 
 debian/changelog:
 	#gbp dch --debian-tag='%(version)s' -S -a --ignore-branch -N '$(VERSION)'
-	dch --create -v 1.0-1 --package $(PKG)
+	dch --create -v 1.4-1 --package $(PKG)
 
 deb:
 	dpkg-buildpackage -b -us -uc
