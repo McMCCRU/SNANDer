@@ -1,2 +1,0 @@
-
-Bus 001 Device 006: ID 1a86:5512 QinHeng Electronics CH341 in EPP/MEM/I2C mode, EPP/I2C adapter
