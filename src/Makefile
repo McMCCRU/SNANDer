@@ -7,7 +7,7 @@ INSTALL   ?= install
 PREFIX    ?= /usr
 BINDIR    ?= $(PREFIX)/bin
 CFLAGS    ?= -std=gnu99 -Wall -O2
-LDFLAGS   ?= -pthread -lusb-1.0
+LDFLAGS   ?= -pthread
 WARNERROR ?= no
 
 ifeq ($(WARNERROR), yes)
@@ -34,7 +34,7 @@ SRCS = flashcmd_api.c spi_controller.c spi_nand_flash.c spi_nor_flash.c ch341a_s
 $(PKG): $(TARGET)$(EXEC_SUFFIX)
 
 $(TARGET)$(EXEC_SUFFIX): $(SRCS)
-	$(CC) $(CFLAGS) $(SRCS) $(LDFLAGS) -o $@
+	$(CC) $(CFLAGS) $(SRCS) $(LDFLAGS) -lusb-1.0 -o $@
 
 clean: 
 	rm -f $(TARGET)$(EXEC_SUFFIX)
