@@ -25,6 +25,7 @@ endif
 
 ifeq ($(TARGET_OS), MinGW)
 EXEC_SUFFIX := .exe
+CFLAGS += -posix
 CFLAGS += -Dffs=__builtin_ffs
 CFLAGS += -D__USE_MINGW_ANSI_STDIO=1
 endif
