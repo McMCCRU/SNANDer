@@ -1,4 +1,4 @@
-Spi NAND programmER v.1.0 by McMCC <mcmcc_at_mail.ru>
+Spi NAND programmER v.1.4 by McMCC <mcmcc_at_mail.ru>
 
   Usage:
  -h             display this message
@@ -19,7 +19,7 @@ Examples:
 
 igor@mcmcc-GL553VE:~/Soft/SNANDer-bin/Linux$ ./SNANDer -i
 
-Spi NAND programmER v.1.0 by McMCC <mcmcc_at_mail.ru>
+Spi NAND programmER v.1.4 by McMCC <mcmcc_at_mail.ru>
 
 Found programmer device: Winchiphead (WCH) - CH341A
 Device revision is 3.0.4
@@ -34,7 +34,7 @@ igor@mcmcc-GL553VE:~/Soft/SNANDer-bin/Linux$
 
 igor@mcmcc-GL553VE:~/Soft/SNANDer-bin/Linux$ ./SNANDer -d -e
 
-Spi NAND programmER v.1.0 by McMCC <mcmcc_at_mail.ru>
+Spi NAND programmER v.1.4 by McMCC <mcmcc_at_mail.ru>
 
 Found programmer device: Winchiphead (WCH) - CH341A
 Device revision is 3.0.4
@@ -53,7 +53,7 @@ igor@mcmcc-GL553VE:~/Soft/SNANDer-bin/Linux$
 
 igor@mcmcc-GL553VE:~/Soft/SNANDer-bin/Linux$ ./SNANDer -d -v -w ecc_1Gb_2K_64_flashimage_rfb1_ac2600.bin 
 
-Spi NAND programmER v.1.0 by McMCC <mcmcc_at_mail.ru>
+Spi NAND programmER v.1.4 by McMCC <mcmcc_at_mail.ru>
 
 Found programmer device: Winchiphead (WCH) - CH341A
 Device revision is 3.0.4
