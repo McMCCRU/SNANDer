@@ -23,7 +23,6 @@
 #include <string.h>
 #include <getopt.h>
 #include <time.h>
-#include <stdio.h>
 
 #include "flashcmd_api.h"
 #include "ch341a_spi.h"
