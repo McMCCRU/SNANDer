@@ -32,9 +32,11 @@
 struct flash_cmd prog;
 extern unsigned int bsize;
 
+#define _VER	"1.5"
+
 void title(void)
 {
-	printf("\nSNANDer - Spi Nor/nAND programmER v.1.4 by McMCC <mcmcc@mail.ru>\n\n");
+	printf("\nSNANDer - Spi Nor/nAND programmER v." _VER " by McMCC <mcmcc@mail.ru>\n\n");
 }
 
 void usage(void)
