@@ -168,6 +168,7 @@
 #define _SPI_NAND_DEVICE_ID_ATO25D2GA		0xF1
 #define _SPI_NAND_DEVICE_ID_ATO25D2GB		0xDA
 #define _SPI_NAND_DEVICE_ID_FM25S01		0xA1
+#define _SPI_NAND_DEVICE_ID_FM25S01A		0xE4
 #define _SPI_NAND_DEVICE_ID_FM25G01B		0xD1
 #define _SPI_NAND_DEVICE_ID_FM25G02B		0xD2
 #define _SPI_NAND_DEVICE_ID_FM25G02		0xF2
@@ -1235,6 +1236,21 @@ static const struct SPI_NAND_FLASH_INFO_T spi_nand_flash_tables[] = {
 		read_mode:				SPI_NAND_FLASH_READ_SPEED_MODE_DUAL,
 		write_mode:				SPI_NAND_FLASH_WRITE_SPEED_MODE_SINGLE,
 		oob_free_layout:			&ooblayout_fm,
+		feature:				SPI_NAND_FLASH_FEATURE_NONE,
+	},
+
+	{
+		ptr_name:				"FM FM25S01A",
+		mfr_id:					_SPI_NAND_MANUFACTURER_ID_FM,
+		dev_id:					_SPI_NAND_DEVICE_ID_FM25S01A,
+		device_size:				_SPI_NAND_CHIP_SIZE_1GBIT,
+		page_size:				_SPI_NAND_PAGE_SIZE_2KBYTE,
+		oob_size:				_SPI_NAND_OOB_SIZE_64BYTE,
+		erase_size:				_SPI_NAND_BLOCK_SIZE_128KBYTE,
+		dummy_mode:				SPI_NAND_FLASH_READ_DUMMY_BYTE_APPEND,
+		read_mode:				SPI_NAND_FLASH_READ_SPEED_MODE_DUAL,
+		write_mode:				SPI_NAND_FLASH_WRITE_SPEED_MODE_SINGLE,
+		oob_free_layout:			&ooblayout_fm_32,
 		feature:				SPI_NAND_FLASH_FEATURE_NONE,
 	},
 
@@ -2536,7 +2552,8 @@ static SPI_NAND_FLASH_RTN_T ecc_fail_check( u32 page_number )
 			rtn_status = SPI_NAND_FLASH_RTN_DETECTED_BAD_BLOCK;
 		}
 	}
-	else if((ptr_dev_info_t->mfr_id == _SPI_NAND_MANUFACTURER_ID_FM) && (ptr_dev_info_t->dev_id == _SPI_NAND_DEVICE_ID_FM25S01))
+	else if(((ptr_dev_info_t->mfr_id == _SPI_NAND_MANUFACTURER_ID_FM) && (ptr_dev_info_t->dev_id == _SPI_NAND_DEVICE_ID_FM25S01)) ||
+		((ptr_dev_info_t->mfr_id == _SPI_NAND_MANUFACTURER_ID_FM) && (ptr_dev_info_t->dev_id == _SPI_NAND_DEVICE_ID_FM25S01A)))
 	{
 		if(((status & 0x30) >> 4) == 0x2)
 		{
@@ -3487,7 +3504,8 @@ static void spi_nand_manufacute_init( struct SPI_NAND_FLASH_INFO_T *ptr_device_t
 		feature &= 0xC7;
 		spi_nand_protocol_set_status_reg_1(feature);
 	}
-	else if((ptr_device_t->mfr_id == _SPI_NAND_MANUFACTURER_ID_FM) && (ptr_device_t->dev_id == _SPI_NAND_DEVICE_ID_FM25S01))
+	else if(((ptr_device_t->mfr_id == _SPI_NAND_MANUFACTURER_ID_FM) && (ptr_device_t->dev_id == _SPI_NAND_DEVICE_ID_FM25S01)) ||
+			((ptr_device_t->mfr_id == _SPI_NAND_MANUFACTURER_ID_FM) && (ptr_device_t->dev_id == _SPI_NAND_DEVICE_ID_FM25S01A)))
 	{
 		/* 1. Unlock All block */
 		spi_nand_protocol_get_status_reg_1(&feature);

@@ -32,7 +32,7 @@
 struct flash_cmd prog;
 extern unsigned int bsize;
 
-#define _VER	"1.5.1"
+#define _VER	"1.5.2"
 
 void title(void)
 {
