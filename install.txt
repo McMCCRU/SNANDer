@@ -11,6 +11,7 @@ Linux Ubuntu 64bit:
 3. Restart udev service as udevadm control --reload-rules.
 4. Use SNANDer in console mode.
 
-MacOS X 10.15.x 64bit:
+MacOS X 64bit 10.15.x or higher:
+
 1. Copy SNANDer in home directory.
 2. Use SNANDer in console mode...
