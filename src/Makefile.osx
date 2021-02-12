@@ -1,0 +1,44 @@
+# To assist in cross-compiling
+# Linux:
+# Build and install cross-tools from https://github.com/tpoechtrager/osxcross
+# export PATH=/home/igor/Work/osxcross/target/bin:$PATH (/home/igor/Work/osxcross/target/bin - replace on your path)
+# make -f Makefile.osx
+
+DRW=x86_64-apple-darwin20.2
+CC=$(DRW)-gcc
+# CC=$(DRW)-clang
+STRIP=$(DRW)-strip
+LDFLAGS=-pthread -lobjc -Wl,-framework,IOKit -Wl,-framework,CoreFoundation
+TOPDIR=$(shell pwd)
+
+BIGFILES=-D_FILE_OFFSET_BITS=64
+CFLAGS=-O2 -std=gnu99 -Wall -I./lusb_build/include $(BIGFILES)
+
+U=lusb_build/libusb
+O=lusb_build/libusb/os
+
+OBJS = flashcmd_api.o spi_controller.o spi_nand_flash.o spi_nor_flash.o ch341a_spi.o main.o
+USB_OBJS += $(U)/libusb_1_0_la-core.o $(U)/libusb_1_0_la-descriptor.o $(U)/libusb_1_0_la-hotplug.o \
+           $(U)/libusb_1_0_la-io.o $(U)/libusb_1_0_la-strerror.o $(U)/libusb_1_0_la-sync.o \
+           $(O)/libusb_1_0_la-darwin_usb.o $(O)/libusb_1_0_la-poll_posix.o $(O)/libusb_1_0_la-threads_posix.o
+
+all: SNANDer
+
+.lusb_install_osx:
+	mkdir -p lusb_build
+	cd lusb_build; \
+	CC=$(DRW)-gcc ../libusb-1.0.22/configure --host=$(DRW) --prefix=$(TOPDIR)/lusb_build --disable-udev; \
+	make; \
+	make install
+	touch $@
+
+SNANDer: .lusb_install_osx $(OBJS)
+	$(CC) $(CFLAGS) -o $@ $(OBJS) $(USB_OBJS) $(LDFLAGS)
+	$(STRIP) $@
+
+.c.o:
+	$(CC) $(CFLAGS) -c $<
+
+clean: 
+	rm -f *.o SNANDer .lusb_install_osx
+	rm -rf lusb_build

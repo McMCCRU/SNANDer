@@ -25,5 +25,5 @@ SNANDer: .lusb_install $(OBJS)
 	$(CC) $(CFLAGS) -c $<
 
 clean: 
-	rm -f *.o SNANDer .lusb_install
+	rm -f *.o SNANDer .lusb_install*
 	rm -rf lusb_build

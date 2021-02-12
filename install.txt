@@ -10,3 +10,7 @@ Linux Ubuntu 64bit:
 2. Copy 40-persistent-ch341a.rules in directory /etc/udev/rules.d.
 3. Restart udev service as udevadm control --reload-rules.
 4. Use SNANDer in console mode.
+
+MacOS X 10.15.x 64bit:
+1. Copy SNANDer in home directory.
+2. Use SNANDer in console mode...
