@@ -11,6 +11,8 @@ STRIP=$(DRW)-strip
 LDFLAGS=-pthread -lobjc -Wl,-framework,IOKit -Wl,-framework,CoreFoundation
 TOPDIR=$(shell pwd)
 
+I2C_EEPROM_SUPPORT = y
+
 BIGFILES=-D_FILE_OFFSET_BITS=64
 CFLAGS=-O2 -std=gnu99 -Wall -I./lusb_build/include $(BIGFILES)
 
@@ -21,6 +23,11 @@ OBJS = flashcmd_api.o spi_controller.o spi_nand_flash.o spi_nor_flash.o ch341a_s
 USB_OBJS += $(U)/libusb_1_0_la-core.o $(U)/libusb_1_0_la-descriptor.o $(U)/libusb_1_0_la-hotplug.o \
            $(U)/libusb_1_0_la-io.o $(U)/libusb_1_0_la-strerror.o $(U)/libusb_1_0_la-sync.o \
            $(O)/libusb_1_0_la-darwin_usb.o $(O)/libusb_1_0_la-poll_posix.o $(O)/libusb_1_0_la-threads_posix.o
+
+ifeq ($(I2C_EEPROM_SUPPORT),y)
+CFLAGS += -DI2C_EEPROM_SUPPORT
+OBJS += ch341a_i2c.o i2c_eeprom.o
+endif
 
 all: SNANDer
 

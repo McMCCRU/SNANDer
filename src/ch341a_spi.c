@@ -89,7 +89,7 @@ struct dev_entry {
  * data bytes to each 32-byte packet with command + 31 bytes of data... */
 static struct libusb_transfer *transfer_out = NULL;
 static struct libusb_transfer *transfer_ins[USB_IN_TRANSFERS] = {0};
-static struct libusb_device_handle *handle = NULL;
+struct libusb_device_handle *handle = NULL;
 
 const struct dev_entry devs_ch341a_spi[] = {
 	{0x1A86, 0x5512, "WinChipHead (WCH)", "CH341A"},
@@ -266,7 +266,7 @@ err:
 
 /*   Set the I2C bus speed (speed(b1b0): 0 = 20kHz; 1 = 100kHz, 2 = 400kHz, 3 = 750kHz).
  *   Set the SPI bus data width (speed(b2): 0 = Single, 1 = Double).  */
-static int32_t config_stream(uint32_t speed)
+int config_stream(unsigned int speed)
 {
 	if (handle == NULL)
 		return -1;

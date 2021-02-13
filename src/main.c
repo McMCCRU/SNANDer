@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 McMCC <mcmcc@mail.ru>
+ * Copyright (C) 2018-2021 McMCC <mcmcc@mail.ru>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,11 +32,29 @@
 struct flash_cmd prog;
 extern unsigned int bsize;
 
+#ifdef I2C_EEPROM_SUPPORT
+#include "ch341a_i2c.h"
+extern struct EEPROM eeprom_info;
+extern char eepromname[12];
+extern int eepromsize;
+#define EHELP	" -E             select I2C EEPROM {24c01|24c02|24c04|24c08|24c16|24c32|24c64|24c128|24c256|24c512|24c1024}\n"
+#else
+#define EHELP	""
+#endif
+
+#ifdef I2C_EEPROM_SUPPORT
+#define _VER	"1.6b"
+#else
 #define _VER	"1.5.2"
+#endif
 
 void title(void)
 {
+#ifdef I2C_EEPROM_SUPPORT
+	printf("\nSNANDer - Serial Nor/nAND/Eeprom programmeR v." _VER " by McMCC <mcmcc@mail.ru>\n\n");
+#else
 	printf("\nSNANDer - Spi Nor/nAND programmER v." _VER " by McMCC <mcmcc@mail.ru>\n\n");
+#endif
 }
 
 void usage(void)
@@ -48,6 +66,7 @@ void usage(void)
 		" -I             ECC ignore errors(for read test only)\n"\
 		" -L             print list support chips\n"\
 		" -i             read the chip ID info\n"\
+		"" EHELP ""\
 		" -e             erase chip(full or use with -a [-l])\n"\
 		" -l <bytes>     manually set length\n"\
 		" -a <address>   manually set address\n"\
@@ -68,10 +87,29 @@ int main(int argc, char* argv[])
 
 	title();
 
+#ifdef I2C_EEPROM_SUPPORT
+	while ((c = getopt(argc, argv, "diIhveLl:a:w:r:E:")) != -1)
+#else
 	while ((c = getopt(argc, argv, "diIhveLl:a:w:r:")) != -1)
+#endif
 	{
 		switch(c)
 		{
+#ifdef I2C_EEPROM_SUPPORT
+			case 'E':
+				if((eepromsize = parseEEPsize(optarg, &eeprom_info)) > 0) {
+					memset(eepromname, 0, sizeof(eepromname));
+					strncpy(eepromname, optarg, 10);
+					if (len > eepromsize) {
+						printf("Error set size %lld, max size %d for EEPROM %s!!!\n", len, eepromsize, eepromname);
+						exit(0);
+					}
+				} else {
+					printf("Unknown I2C EEPROM chip %s!!!\n", optarg);
+					exit(0);
+				}
+				break;
+#endif
 			case 'I':
 				ECC_ignore = 1;
 				break;
@@ -129,7 +167,14 @@ int main(int argc, char* argv[])
 	if((flen = flash_cmd_init(&prog)) <= 0)
 		goto out;
 
+#ifdef I2C_EEPROM_SUPPORT
+	if (eepromsize && op == 'i') {
+		printf("Programmer not supported auto detect I2C EEPROM!\n\n");
+		goto out;
+	}
+#else
 	if (op == 'i') goto out;
+#endif
 
 	if (op == 'e') {
 		printf("ERASE:\n");

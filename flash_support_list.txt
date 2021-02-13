@@ -1,5 +1,5 @@
 
-SNANDer - Spi Nor/nAND programmER v.1.5.2 by McMCC <mcmcc_at_mail.ru>
+SNANDer - Serial Nor/nAND/Eeprom programmeR v.1.6b by McMCC <mcmcc_at_mail.ru>
 
 SPI NAND Flash Support List:
 001. GIGADEVICE GD5F1GQ4UA
@@ -191,3 +191,16 @@ SPI NOR Flash Support List:
 111. P25Q32H
 112. P25Q64H
 113. P25Q128H
+
+I2C EEPROM Support List:
+001. 24c01
+002. 24c02
+003. 24c04
+004. 24c08
+005. 24c16
+006. 24c32
+007. 24c64
+008. 24c128
+009. 24c256
+010. 24c512
+011. 24c1024
