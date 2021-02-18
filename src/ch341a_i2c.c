@@ -336,7 +336,7 @@ int32_t parseEEPsize(char *eepromname, struct EEPROM *eeprom)
 	for (i = 0; eepromlist[i].size; i++) {
 		if (strstr(eepromlist[i].name, eepromname)) {
 			memcpy(eeprom, &(eepromlist[i]), sizeof(struct EEPROM));
-			return(eepromlist[i].size);
+			return (eepromlist[i].size);
 		}
 	}
 

@@ -1,5 +1,6 @@
 /*
- * Copyright (C) 2018 McMCC <mcmcc@mail.ru>
+ * Copyright (C) 2021 McMCC <mcmcc@mail.ru>
+ * ch341a_gpio.h
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,21 +16,14 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
-#ifndef __CH341_SPI_H__
-#define __CH341_SPI_H__
+#ifndef __CH341A_GPIO_H__
+#define __CH341A_GPIO_H__
 
-#include <string.h>
-#include <stdio.h>
-#include <stdbool.h>
+#include <stdint.h>
 
-#define min(a,b) (((a)<(b))?(a):(b))
-#define max(a,b) (((a)>(b))?(a):(b))
+int ch341a_gpio_setdir(void);
+int ch341a_gpio_setbits(uint8_t bits);
+int ch341a_gpio_getbits(uint8_t *data);
 
-int ch341a_spi_init(void);
-int ch341a_spi_shutdown(void);
-int ch341a_spi_send_command(unsigned int writecnt, unsigned int readcnt, const unsigned char *writearr, unsigned char *readarr);
-int enable_pins(bool enable);
-int config_stream(unsigned int speed);
-
-#endif /* __CH341_SPI_H__ */
-/* End of [ch341a_spi.h] package */
+#endif /* __CH341A_GPIO_H__ */
+/* End of [ch341a_gpio.h] package */

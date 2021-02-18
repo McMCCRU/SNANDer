@@ -3,16 +3,17 @@ CC=gcc
 LDFLAGS=-pthread -L./lusb_build/lib -lusb-1.0
 TOPDIR=$(shell pwd)
 
-I2C_EEPROM_SUPPORT = y
+EEPROM_SUPPORT = y
 
 BIGFILES=-D_FILE_OFFSET_BITS=64
 CFLAGS=-O2 -std=gnu99 -static -Wall -I./lusb_build/include $(BIGFILES)
 
 OBJS= flashcmd_api.o spi_controller.o spi_nand_flash.o spi_nor_flash.o ch341a_spi.o main.o
 
-ifeq ($(I2C_EEPROM_SUPPORT),y)
-CFLAGS += -DI2C_EEPROM_SUPPORT
+ifeq ($(EEPROM_SUPPORT),y)
+CFLAGS += -DEEPROM_SUPPORT
 OBJS += ch341a_i2c.o i2c_eeprom.o
+OBJS += bitbang_microwire.o mw_eeprom.o ch341a_gpio.o
 endif
 
 all: SNANDer
@@ -32,5 +33,5 @@ SNANDer: .lusb_install $(OBJS)
 	$(CC) $(CFLAGS) -c $<
 
 clean: 
-	rm -f *.o SNANDer .lusb_install*
-	rm -rf lusb_build
+	rm -f *.o SNANDer* .lusb_install*
+	rm -rf lusb_build*

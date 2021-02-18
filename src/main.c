@@ -32,25 +32,30 @@
 struct flash_cmd prog;
 extern unsigned int bsize;
 
-#ifdef I2C_EEPROM_SUPPORT
+#ifdef EEPROM_SUPPORT
 #include "ch341a_i2c.h"
+#include "bitbang_microwire.h"
 extern struct EEPROM eeprom_info;
 extern char eepromname[12];
 extern int eepromsize;
-#define EHELP	" -E             select I2C EEPROM {24c01|24c02|24c04|24c08|24c16|24c32|24c64|24c128|24c256|24c512|24c1024}\n"
+extern int mw_eepromsize;
+extern int org;
+#define EHELP	" -E             select I2C EEPROM {24c01|24c02|24c04|24c08|24c16|24c32|24c64|24c128|24c256|24c512|24c1024}\n" \
+		"                select Microwire EEPROM {93c06|93c16|93c46|93c56|93c66|93c76|93c86|93c96} (need SPI-to-MW adapter)\n" \
+		" -8             set organization 8-bit for Microwire EEPROM(default 16-bit) and set jumper on SPI-to-MW adapter\n"
 #else
 #define EHELP	""
 #endif
 
-#ifdef I2C_EEPROM_SUPPORT
-#define _VER	"1.6b"
+#ifdef EEPROM_SUPPORT
+#define _VER	"1.6b2"
 #else
 #define _VER	"1.5.2"
 #endif
 
 void title(void)
 {
-#ifdef I2C_EEPROM_SUPPORT
+#ifdef EEPROM_SUPPORT
 	printf("\nSNANDer - Serial Nor/nAND/Eeprom programmeR v." _VER " by McMCC <mcmcc@mail.ru>\n\n");
 #else
 	printf("\nSNANDer - Spi Nor/nAND programmER v." _VER " by McMCC <mcmcc@mail.ru>\n\n");
@@ -87,27 +92,43 @@ int main(int argc, char* argv[])
 
 	title();
 
-#ifdef I2C_EEPROM_SUPPORT
-	while ((c = getopt(argc, argv, "diIhveLl:a:w:r:E:")) != -1)
+#ifdef EEPROM_SUPPORT
+	while ((c = getopt(argc, argv, "diIhveLl:a:w:r:E:8")) != -1)
 #else
 	while ((c = getopt(argc, argv, "diIhveLl:a:w:r:")) != -1)
 #endif
 	{
 		switch(c)
 		{
-#ifdef I2C_EEPROM_SUPPORT
+#ifdef EEPROM_SUPPORT
 			case 'E':
-				if((eepromsize = parseEEPsize(optarg, &eeprom_info)) > 0) {
+				if ((eepromsize = parseEEPsize(optarg, &eeprom_info)) > 0) {
 					memset(eepromname, 0, sizeof(eepromname));
 					strncpy(eepromname, optarg, 10);
 					if (len > eepromsize) {
 						printf("Error set size %lld, max size %d for EEPROM %s!!!\n", len, eepromsize, eepromname);
 						exit(0);
 					}
+				} else if ((mw_eepromsize = deviceSize_3wire(optarg)) > 0) {
+					memset(eepromname, 0, sizeof(eepromname));
+					strncpy(eepromname, optarg, 10);
+					org = 1;
+					if (len > mw_eepromsize) {
+						printf("Error set size %lld, max size %d for EEPROM %s!!!\n", len, mw_eepromsize, eepromname);
+						exit(0);
+					}
 				} else {
-					printf("Unknown I2C EEPROM chip %s!!!\n", optarg);
+					printf("Unknown EEPROM chip %s!!!\n", optarg);
 					exit(0);
 				}
+				break;
+			case '8':
+				if (mw_eepromsize <= 0)
+				{
+					printf("-8 option only for Microwire EEPROM chips!!!\n");
+					exit(0);
+				}
+				org = 0;
 				break;
 #endif
 			case 'I':
@@ -167,9 +188,9 @@ int main(int argc, char* argv[])
 	if((flen = flash_cmd_init(&prog)) <= 0)
 		goto out;
 
-#ifdef I2C_EEPROM_SUPPORT
-	if (eepromsize && op == 'i') {
-		printf("Programmer not supported auto detect I2C EEPROM!\n\n");
+#ifdef EEPROM_SUPPORT
+	if ((eepromsize || mw_eepromsize) && op == 'i') {
+		printf("Programmer not supported auto detect EEPROM!\n\n");
 		goto out;
 	}
 #else

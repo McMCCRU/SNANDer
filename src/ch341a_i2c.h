@@ -1,6 +1,8 @@
 // libUSB driver for the ch341a in i2c mode
 //
 // Copyright 2011 asbokid <ballymunboy@gmail.com>
+#ifndef __CH341A_I2C_H__
+#define __CH341A_I2C_H__
 
 #include <stdint.h>
 
@@ -363,3 +365,5 @@ const static struct EEPROM eepromlist[] = {
 int32_t ch341readEEPROM(uint8_t *buf, uint32_t bytes, struct EEPROM *eeprom_info);
 int32_t ch341writeEEPROM(uint8_t *buf, uint32_t bytes, struct EEPROM *eeprom_info);
 int32_t parseEEPsize(char *eepromname, struct EEPROM *eeprom);
+
+#endif /* __CH341A_I2C_H__ */

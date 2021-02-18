@@ -16,7 +16,7 @@
 #include <stdio.h>
 #include "flashcmd_api.h"
 
-#ifdef I2C_EEPROM_SUPPORT
+#ifdef EEPROM_SUPPORT
 #define __EEPROM___	"or EEPROM"
 #else
 #define __EEPROM___	""
@@ -34,11 +34,15 @@ long flash_cmd_init(struct flash_cmd *cmd)
 		cmd->flash_erase = snor_erase;
 		cmd->flash_write = snor_write;
 		cmd->flash_read  = snor_read;
-#ifdef I2C_EEPROM_SUPPORT
+#ifdef EEPROM_SUPPORT
 	} else if ((flen = i2c_init()) > 0) {
 		cmd->flash_erase = i2c_eeprom_erase;
 		cmd->flash_write = i2c_eeprom_write;
 		cmd->flash_read  = i2c_eeprom_read;
+	} else if ((flen = mw_init()) > 0) {
+		cmd->flash_erase = mw_eeprom_erase;
+		cmd->flash_write = mw_eeprom_write;
+		cmd->flash_read  = mw_eeprom_read;
 #endif
 	} else
 		printf("\nNot Flash" __EEPROM___ " detected!!!!\n\n");
@@ -51,8 +55,10 @@ void support_flash_list(void)
 	support_snand_list();
 	printf("\n");
 	support_snor_list();
-#ifdef I2C_EEPROM_SUPPORT
+#ifdef EEPROM_SUPPORT
 	printf("\n");
 	support_i2c_eeprom_list();
+	printf("\n");
+	support_mw_eeprom_list();
 #endif
 }
