@@ -22,7 +22,7 @@ Examples:
 
 igor@mcmcc-GL553VE:~/Soft/SNANDer-bin/Linux$ ./SNANDer -i
 
-Spi NAND programmER v.1.0 by McMCC <mcmcc_at_mail.ru>
+SNANDer - Serial Nor/nAND/Eeprom programmeR v.1.6 by McMCC <mcmcc_at_mail.ru>
 
 Found programmer device: Winchiphead (WCH) - CH341A
 Device revision is 3.0.4
