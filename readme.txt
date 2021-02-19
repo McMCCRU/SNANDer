@@ -77,4 +77,48 @@ Status: OK
 VERIFY:
 Read addr = 0x0000000000000000, len = 0x0000000001080000
 Status: OK
-igor@mcmcc-GL553VE:~/Soft/SNANDer-bin/Linux$
+
+4. Read Microwire EEPROM Atmel 93C46 and save file.
+
+igor@igor-GL553VE:~/Soft/SNANDer-bin/Linux$ ./SNANDer -E 93c46 -r test.bin
+
+SNANDer - Serial Nor/nAND/Eeprom programmeR v.1.6 by McMCC <mcmcc@mail.ru>
+
+Found programmer device: WinChipHead (WCH) - CH341A
+Device revision is 3.0.4
+spi_nand_probe: mfr_id = 0xff, dev_id = 0xff
+SPI NAND Flash Not Detected!
+spi device id: ff ff ff ff ff (ffffffff)
+SPI NOR Flash Not Detected!
+I2C EEPROM Not Detected!
+Microwire EEPROM chip: 93c46, Size: 64 bytes, Org: 16 bits
+READ:
+Read addr = 0x0000000000000000, len = 0x0000000000000080
+............................................................
+Read [128] bytes from [93c46] EEPROM address 0x00000000
+Status: OK
+
+5. Write and verify Microwire EEPROM Atmel 93C46 from file.
+
+igor@igor-GL553VE:~/Soft/SNANDer-bin/Linux$ ./SNANDer -E 93c46 -w test.bin -v
+
+SNANDer - Serial Nor/nAND/Eeprom programmeR v.1.6 by McMCC <mcmcc@mail.ru>
+
+Found programmer device: WinChipHead (WCH) - CH341A
+Device revision is 3.0.4
+spi_nand_probe: mfr_id = 0xff, dev_id = 0xff
+SPI NAND Flash Not Detected!
+spi device id: ff ff ff ff ff (ffffffff)
+SPI NOR Flash Not Detected!
+I2C EEPROM Not Detected!
+Microwire EEPROM chip: 93c46, Size: 64 bytes, Org: 16 bits
+WRITE:
+Write addr = 0x0000000000000000, len = 0x0000000000000080
+............................................................
+Wrote [128] bytes to [93c46] EEPROM address 0x00000000
+Status: OK
+VERIFY:
+Read addr = 0x0000000000000000, len = 0x0000000000000080
+............................................................
+Read [128] bytes from [93c46] EEPROM address 0x00000000
+Status: OK
