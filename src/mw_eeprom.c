@@ -54,7 +54,7 @@ int mw_eeprom_erase(unsigned long offs, unsigned long len)
 	if (len == 0)
 		return -1;
 
-	memset(ebuf, 0, sizeof(ebuf));
+	memset(ebuf, 0xff, sizeof(ebuf));
 	pbuf = ebuf;
 
 	if (offs || len < mw_eepromsize) {
@@ -64,9 +64,11 @@ int mw_eeprom_erase(unsigned long offs, unsigned long len)
 
 	Erase_EEPROM_3wire(mw_eepromsize);
 
-	if (Write_EEPROM_3wire(pbuf, mw_eepromsize) < 0) {
-		printf("Failed to erase [%d] bytes of [%s] EEPROM address 0x%08lu\n", (int)len, eepromname, offs);
-		return -1;
+	if (offs || len < mw_eepromsize) {
+		if (Write_EEPROM_3wire(pbuf, mw_eepromsize) < 0) {
+			printf("Failed to erase [%d] bytes of [%s] EEPROM address 0x%08lu\n", (int)len, eepromname, offs);
+			return -1;
+		}
 	}
 
 	printf("Erased [%d] bytes of [%s] EEPROM address 0x%08lu\n", (int)len, eepromname, offs);

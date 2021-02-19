@@ -47,11 +47,7 @@ extern int org;
 #define EHELP	""
 #endif
 
-#ifdef EEPROM_SUPPORT
-#define _VER	"1.6b2"
-#else
-#define _VER	"1.5.2"
-#endif
+#define _VER	"1.6"
 
 void title(void)
 {

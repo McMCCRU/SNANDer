@@ -1,4 +1,4 @@
-/*  Copyright (C) 2005,2006 Mokrushin I.V. aka McMCC mcmcc@mail.ru
+/*  Copyright (C) 2005-2021 Mokrushin I.V. aka McMCC mcmcc@mail.ru
     A simple bitbang protocol for Microwire 8-pin serial EEPROMs
     (93XX devices). Support organization 8bit and 16bit(8bit emulation).
 

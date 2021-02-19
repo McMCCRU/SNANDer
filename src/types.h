@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 McMCC <mcmcc@mail.ru>
+ * Copyright (C) 2018-2021 McMCC <mcmcc@mail.ru>
  * types.h
  *
  * This program is free software; you can redistribute it and/or
