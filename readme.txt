@@ -1,4 +1,4 @@
-Spi NAND programmER v.1.0 by McMCC <mcmcc_at_mail.ru>
+SNANDer - Serial Nor/nAND/Eeprom programmeR v.1.6 by McMCC <mcmcc_at_mail.ru>
 
   Usage:
  -h             display this message
@@ -6,6 +6,9 @@ Spi NAND programmER v.1.0 by McMCC <mcmcc_at_mail.ru>
  -I             ECC ignore errors(for read test only)
  -L             print list support chips
  -i             read the chip ID info
+ -E             select I2C EEPROM {24c01|24c02|24c04|24c08|24c16|24c32|24c64|24c128|24c256|24c512|24c1024}
+                select Microwire EEPROM {93c06|93c16|93c46|93c56|93c66|93c76|93c86|93c96} (need SPI-to-MW adapter)
+ -8             set organization 8-bit for Microwire EEPROM(default 16-bit) and set jumper on SPI-to-MW adapter
  -e             erase chip(full or use with -a [-l])
  -l <bytes>     manually set length
  -a <address>   manually set address
@@ -34,7 +37,7 @@ igor@mcmcc-GL553VE:~/Soft/SNANDer-bin/Linux$
 
 igor@mcmcc-GL553VE:~/Soft/SNANDer-bin/Linux$ ./SNANDer -d -e
 
-Spi NAND programmER v.1.0 by McMCC <mcmcc_at_mail.ru>
+SNANDer - Serial Nor/nAND/Eeprom programmeR v.1.6 by McMCC <mcmcc_at_mail.ru>
 
 Found programmer device: Winchiphead (WCH) - CH341A
 Device revision is 3.0.4
@@ -53,7 +56,7 @@ igor@mcmcc-GL553VE:~/Soft/SNANDer-bin/Linux$
 
 igor@mcmcc-GL553VE:~/Soft/SNANDer-bin/Linux$ ./SNANDer -d -v -w ecc_1Gb_2K_64_flashimage_rfb1_ac2600.bin 
 
-Spi NAND programmER v.1.0 by McMCC <mcmcc_at_mail.ru>
+SNANDer - Serial Nor/nAND/Eeprom programmeR v.1.6 by McMCC <mcmcc_at_mail.ru>
 
 Found programmer device: Winchiphead (WCH) - CH341A
 Device revision is 3.0.4
