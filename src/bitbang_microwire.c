@@ -26,6 +26,18 @@
 #include "bitbang_microwire.h"
 
 struct gpio_cmd bb_func;
+
+#if 0
+unsigned char ORG = 0; /* organization 0 = 8 bit and 1 = 16 bit */
+#endif
+unsigned char CLK = 0;
+unsigned char DO = 0;
+unsigned char DI = 0;
+unsigned char CSEL = 0;
+
+int org = 0;
+int mw_eepromsize = 0;
+
 static unsigned char data = 0;
 
 static void delay_ms(int n)

@@ -14,7 +14,7 @@ TOPDIR=$(shell pwd)
 EEPROM_SUPPORT = y
 
 BIGFILES=-D_FILE_OFFSET_BITS=64
-CFLAGS=-O2 -std=gnu99 -Wall -Wno-gnu-designator -fcommon -I./lusb_build_osx/include $(BIGFILES)
+CFLAGS=-O2 -std=gnu99 -Wall -Wno-gnu-designator -I./lusb_build_osx/include $(BIGFILES)
 
 U=lusb_build_osx/libusb
 O=lusb_build_osx/libusb/os

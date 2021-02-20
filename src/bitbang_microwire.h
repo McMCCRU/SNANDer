@@ -23,15 +23,15 @@
 #define _BITBANG_MICROWIRE_H
 
 #if 0
-unsigned char ORG; /* organization 0 = 8 bit and 1 = 16 bit */
+extern unsigned char ORG; /* organization 0 = 8 bit and 1 = 16 bit */
 #endif
-unsigned char CLK;
-unsigned char DO;
-unsigned char DI;
-unsigned char CSEL;
+extern unsigned char CLK;
+extern unsigned char DO;
+extern unsigned char DI;
+extern unsigned char CSEL;
 
-int org;
-int mw_eepromsize;
+extern int org;
+extern int mw_eepromsize;
 
 struct MW_EEPROM {
 	char *name;
