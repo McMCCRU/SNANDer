@@ -42,12 +42,13 @@ extern int mw_eepromsize;
 extern int org;
 #define EHELP	" -E             select I2C EEPROM {24c01|24c02|24c04|24c08|24c16|24c32|24c64|24c128|24c256|24c512|24c1024}\n" \
 		"                select Microwire EEPROM {93c06|93c16|93c46|93c56|93c66|93c76|93c86|93c96} (need SPI-to-MW adapter)\n" \
-		" -8             set organization 8-bit for Microwire EEPROM(default 16-bit) and set jumper on SPI-to-MW adapter\n"
+		" -8             set organization 8-bit for Microwire EEPROM(default 16-bit) and set jumper on SPI-to-MW adapter\n" \
+		" -f <addr len>  set manual address size in bits for Microwire EEPROM(default auto)\n"
 #else
 #define EHELP	""
 #endif
 
-#define _VER	"1.6"
+#define _VER	"1.6.1"
 
 void title(void)
 {
@@ -89,7 +90,7 @@ int main(int argc, char* argv[])
 	title();
 
 #ifdef EEPROM_SUPPORT
-	while ((c = getopt(argc, argv, "diIhveLl:a:w:r:E:8")) != -1)
+	while ((c = getopt(argc, argv, "diIhveLl:a:w:r:E:f:8")) != -1)
 #else
 	while ((c = getopt(argc, argv, "diIhveLl:a:w:r:")) != -1)
 #endif
@@ -125,6 +126,19 @@ int main(int argc, char* argv[])
 					exit(0);
 				}
 				org = 0;
+				break;
+			case 'f':
+				if (mw_eepromsize <= 0)
+				{
+					printf("-f option only for Microwire EEPROM chips!!!\n");
+					exit(0);
+				}
+				str = strdup(optarg);
+				fix_addr_len = strtoll(str, NULL, *str && *(str + 1) == 'x' ? 16 : 10);
+				if (fix_addr_len > 32) {
+						printf("Address len is very big!!!\n");
+						exit(0);
+				}
 				break;
 #endif
 			case 'I':

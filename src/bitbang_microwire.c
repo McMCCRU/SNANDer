@@ -37,6 +37,7 @@ unsigned char CSEL = 0;
 
 int org = 0;
 int mw_eepromsize = 0;
+int fix_addr_len = 0;
 
 static unsigned char data = 0;
 
@@ -118,10 +119,14 @@ static unsigned int get_data()
 	return ((b & DO) == DO);
 }
 
-static int addr_nbits(int size)
+static int addr_nbits(const char *func, int size)
 {
-	int i;
-	i = 0;
+	int i = 0;
+
+	if (fix_addr_len) {
+		printf("%s: Set address len %d bits\n", func, fix_addr_len);
+		return fix_addr_len;
+	}
 
 	while (size > 0)
 	{
@@ -132,16 +137,17 @@ static int addr_nbits(int size)
 	if (i < 6) /* Fix for 93C06 */
 		i = 6;
 
+	printf("%s: Set address len %d bits\n", func, i);
+
 	return i;
 }
 
 static int convert_size(int eeprom_size)
 {
-	int k;
+	int k = 1;
+
 	org_0();
 	delay_ms(1);
-	k = 1;
-
 	if (org)
 	{
 		org_1();
@@ -153,14 +159,13 @@ static int convert_size(int eeprom_size)
 	return eeprom_size;
 }
 
-static void send_to_di(unsigned char val, int nbit)
+static void send_to_di(unsigned int val, int nbit)
 {
-	int b, i;
-	i = 0;
+	int b = 0, i = 0;
 
 	while (i < nbit)
 	{
-		b = val & (1 << (nbit - 1));
+		b = val & (1 << ((nbit - i++) - 1));
 		clock_0();
 		if (b)
 			data_1();
@@ -169,27 +174,21 @@ static void send_to_di(unsigned char val, int nbit)
 		delay_ms(1);
 		clock_1();
 		delay_ms(1);
-		i++;
-		val = (val & ((1 << (nbit - 1)) - 1)) * 2;
 	}
 }
 
 static unsigned char get_from_do()
 {
-	unsigned char val;
-	int b, i;
-	i = 0;
-	val = 0;
+	unsigned char val = 0;
+	int b = 0, i = 0;
 	while (i < 8)
 	{
-		val = val * 2;
 		clock_0();
 		delay_ms(1);
 		b = get_data();
 		clock_1();
 		delay_ms(1);
-		i++;
-		val += b;
+		val |= (b << (7 - i++));
 	}
 	return val;
 }
@@ -240,7 +239,7 @@ void Erase_EEPROM_3wire(int size_eeprom)
 	int i, num_bit;
 
 	size_eeprom = convert_size(size_eeprom);
-	num_bit = addr_nbits(size_eeprom);
+	num_bit = addr_nbits(__func__, size_eeprom);
 
 	enable_write_3wire(num_bit);
 	csel_0();
@@ -294,7 +293,7 @@ int Read_EEPROM_3wire(unsigned char *buffer, int size_eeprom)
 	int address, num_bit, l;
 
 	size_eeprom = convert_size(size_eeprom);
-	num_bit = addr_nbits(size_eeprom);
+	num_bit = addr_nbits(__func__, size_eeprom);
 
 	address = 0;
 
@@ -344,7 +343,7 @@ int Write_EEPROM_3wire(unsigned char *buffer, int size_eeprom)
 	int i, l, address, num_bit;
 
 	size_eeprom = convert_size(size_eeprom);
-	num_bit = addr_nbits(size_eeprom);
+	num_bit = addr_nbits(__func__, size_eeprom);
 
 	enable_write_3wire(num_bit);
 	address = 0;

@@ -32,6 +32,7 @@ extern unsigned char CSEL;
 
 extern int org;
 extern int mw_eepromsize;
+extern int fix_addr_len;
 
 struct MW_EEPROM {
 	char *name;

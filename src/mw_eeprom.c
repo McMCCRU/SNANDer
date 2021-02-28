@@ -139,6 +139,15 @@ static int mw_gpio_init(void)
 	return 0;
 }
 
+static char *__itoa(int a)
+{
+	char *p, tmp[32];
+	p = tmp;
+	snprintf(p, sizeof(tmp), "%d", a);
+	return p;
+}
+
+
 long mw_init(void)
 {
 	if (mw_eepromsize <= 0) {
@@ -151,7 +160,8 @@ long mw_init(void)
 
 	bsize = 1;
 
-	printf("Microwire EEPROM chip: %s, Size: %d bytes, Org: %d bits\n", eepromname, mw_eepromsize / (org ? 2 : 1), org ? 16 : 8);
+	printf("Microwire EEPROM chip: %s, Size: %d bytes, Org: %d bits, fix addr len: %s\n", eepromname, mw_eepromsize / (org ? 2 : 1),
+			org ? 16 : 8, fix_addr_len ? __itoa(fix_addr_len) : "Auto");
 
 	return (long)mw_eepromsize;
 }
