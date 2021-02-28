@@ -128,14 +128,25 @@ static int addr_nbits(const char *func, int size)
 		return fix_addr_len;
 	}
 
-	while (size > 0)
-	{
-		size = size >> 1;
-		if (size)
-			i++;
+	switch (size) {
+		case 128: /* 93c46 */
+			i = org ? 6 : 7;
+			break;
+		case 256: /* 93c56 */
+		case 512: /* 93c66 */
+			i = org ? 8 : 9;
+			break;
+		case 1024: /* 93c76 */
+		case 2048: /* 93c86 */
+			i = org ? 10 : 11;
+			break;
+		case 4096: /* 93c96(not original name) */
+			i = org ? 12 : 13;
+			break;
+		default:
+			i = 6; /* 93c06 and 93c16(not original name) */
+			break;
 	}
-	if (i < 6) /* Fix for 93C06 */
-		i = 6;
 
 	printf("%s: Set address len %d bits\n", func, i);
 
@@ -238,8 +249,8 @@ void Erase_EEPROM_3wire(int size_eeprom)
 {
 	int i, num_bit;
 
-	size_eeprom = convert_size(size_eeprom);
 	num_bit = addr_nbits(__func__, size_eeprom);
+	size_eeprom = convert_size(size_eeprom);
 
 	enable_write_3wire(num_bit);
 	csel_0();
@@ -292,8 +303,8 @@ int Read_EEPROM_3wire(unsigned char *buffer, int size_eeprom)
 {
 	int address, num_bit, l;
 
-	size_eeprom = convert_size(size_eeprom);
 	num_bit = addr_nbits(__func__, size_eeprom);
+	size_eeprom = convert_size(size_eeprom);
 
 	address = 0;
 
@@ -342,8 +353,8 @@ int Write_EEPROM_3wire(unsigned char *buffer, int size_eeprom)
 {
 	int i, l, address, num_bit;
 
-	size_eeprom = convert_size(size_eeprom);
 	num_bit = addr_nbits(__func__, size_eeprom);
+	size_eeprom = convert_size(size_eeprom);
 
 	enable_write_3wire(num_bit);
 	address = 0;
