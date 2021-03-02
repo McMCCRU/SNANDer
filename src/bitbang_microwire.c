@@ -250,7 +250,6 @@ void Erase_EEPROM_3wire(int size_eeprom)
 	int i, num_bit;
 
 	num_bit = addr_nbits(__func__, size_eeprom);
-	size_eeprom = convert_size(size_eeprom);
 
 	enable_write_3wire(num_bit);
 	csel_0();
@@ -339,13 +338,12 @@ int Read_EEPROM_3wire(unsigned char *buffer, int size_eeprom)
 		delay_ms(1);
 		clock_1();
 		delay_ms(1);
+		printf("\bRead %d%% [%d] of [%d] bytes      ", 100 * l / size_eeprom, l, size_eeprom);
+		printf("\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b");
+		fflush(stdout);
 		address++;
-		if (l % (org ? 16 : 8)) {
-			printf(".");
-			fflush(stdout);
-		}
 	}
-	printf("\n");
+	printf("Read 100%% [%d] of [%d] bytes      \n", l, size_eeprom);
 	return 0;
 }
 
@@ -408,13 +406,12 @@ int Write_EEPROM_3wire(unsigned char *buffer, int size_eeprom)
 		delay_ms(1);
 		clock_1();
 		delay_ms(1);
+		printf("\bWritten %d%% [%d] of [%d] bytes      ", 100 * l / size_eeprom, l, size_eeprom);
+		printf("\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b");
+		fflush(stdout);
 		address++;
-		if (l % (org ? 16 : 8)) {
-			printf(".");
-			fflush(stdout);
-		}
 	}
-	printf("\n");
+	printf("Written 100%% [%d] of [%d] bytes      \n", l, size_eeprom);
 	disable_write_3wire(num_bit);
 
 	return 0;

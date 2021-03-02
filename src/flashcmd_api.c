@@ -18,6 +18,8 @@
 
 #ifdef EEPROM_SUPPORT
 #define __EEPROM___	"or EEPROM"
+extern int eepromsize;
+extern int mw_eepromsize;
 #else
 #define __EEPROM___	""
 #endif
@@ -26,26 +28,33 @@ long flash_cmd_init(struct flash_cmd *cmd)
 {
 	long flen = -1;
 
-	if((flen = snand_init()) > 0) {
-		cmd->flash_erase = snand_erase;
-		cmd->flash_write = snand_write;
-		cmd->flash_read  = snand_read;
-	} else if ((flen = snor_init()) > 0) {
-		cmd->flash_erase = snor_erase;
-		cmd->flash_write = snor_write;
-		cmd->flash_read  = snor_read;
 #ifdef EEPROM_SUPPORT
-	} else if ((flen = i2c_init()) > 0) {
-		cmd->flash_erase = i2c_eeprom_erase;
-		cmd->flash_write = i2c_eeprom_write;
-		cmd->flash_read  = i2c_eeprom_read;
-	} else if ((flen = mw_init()) > 0) {
-		cmd->flash_erase = mw_eeprom_erase;
-		cmd->flash_write = mw_eeprom_write;
-		cmd->flash_read  = mw_eeprom_read;
+	if ((eepromsize <= 0) && (mw_eepromsize <= 0)) {
 #endif
-	} else
-		printf("\nNot Flash" __EEPROM___ " detected!!!!\n\n");
+		if ((flen = snand_init()) > 0) {
+			cmd->flash_erase = snand_erase;
+			cmd->flash_write = snand_write;
+			cmd->flash_read  = snand_read;
+		} else if ((flen = snor_init()) > 0) {
+			cmd->flash_erase = snor_erase;
+			cmd->flash_write = snor_write;
+			cmd->flash_read  = snor_read;
+		}
+#ifdef EEPROM_SUPPORT
+	} else if ((eepromsize > 0) || (mw_eepromsize > 0)) {
+		if ((eepromsize > 0) && (flen = i2c_init()) > 0) {
+			cmd->flash_erase = i2c_eeprom_erase;
+			cmd->flash_write = i2c_eeprom_write;
+			cmd->flash_read  = i2c_eeprom_read;
+		} else if ((mw_eepromsize > 0) && (flen = mw_init()) > 0) {
+			cmd->flash_erase = mw_eeprom_erase;
+			cmd->flash_write = mw_eeprom_write;
+			cmd->flash_read  = mw_eeprom_read;
+		}
+	}
+#endif
+	else
+		printf("\nFlash" __EEPROM___ " not found!!!!\n\n");
 
 	return flen;
 }
@@ -62,3 +71,4 @@ void support_flash_list(void)
 	support_mw_eeprom_list();
 #endif
 }
+/* End of [flashcmd.c] package */

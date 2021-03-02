@@ -37,6 +37,7 @@
 #include "spi_nand_flash.h"
 #include "spi_controller.h"
 #include "nandcmd_api.h"
+#include "timer.h"
 
 /* NAMING CONSTANT DECLARATIONS ------------------------------------------------------ */
 
@@ -254,7 +255,9 @@ static unsigned long bmt_oob_size = 64;
 static u32 erase_oob_size = 0;
 static u32 ecc_size = 0;
 u32 bsize = 0;
+#if 0
 static unsigned int print_dot = 0;
+#endif
 
 static u32 _current_page_num = 0xFFFFFFFF;
 static u8 _current_cache_page[_SPI_NAND_CACHE_SIZE];
@@ -2782,12 +2785,14 @@ SPI_NAND_FLASH_RTN_T spi_nand_erase_block ( u32 block_index)
 	/* 2.5 Disable write_flash */
 	spi_nand_protocol_write_disable();
 
-	print_dot ++;
+#if 0
+	print_dot++;
 	if( (print_dot % 15) == 0 )
 	{
 		_SPI_NAND_PRINTF(".");
 		fflush(stdout);
 	}
+#endif
 
 	/* 2.6 Check Erase Fail Bit */
 	if( status & _SPI_NAND_VAL_ERASE_FAIL )
@@ -2823,7 +2828,9 @@ static SPI_NAND_FLASH_RTN_T spi_nand_erase_internal( u32 addr, u32 len )
 	u32 block_index = 0;
 	u32 erase_len = 0;
 	SPI_NAND_FLASH_RTN_T rtn_status = SPI_NAND_FLASH_RTN_NO_ERROR;
+#if 0
 	print_dot  = 0;
+#endif
 
 	_SPI_NAND_DEBUG_PRINTF(SPI_NAND_FLASH_DEBUG_LEVEL_1, "\nspi_nand_erase_internal (in): addr = 0x%x, len = 0x%x\n", addr, len );
 	_SPI_NAND_SEMAPHORE_LOCK();
@@ -2857,7 +2864,11 @@ static SPI_NAND_FLASH_RTN_T spi_nand_erase_internal( u32 addr, u32 len )
 			/* 2.7 Erase next block if needed */
 			addr		+= _current_flash_info_t.erase_size;
 			erase_len	+= _current_flash_info_t.erase_size;
+			printf("\bErase %d%% [%u] of [%u] bytes      ", 100 * (erase_len / 1024) / (len / 1024), erase_len, len);
+			printf("\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b");
+			fflush(stdout);
 		}
+		printf("Erase 100%% [%u] of [%u] bytes      \n", erase_len, len);
 	}
 	else
 	{
@@ -2955,12 +2966,14 @@ static SPI_NAND_FLASH_RTN_T spi_nand_read_page (u32 page_number, SPI_NAND_FLASH_
 		}
 noecc:
 		_current_page_num = page_number;
-		print_dot ++;
+#if 0
+		print_dot++;
 		if( (print_dot % 20) == 0 )
 		{
 			_SPI_NAND_PRINTF(".");
 			fflush(stdout);
 		}
+#endif
 	}
 
 	return rtn_status;
@@ -3075,14 +3088,14 @@ static SPI_NAND_FLASH_RTN_T spi_nand_write_page( u32 page_number, u32 data_offse
 		spi_nand_protocol_get_status_reg_1( &status_2);
 
 		_SPI_NAND_DEBUG_PRINTF(SPI_NAND_FLASH_DEBUG_LEVEL_1, "[spi_nand_write_page]: status 1 = 0x%x, status 3 = 0x%x\n", status_2, status);
-
-		print_dot ++;
+#if 0
+		print_dot++;
 		if( (print_dot % 20) == 0 )
 		{
 			_SPI_NAND_PRINTF(".");
 			fflush(stdout);
 		}
-
+#endif
 		/* Check Program Fail Bit */
 		if( status & _SPI_NAND_VAL_PROGRAM_FAIL )
 		{
@@ -3125,8 +3138,9 @@ static SPI_NAND_FLASH_RTN_T spi_nand_write_internal( u32 dst_addr, u32 len, u32 
 	u32 addr_offset;
 	struct SPI_NAND_FLASH_INFO_T *ptr_dev_info_t;
 	SPI_NAND_FLASH_RTN_T rtn_status = SPI_NAND_FLASH_RTN_NO_ERROR;
-
+#if 0
 	print_dot  = 0;
+#endif
 
 	*ptr_rtn_len = 0;
 	ptr_dev_info_t = _SPI_NAND_GET_DEVICE_INFO_PTR;
@@ -3163,8 +3177,11 @@ static SPI_NAND_FLASH_RTN_T spi_nand_write_internal( u32 dst_addr, u32 len, u32 
 		write_addr += data_len;
 		remain_len -= data_len;
 		ptr_rtn_len += data_len;
+		printf("\bWritten %d%% [%u] of [%u] bytes      ", 100 * ((len - remain_len) / 1024) / (len / 1024), len - remain_len, len);
+		printf("\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b");
+		fflush(stdout);
 	}
-
+	printf("Written 100%% [%u] of [%u] bytes      \n", len - remain_len, len);
 	_SPI_NAND_SEMAPHORE_UNLOCK();
 
 	return (rtn_status);
@@ -3199,7 +3216,9 @@ static SPI_NAND_FLASH_RTN_T spi_nand_read_internal ( u32 addr, u32 len, u8 *ptr_
 	SPI_NAND_FLASH_RTN_T rtn_status = SPI_NAND_FLASH_RTN_NO_ERROR;
 
 	ptr_dev_info_t = _SPI_NAND_GET_DEVICE_INFO_PTR;
+#if 0
 	print_dot  = 0;
+#endif
 	read_addr = addr;
 	remain_len = len;
 
@@ -3237,7 +3256,11 @@ static SPI_NAND_FLASH_RTN_T spi_nand_read_internal ( u32 addr, u32 len, u8 *ptr_
 			remain_len -= (ptr_dev_info_t->page_size - data_offset);
 			read_addr += (ptr_dev_info_t->page_size - data_offset);
 		}
+		printf("\bRead %d%% [%u] of [%u] bytes      ", 100 * ((len - remain_len) / 1024) / (len / 1024), len - remain_len, len);
+		printf("\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b");
+		fflush(stdout);
 	}
+	printf("Read 100%% [%u] of [%u] bytes      \n", len - remain_len, len);
 	_SPI_NAND_SEMAPHORE_UNLOCK();
 
 	return (rtn_status);
@@ -4118,8 +4141,10 @@ int nandflash_read(unsigned long from, unsigned long len, unsigned long *retlen,
 
 	ptr_dev_info_t  = _SPI_NAND_GET_DEVICE_INFO_PTR;
 
+	timer_start();
 	if( SPI_NAND_Flash_Read_NByte(from, len, (u32 *)retlen, buf, ptr_dev_info_t->read_mode, status) == SPI_NAND_FLASH_RTN_NO_ERROR )
 	{
+		timer_end();
 		return 0;
 	}
 	else
@@ -4130,8 +4155,10 @@ int nandflash_read(unsigned long from, unsigned long len, unsigned long *retlen,
 
 int nandflash_erase(unsigned long offset, unsigned long len)
 {
+	timer_start();
 	if( SPI_NAND_Flash_Erase(offset, len) == SPI_NAND_FLASH_RTN_NO_ERROR )
 	{
+		timer_end();
 		return 0;
 	}
 	else
@@ -4146,8 +4173,10 @@ int nandflash_write(unsigned long to, unsigned long len, unsigned long *retlen, 
 
 	ptr_dev_info_t  = _SPI_NAND_GET_DEVICE_INFO_PTR;
 
+	timer_start();
 	if( SPI_NAND_Flash_Write_Nbyte(to, len, (u32 *)retlen, buf, ptr_dev_info_t->write_mode) == SPI_NAND_FLASH_RTN_NO_ERROR )
 	{
+		timer_end();
 		return 0;
 	}
 	else

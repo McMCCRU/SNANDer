@@ -1,4 +1,4 @@
-SNANDer - Serial Nor/nAND/Eeprom programmeR v.1.6.2 by McMCC <mcmcc_at_mail.ru>
+SNANDer - Serial Nor/nAND/Eeprom programmeR v.1.7 by McMCC <mcmcc_at_mail.ru>
 
   Usage:
  -h             display this message
@@ -23,7 +23,19 @@ Examples:
 
 igor@mcmcc-GL553VE:~/Soft/SNANDer-bin/Linux$ ./SNANDer -i
 
-SNANDer - Serial Nor/nAND/Eeprom programmeR v.1.6.2 by McMCC <mcmcc_at_mail.ru>
+SNANDer - Serial Nor/nAND/Eeprom programmeR v.1.7 by McMCC <mcmcc_at_mail.ru>
+
+Found programmer device: WinChipHead (WCH) - CH341A
+Device revision is 3.0.4
+spi_nand_probe: mfr_id = 0xc2, dev_id = 0x22
+Get Status Register 1: 0x38
+Get Status Register 2: 0x10
+Using Flash ECC.
+Detected SPI NAND Flash: MXIC MX35LF2G, Flash Size: 256 MB
+
+or
+
+SNANDer - Serial Nor/nAND/Eeprom programmeR v.1.7 by McMCC <mcmcc_at_mail.ru>
 
 Found programmer device: Winchiphead (WCH) - CH341A
 Device revision is 3.0.4
@@ -32,98 +44,90 @@ Get Status Register 1: 0x81
 Get Status Register 2: 0x18
 Using Flash ECC.
 Detected SPI NAND Flash: WINBOND W25N01G, Flash Size: 128 MB
-igor@mcmcc-GL553VE:~/Soft/SNANDer-bin/Linux$
 
 2. Full erase flash with disable internal ECC check. Without OOB, page size 2112 bytes.
 
 igor@mcmcc-GL553VE:~/Soft/SNANDer-bin/Linux$ ./SNANDer -d -e
 
-SNANDer - Serial Nor/nAND/Eeprom programmeR v.1.6.2 by McMCC <mcmcc_at_mail.ru>
+SNANDer - Serial Nor/nAND/Eeprom programmeR v.1.7 by McMCC <mcmcc_at_mail.ru>
 
-Found programmer device: Winchiphead (WCH) - CH341A
+Found programmer device: WinChipHead (WCH) - CH341A
 Device revision is 3.0.4
-spi_nand_probe: mfr_id = 0xef, dev_id = 0xaa
-Get Status Register 1: 0x81
-Get Status Register 2: 0x18
+spi_nand_probe: mfr_id = 0xc2, dev_id = 0x22
+Get Status Register 1: 0x00
+Get Status Register 2: 0x11
 Disable Flash ECC.
-Detected SPI NAND Flash: WINBOND W25N01G, Flash Size: 128 MB
+Detected SPI NAND Flash: MXIC MX35LF2G, Flash Size: 256 MB
 ERASE:
 Set full erase chip!
-Erase addr = 0x0000000000000000, len = 0x0000000008400000
+Erase addr = 0x0000000000000000, len = 0x0000000010800000
+Erase 100% [276824064] of [276824064] bytes
+Elapsed time: 3 seconds
 Status: OK
 igor@mcmcc-GL553VE:~/Soft/SNANDer-bin/Linux$
 
 3. Write and verify flash with disable internal ECC check. Without OOB, page size 2112 bytes.
 
-igor@mcmcc-GL553VE:~/Soft/SNANDer-bin/Linux$ ./SNANDer -d -v -w ecc_1Gb_2K_64_flashimage_rfb1_ac2600.bin 
+igor@mcmcc-GL553VE:~/Soft/SNANDer-bin/Linux$ ./SNANDer -d -v -w ecc_2Gb_2K_64_flashimage_rfb1_ac2600.bin 
 
-SNANDer - Serial Nor/nAND/Eeprom programmeR v.1.6.2 by McMCC <mcmcc_at_mail.ru>
+SNANDer - Serial Nor/nAND/Eeprom programmeR v.1.7 by McMCC <mcmcc_at_mail.ru>
 
-Found programmer device: Winchiphead (WCH) - CH341A
+Found programmer device: WinChipHead (WCH) - CH341A
 Device revision is 3.0.4
-spi_nand_probe: mfr_id = 0xef, dev_id = 0xaa
-Get Status Register 1: 0x81
-Get Status Register 2: 0x08
+spi_nand_probe: mfr_id = 0xc2, dev_id = 0x22
+Get Status Register 1: 0x00
+Get Status Register 2: 0x11
 Disable Flash ECC.
-Detected SPI NAND Flash: WINBOND W25N01G, Flash Size: 128 MB
+Detected SPI NAND Flash: MXIC MX35LF2G, Flash Size: 256 MB
 WRITE:
-Write addr = 0x0000000000000000, len = 0x0000000001080000
-snand_erase_write: offs:0, count:1080000
-..........................................................................................................
-..........................................................................................................
-..........................................................................................................
-..........................................................................................................
-........................................................................................................Done!
+Write addr = 0x0000000000000000, len = 0x000000000E5A9D6F
+Written 100% [240819567] of [240819567] bytes
+Elapsed time: 4184 seconds
 Status: OK
 VERIFY:
-Read addr = 0x0000000000000000, len = 0x0000000001080000
+Read addr = 0x0000000000000000, len = 0x000000000E5A9D6F
+Read 100% [240819567] of [240819567] bytes
+Elapsed time: 2047 seconds
 Status: OK
 
 4. Read Microwire EEPROM Atmel 93C46 and save file.
 
 igor@igor-GL553VE:~/Soft/SNANDer-bin/Linux$ ./SNANDer -E 93c46 -r test.bin
 
-SNANDer - Serial Nor/nAND/Eeprom programmeR v.1.6.2 by McMCC <mcmcc_at_mail.ru>
+SNANDer - Serial Nor/nAND/Eeprom programmeR v.1.7 by McMCC <mcmcc_at_mail.ru>
 
 Found programmer device: WinChipHead (WCH) - CH341A
 Device revision is 3.0.4
-spi_nand_probe: mfr_id = 0xff, dev_id = 0xff
-SPI NAND Flash Not Detected!
-spi device id: ff ff ff ff ff (ffffffff)
-SPI NOR Flash Not Detected!
-I2C EEPROM Not Detected!
 Microwire EEPROM chip: 93c46, Size: 64 bytes, Org: 16 bits, fix addr len: Auto
 READ:
 Read addr = 0x0000000000000000, len = 0x0000000000000080
 Read_EEPROM_3wire: Set address len 6 bits
-............................................................
+Read 100% [64] of [64] bytes
 Read [128] bytes from [93c46] EEPROM address 0x00000000
+Elapsed time: 0 seconds
 Status: OK
 
 5. Write and verify Microwire EEPROM Atmel 93C46 from file.
 
 igor@igor-GL553VE:~/Soft/SNANDer-bin/Linux$ ./SNANDer -E 93c46 -w test.bin -v
 
-SNANDer - Serial Nor/nAND/Eeprom programmeR v.1.6.2 by McMCC <mcmcc_at_mail.ru>
+SNANDer - Serial Nor/nAND/Eeprom programmeR v.1.7 by McMCC <mcmcc_at_mail.ru>
 
 Found programmer device: WinChipHead (WCH) - CH341A
 Device revision is 3.0.4
-spi_nand_probe: mfr_id = 0xff, dev_id = 0xff
-SPI NAND Flash Not Detected!
-spi device id: ff ff ff ff ff (ffffffff)
-SPI NOR Flash Not Detected!
-I2C EEPROM Not Detected!
 Microwire EEPROM chip: 93c46, Size: 64 bytes, Org: 16 bits, fix addr len: Auto
 WRITE:
 Write addr = 0x0000000000000000, len = 0x0000000000000080
 Erase_EEPROM_3wire: Set address len 6 bits
 Write_EEPROM_3wire: Set address len 6 bits
-............................................................
+Written 100% [64] of [64] bytes
 Wrote [128] bytes to [93c46] EEPROM address 0x00000000
+Elapsed time: 1 seconds
 Status: OK
 VERIFY:
 Read addr = 0x0000000000000000, len = 0x0000000000000080
 Read_EEPROM_3wire: Set address len 6 bits
-............................................................
+Read 100% [64] of [64] bytes
 Read [128] bytes from [93c46] EEPROM address 0x00000000
+Elapsed time: 1 seconds
 Status: OK

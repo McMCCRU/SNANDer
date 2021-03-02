@@ -24,6 +24,7 @@
 
 #include "bitbang_microwire.h"
 #include "ch341a_gpio.h"
+#include "timer.h"
 
 extern struct gpio_cmd bb_func;
 extern char eepromname[12];
@@ -36,13 +37,15 @@ int mw_eeprom_read(unsigned char *buf, unsigned long from, unsigned long len)
 	if (len == 0)
 		return -1;
 
+	timer_start();
 	memset(ebuf, 0, sizeof(ebuf));
 	pbuf = ebuf;
 
 	Read_EEPROM_3wire(pbuf, mw_eepromsize);
 	memcpy(buf, pbuf + from, len);
 
-	printf("Read [%d] bytes from [%s] EEPROM address 0x%08lu\n", (int)len, eepromname, from);
+	printf("Read [%lu] bytes from [%s] EEPROM address 0x%08lu\n", len, eepromname, from);
+	timer_end();
 
 	return (int)len;
 }
@@ -54,6 +57,7 @@ int mw_eeprom_erase(unsigned long offs, unsigned long len)
 	if (len == 0)
 		return -1;
 
+	timer_start();
 	memset(ebuf, 0xff, sizeof(ebuf));
 	pbuf = ebuf;
 
@@ -66,12 +70,13 @@ int mw_eeprom_erase(unsigned long offs, unsigned long len)
 
 	if (offs || len < mw_eepromsize) {
 		if (Write_EEPROM_3wire(pbuf, mw_eepromsize) < 0) {
-			printf("Failed to erase [%d] bytes of [%s] EEPROM address 0x%08lu\n", (int)len, eepromname, offs);
+			printf("Failed to erase [%lu] bytes of [%s] EEPROM address 0x%08lu\n", len, eepromname, offs);
 			return -1;
 		}
 	}
 
-	printf("Erased [%d] bytes of [%s] EEPROM address 0x%08lu\n", (int)len, eepromname, offs);
+	printf("Erased [%lu] bytes of [%s] EEPROM address 0x%08lu\n", len, eepromname, offs);
+	timer_end();
 
 	return 0;
 }
@@ -83,6 +88,7 @@ int mw_eeprom_write(unsigned char *buf, unsigned long to, unsigned long len)
 	if (len == 0)
 		return -1;
 
+	timer_start();
 	memset(ebuf, 0xff, sizeof(ebuf));
 	pbuf = ebuf;
 
@@ -94,11 +100,12 @@ int mw_eeprom_write(unsigned char *buf, unsigned long to, unsigned long len)
 	Erase_EEPROM_3wire(mw_eepromsize);
 
 	if (Write_EEPROM_3wire(pbuf, mw_eepromsize) < 0) {
-		printf("Failed to write [%d] bytes of [%s] EEPROM address 0x%08lu\n", (int)len, eepromname, to);
+		printf("Failed to write [%lu] bytes of [%s] EEPROM address 0x%08lu\n", len, eepromname, to);
 		return -1;
 	}
 
-	printf("Wrote [%d] bytes to [%s] EEPROM address 0x%08lu\n", (int)len, eepromname, to);
+	printf("Wrote [%lu] bytes to [%s] EEPROM address 0x%08lu\n", len, eepromname, to);
+	timer_end();
 
 	return (int)len;
 }

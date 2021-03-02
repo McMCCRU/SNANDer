@@ -19,7 +19,7 @@ CFLAGS=-O2 -std=gnu99 -Wall -Wno-gnu-designator -I./lusb_build_osx/include $(BIG
 U=lusb_build_osx/libusb
 O=lusb_build_osx/libusb/os
 
-OBJS = flashcmd_api.o spi_controller.o spi_nand_flash.o spi_nor_flash.o ch341a_spi.o main.o
+OBJS = flashcmd_api.o spi_controller.o spi_nand_flash.o spi_nor_flash.o ch341a_spi.o timer.o main.o
 USB_OBJS += $(U)/libusb_1_0_la-core.o $(U)/libusb_1_0_la-descriptor.o $(U)/libusb_1_0_la-hotplug.o \
            $(U)/libusb_1_0_la-io.o $(U)/libusb_1_0_la-strerror.o $(U)/libusb_1_0_la-sync.o \
            $(O)/libusb_1_0_la-darwin_usb.o $(O)/libusb_1_0_la-poll_posix.o $(O)/libusb_1_0_la-threads_posix.o

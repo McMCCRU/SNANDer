@@ -424,9 +424,9 @@ int ch341a_spi_init(void)
 	}
 	printf("Found programmer device: %s - %s\n", devs_ch341a_spi[0].vendor_name, devs_ch341a_spi[0].device_name);
 
-/* libusb_detach_kernel_driver() and friends basically only work on Linux. We simply try to detach on Linux
- * without a lot of passion here. If that works fine else we will fail on claiming the interface anyway. */
-#if 1 /* IS_LINUX */
+#ifdef __gnu_linux__
+	/* libusb_detach_kernel_driver() and friends basically only work on Linux. We simply try to detach on Linux
+	 * without a lot of passion here. If that works fine else we will fail on claiming the interface anyway. */
 	ret = libusb_detach_kernel_driver(handle, 0);
 	if (ret == LIBUSB_ERROR_NOT_SUPPORTED) {
 		printf("Detaching kernel drivers is not supported. Further accesses may fail.\n");

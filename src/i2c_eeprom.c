@@ -15,6 +15,7 @@
 
 #include "ch341a_spi.h"
 #include "ch341a_i2c.h"
+#include "timer.h"
 
 extern unsigned int bsize;
 struct EEPROM eeprom_info;
@@ -28,6 +29,7 @@ int i2c_eeprom_read(unsigned char *buf, unsigned long from, unsigned long len)
 	if (len == 0)
 		return -1;
 
+	timer_start();
 	memset(ebuf, 0, sizeof(ebuf));
 	pbuf = ebuf;
 
@@ -39,6 +41,7 @@ int i2c_eeprom_read(unsigned char *buf, unsigned long from, unsigned long len)
 	memcpy(buf, pbuf + from, len);
 
 	printf("Read [%d] bytes from [%s] EEPROM address 0x%08lu\n", (int)len, eepromname, from);
+	timer_end();
 
 	return (int)len;
 }
@@ -50,6 +53,7 @@ int i2c_eeprom_erase(unsigned long offs, unsigned long len)
 	if (len == 0)
 		return -1;
 
+	timer_start();
 	memset(ebuf, 0xff, sizeof(ebuf));
 	pbuf = ebuf;
 
@@ -67,6 +71,7 @@ int i2c_eeprom_erase(unsigned long offs, unsigned long len)
 	}
 
 	printf("Erased [%d] bytes of [%s] EEPROM address 0x%08lu\n", (int)len, eepromname, offs);
+	timer_end();
 
 	return 0;
 }
@@ -78,6 +83,7 @@ int i2c_eeprom_write(unsigned char *buf, unsigned long to, unsigned long len)
 	if (len == 0)
 		return -1;
 
+	timer_start();
 	memset(ebuf, 0xff, sizeof(ebuf));
 	pbuf = ebuf;
 
@@ -95,6 +101,7 @@ int i2c_eeprom_write(unsigned char *buf, unsigned long to, unsigned long len)
 	}
 
 	printf("Wrote [%d] bytes to [%s] EEPROM address 0x%08lu\n", (int)len, eepromname, to);
+	timer_end();
 
 	return (int)len;
 }

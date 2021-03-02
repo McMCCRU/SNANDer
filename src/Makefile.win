@@ -8,7 +8,7 @@ EEPROM_SUPPORT = y
 BIGFILES=-D_FILE_OFFSET_BITS=64
 CFLAGS=-O2 -std=gnu99 -posix -static -Wall -I./lusb_build_win/include $(BIGFILES)
 
-OBJS= flashcmd_api.o spi_controller.o spi_nand_flash.o spi_nor_flash.o ch341a_spi.o main.o
+OBJS= flashcmd_api.o spi_controller.o spi_nand_flash.o spi_nor_flash.o ch341a_spi.o timer.o main.o
 
 ifeq ($(EEPROM_SUPPORT),y)
 CFLAGS += -DEEPROM_SUPPORT
@@ -26,8 +26,11 @@ all: SNANDer.exe
 	make install
 	touch $@
 
-SNANDer.exe: .lusb_install_win $(OBJS)
-	$(CC) $(CFLAGS) -s -o $@ $(OBJS) $(LDFLAGS)
+res.o:
+	x86_64-w64-mingw32-windres -i snander.rc -o res.o
+
+SNANDer.exe: .lusb_install_win $(OBJS) res.o
+	$(CC) $(CFLAGS) -s -o $@ $(OBJS) res.o $(LDFLAGS)
 
 .c.o:
 	$(CC) $(CFLAGS) -c $<

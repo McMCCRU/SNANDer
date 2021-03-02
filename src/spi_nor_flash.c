@@ -23,6 +23,7 @@
 #include "spi_controller.h"
 #include "snorcmd_api.h"
 #include "types.h"
+#include "timer.h"
 
 #define min(a,b) (((a)<(b))?(a):(b))
 
@@ -274,6 +275,7 @@ static int snor_erase_sector(unsigned long offset)
 
 static int full_erase_chip(void)
 {
+	timer_start();
 	/* Wait until finished previous write command. */
 	if (snor_wait_ready(3))
 		return -1;
@@ -288,6 +290,7 @@ static int full_erase_chip(void)
 
 	snor_wait_ready(950);
 	snor_write_disable();
+	timer_end();
 
 	return 0;
 }
@@ -534,6 +537,7 @@ long snor_init(void)
 
 int snor_erase(unsigned long offs, unsigned long len)
 {
+	unsigned long plen = len;
 	snor_dbg("%s: offs:%x len:%x\n", __func__, offs, len);
 
 	/* sanity checks */
@@ -546,6 +550,8 @@ int snor_erase(unsigned long offs, unsigned long len)
 		return full_erase_chip();
 	}
 
+	timer_start();
+
 	snor_unprotect();
 
 	/* now erase those sectors */
@@ -556,10 +562,13 @@ int snor_erase(unsigned long offs, unsigned long len)
 
 		offs += spi_chip_info->sector_size;
 		len -= spi_chip_info->sector_size;
-		printf(".");
+
+		printf("\bErase %ld%% [%lu] of [%lu] bytes      ", 100 * (plen - len) / plen, plen - len, plen);
+		printf("\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b");
 		fflush(stdout);
 	}
-	printf("\n");
+	printf("Erase 100%% [%lu] of [%lu] bytes      \n", plen - len, plen);
+	timer_end();
 
 	return 0;
 }
@@ -574,6 +583,7 @@ int snor_read(unsigned char *buf, unsigned long from, unsigned long len)
 	if (len == 0)
 		return 0;
 
+	timer_start();
 	/* Wait till previous write/erase is done. */
 	if (snor_wait_ready(1)) {
 		/* REVISIT status return?? */
@@ -622,8 +632,11 @@ int snor_read(unsigned char *buf, unsigned long from, unsigned long len)
 			}
 			remain_len -= spi_chip_info->sector_size - data_offset;
 			read_addr += spi_chip_info->sector_size - data_offset;
-			printf(".");
-			fflush(stdout);
+			if ((read_addr & 0xffff) == 0) {
+				printf("\bRead %ld%% [%lu] of [%lu] bytes      ", 100 * (len - remain_len) / len, len - remain_len, len);
+				printf("\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b");
+				fflush(stdout);
+			}
 		}
 
 		SPI_CONTROLLER_Chip_Select_High();
@@ -631,7 +644,8 @@ int snor_read(unsigned char *buf, unsigned long from, unsigned long len)
 		if (spi_chip_info->addr4b)
 			snor_4byte_mode(0);
 	}
-	printf("\n");
+	printf("Read 100%% [%lu] of [%lu] bytes      \n", len - remain_len, len);
+	timer_end();
 
 	return len;
 }
@@ -640,6 +654,7 @@ int snor_write(unsigned char *buf, unsigned long to, unsigned long len)
 {
 	u32 page_offset, page_size;
 	int rc = 0, retlen = 0;
+	unsigned long plen = len;
 
 	snor_dbg("%s: to:%x len:%x \n", __func__, to, len);
 
@@ -650,7 +665,7 @@ int snor_write(unsigned char *buf, unsigned long to, unsigned long len)
 	if (to + len > spi_chip_info->sector_size * spi_chip_info->n_sectors)
 		return -1;
 
-
+	timer_start();
 	/* Wait until finished previous write command. */
 	if (snor_wait_ready(2)) {
 		return -1;
@@ -693,7 +708,8 @@ int snor_write(unsigned char *buf, unsigned long to, unsigned long len)
 		snor_dbg("%s: to:%x page_size:%x ret:%x\n", __func__, to, page_size, rc);
 
 		if ((retlen & 0xffff) == 0) {
-			printf(".");
+			printf("\bWritten %ld%% [%lu] of [%lu] bytes      ", 100 * (plen - len) / plen, plen - len, plen);
+			printf("\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b");
 			fflush(stdout);
 		}
 
@@ -717,7 +733,8 @@ int snor_write(unsigned char *buf, unsigned long to, unsigned long len)
 
 	snor_write_disable();
 
-	printf("\n");
+	printf("Written 100%% [%ld] of [%ld] bytes      \n", plen - len, plen);
+	timer_end();
 
 	return retlen;
 }

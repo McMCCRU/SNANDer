@@ -8,7 +8,7 @@ EEPROM_SUPPORT = y
 BIGFILES=-D_FILE_OFFSET_BITS=64
 CFLAGS=-O2 -std=gnu99 -static -Wall -I./lusb_build/include $(BIGFILES)
 
-OBJS= flashcmd_api.o spi_controller.o spi_nand_flash.o spi_nor_flash.o ch341a_spi.o main.o
+OBJS= flashcmd_api.o spi_controller.o spi_nand_flash.o spi_nor_flash.o ch341a_spi.o timer.o main.o
 
 ifeq ($(EEPROM_SUPPORT),y)
 CFLAGS += -DEEPROM_SUPPORT
