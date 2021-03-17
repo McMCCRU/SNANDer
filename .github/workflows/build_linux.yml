@@ -45,7 +45,7 @@ jobs:
             RELEASE_NAME="Release ${{ github.ref }}"
             PRERELEASE=false
           fi
-          ARCHIVE="output/openwrt-hi35xx-*"
+          ARCHIVE="output/SNANDer"
           echo "ARCHIVE=$ARCHIVE" >> $GITHUB_ENV
           echo "TAG_NAME=$TAG_NAME" >> $GITHUB_ENV
           echo "GIT_HASH=$GIT_HASH" >> $GITHUB_ENV
@@ -54,7 +54,7 @@ jobs:
           echo "PRERELEASE=$PRERELEASE" >> $GITHUB_ENV
           
           cd src
-          make -j$(nproc)
+          make -j1
           mkdir output
           mv -v SNANDer output
      
