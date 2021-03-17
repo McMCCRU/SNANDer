@@ -3,7 +3,7 @@ name: SNANDer build
 on:
   push:
     branches:
-      - master
+      - main
     tags:
       - "v*"
 
