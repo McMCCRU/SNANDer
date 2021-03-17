@@ -20,7 +20,8 @@ jobs:
         id: install
         run: |
           DEBIAN_FRONTEND=noninteractive \
-          sudo apt-get -y update && sudo apt-get -y upgrade && sudo apt -y autoremove && sudo apt-get -y install build-essential curl
+          sudo apt-get update && sudo apt -y autoremove && \
+          sudo apt-get -y install build-essential curl
 
       - name: Free disk space
         run: |
