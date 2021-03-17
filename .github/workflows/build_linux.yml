@@ -20,7 +20,7 @@ jobs:
         id: install
         run: |
           DEBIAN_FRONTEND=noninteractive sudo apt-get update && sudo apt-get -y install \
-          build-essential curl 
+          build-essential curl libusb-dev
 
       - name: Free disk space
         run: |
