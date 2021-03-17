@@ -1,1 +1,31 @@
-#
+name: SNANDer build
+
+on:
+  push:
+    branches:
+      - master
+    tags:
+      - "v*"
+
+jobs:
+  image_build:
+    name: images build
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Install build dependencies
+        id: install
+        run: |
+          DEBIAN_FRONTEND=noninteractive sudo apt-get update && sudo apt-get -y install \
+          build-essential curl 
+
+      - name: Free disk space
+        run: |
+          sudo swapoff -a
+          sudo rm -f /swapfile
+          sudo apt clean
+          docker rmi $(docker image ls -aq)
+          df -h
