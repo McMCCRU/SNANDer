@@ -1,4 +1,4 @@
-name: SNANDer build
+name: SNANDer for Linux
 
 on:
   push:
@@ -19,8 +19,9 @@ jobs:
       - name: Install build dependencies
         id: install
         run: |
-          DEBIAN_FRONTEND=noninteractive sudo apt-get update && sudo apt-get -y install \
-          build-essential curl libusb-dev
+          DEBIAN_FRONTEND=noninteractive \
+          sudo echo -e '#\nAPT::Install-Recommends "0";\nAPT::AutoRemove::RecommendsImportant "false";\n#\n' >/etc/apt/apt.conf.d/01lean && \
+          sudo apt-get -y update && sudo apt-get -y upgrade && apt -y autoremove && apt-get -y install build-essential curl
 
       - name: Free disk space
         run: |
@@ -57,9 +58,34 @@ jobs:
           make -j1
           mkdir output
           mv -v SNANDer output
+          
+        continue-on-error: true
      
-     
-     
+   
+      - name: Post free disk space
+        run: |
+          df -h
+
+      - name: Create release
+        uses: actions/create-release@v1
+        continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ env.TAG_NAME }}
+          release_name: ${{ env.RELEASE_NAME }}
+          draft: false
+          prerelease: ${{ env.PRERELEASE }}
+
+      - name: Upload binaries to release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file_glob: true
+          file: ${{ env.ARCHIVE }}
+          asset_name: ${{ env.ARCHIVE }}
+          tag: ${{ env.TAG_NAME }}
+          overwrite: true  
      
      
      
