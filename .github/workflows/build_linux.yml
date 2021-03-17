@@ -19,17 +19,8 @@ jobs:
       - name: Install build dependencies
         id: install
         run: |
-          DEBIAN_FRONTEND=noninteractive \
-          sudo apt-get update && sudo apt -y autoremove && \
+          DEBIAN_FRONTEND=noninteractive sudo apt-get update && sudo apt -y autoremove && \
           sudo apt-get -y install build-essential curl
-
-      - name: Free disk space
-        run: |
-          sudo swapoff -a
-          sudo rm -f /swapfile
-          sudo apt clean
-          docker rmi $(docker image ls -aq)
-          df -h
 
       - name: Build SNANDer binary
         id: build
@@ -37,6 +28,7 @@ jobs:
           HEAD_TAG=$(git tag --points-at HEAD)
           GIT_HASH=$(git rev-parse --short $GITHUB_SHA)
           BRANCH_NAME=$(echo $GITHUB_REF | cut -d'/' -f 3)
+          
           if [ -z "$HEAD_TAG" ]; then
             TAG_NAME="latest"
             RELEASE_NAME="Development Build"
@@ -46,6 +38,7 @@ jobs:
             RELEASE_NAME="Release ${{ github.ref }}"
             PRERELEASE=false
           fi
+          
           ARCHIVE="output/SNANDer"
           echo "ARCHIVE=$ARCHIVE" >> $GITHUB_ENV
           echo "TAG_NAME=$TAG_NAME" >> $GITHUB_ENV
@@ -61,10 +54,6 @@ jobs:
           
         continue-on-error: true
      
-   
-      - name: Post free disk space
-        run: |
-          df -h
 
       - name: Create release
         uses: actions/create-release@v1
