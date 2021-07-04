@@ -155,6 +155,7 @@
 #define _SPI_NAND_DEVICE_ID_TC58CVG0S3H		0xC2
 #define _SPI_NAND_DEVICE_ID_TC58CVG1S3H		0xCB
 #define _SPI_NAND_DEVICE_ID_TC58CVG2S0H		0xCD
+#define _SPI_NAND_DEVICE_ID_TC58CVG2S0HRAIJ	0xED
 #define _SPI_NAND_DEVICE_ID_MT29F1G01		0x14
 #define _SPI_NAND_DEVICE_ID_MT29F2G01		0x24
 #define _SPI_NAND_DEVICE_ID_MT29F4G01		0x36
@@ -1020,6 +1021,21 @@ static const struct SPI_NAND_FLASH_INFO_T spi_nand_flash_tables[] = {
 		mfr_id:					_SPI_NAND_MANUFACTURER_ID_TOSHIBA,
 		dev_id:					_SPI_NAND_DEVICE_ID_TC58CVG2S0H,
 		ptr_name:				"TOSHIBA TC58CVG2S0H",
+		device_size:				_SPI_NAND_CHIP_SIZE_4GBIT,
+		page_size:				_SPI_NAND_PAGE_SIZE_4KBYTE,
+		oob_size:				_SPI_NAND_OOB_SIZE_128BYTE,
+		erase_size:				_SPI_NAND_BLOCK_SIZE_256KBYTE,
+		dummy_mode:				SPI_NAND_FLASH_READ_DUMMY_BYTE_APPEND,
+		read_mode:				SPI_NAND_FLASH_READ_SPEED_MODE_DUAL,
+		write_mode:				SPI_NAND_FLASH_WRITE_SPEED_MODE_SINGLE,
+		oob_free_layout: 			&ooblayout_toshiba_256,
+		feature:				SPI_NAND_FLASH_FEATURE_NONE,
+	},
+
+	{
+		mfr_id:					_SPI_NAND_MANUFACTURER_ID_TOSHIBA,
+		dev_id:					_SPI_NAND_DEVICE_ID_TC58CVG2S0HRAIJ,
+		ptr_name:				"KIOXIA TC58CVG2S0HRAIJ",
 		device_size:				_SPI_NAND_CHIP_SIZE_4GBIT,
 		page_size:				_SPI_NAND_PAGE_SIZE_4KBYTE,
 		oob_size:				_SPI_NAND_OOB_SIZE_128BYTE,
@@ -2057,6 +2073,47 @@ static SPI_NAND_FLASH_RTN_T spi_nand_protocol_read_id_2 ( struct SPI_NAND_FLASH_
 	_SPI_NAND_READ_CHIP_SELECT_HIGH();
 
 	_SPI_NAND_DEBUG_PRINTF(SPI_NAND_FLASH_DEBUG_LEVEL_1, "spi_nand_protocol_read_id_2 : mfr_id = 0x%x, dev_id = 0x%x\n", ptr_rtn_flash_id->mfr_id, ptr_rtn_flash_id->dev_id);
+
+	return (rtn_status);
+}
+
+/*------------------------------------------------------------------------------------
+ * FUNCTION: static SPI_NAND_FLASH_RTN_T spi_nand_protocol_read_id_3( struct SPI_NAND_FLASH_INFO_T *ptr_rtn_flash_id )
+ * PURPOSE : To implement the SPI nand protocol for read id.
+ * AUTHOR  :
+ * CALLED BY
+ *   -
+ * CALLS
+ *   -
+ * PARAMs  :
+ *   INPUT : None
+ *   OUTPUT: None
+ * RETURN  : SPI_RTN_NO_ERROR - Successful.   Otherwise - Failed.
+ * NOTES   : Workaround Toshiba/KIOXIA
+ * MODIFICTION HISTORY:
+ *
+ *------------------------------------------------------------------------------------
+ */
+static SPI_NAND_FLASH_RTN_T spi_nand_protocol_read_id_3 ( struct SPI_NAND_FLASH_INFO_T *ptr_rtn_flash_id )
+{
+	SPI_NAND_FLASH_RTN_T rtn_status = SPI_NAND_FLASH_RTN_NO_ERROR;
+	u8 dummy = 0;
+
+	/* 1. Chip Select Low */
+	_SPI_NAND_READ_CHIP_SELECT_LOW();
+
+	/* 2. Write op_cmd 0x9F (Read ID) */
+	_SPI_NAND_WRITE_ONE_BYTE( _SPI_NAND_OP_READ_ID );
+
+	/* 3. Read data (Manufacture ID and Device ID) */
+	_SPI_NAND_READ_NBYTE( &dummy, _SPI_NAND_LEN_ONE_BYTE, SPI_CONTROLLER_SPEED_SINGLE);
+	_SPI_NAND_READ_NBYTE( &(ptr_rtn_flash_id->mfr_id), _SPI_NAND_LEN_ONE_BYTE, SPI_CONTROLLER_SPEED_SINGLE);
+	_SPI_NAND_READ_NBYTE( &(ptr_rtn_flash_id->dev_id), _SPI_NAND_LEN_ONE_BYTE, SPI_CONTROLLER_SPEED_SINGLE);
+
+	/* 4. Chip Select High */
+	_SPI_NAND_READ_CHIP_SELECT_HIGH();
+
+	_SPI_NAND_DEBUG_PRINTF(SPI_NAND_FLASH_DEBUG_LEVEL_1, "spi_nand_protocol_read_id_3 : dummy = 0x%x, mfr_id = 0x%x, dev_id = 0x%x\n", dummy, ptr_rtn_flash_id->mfr_id, ptr_rtn_flash_id->dev_id);
 
 	return (rtn_status);
 }
@@ -3716,6 +3773,40 @@ static SPI_NAND_FLASH_RTN_T spi_nand_probe( struct SPI_NAND_FLASH_INFO_T *ptr_rt
 		/* Another protocol for read id  (For example, the GigaDevice SPI NADN chip for Type C */
 		_SPI_NAND_SEMAPHORE_LOCK();
 		spi_nand_protocol_read_id_2( ptr_rtn_device_t );
+		_SPI_NAND_SEMAPHORE_UNLOCK();
+
+		for ( i = 0; i < (sizeof(spi_nand_flash_tables) / sizeof(struct SPI_NAND_FLASH_INFO_T)); i++)
+		{
+			_SPI_NAND_DEBUG_PRINTF(SPI_NAND_FLASH_DEBUG_LEVEL_1,"spi_nand_probe: table[%d]: mfr_id = 0x%x, dev_id = 0x%x\n", i, spi_nand_flash_tables[i].mfr_id, spi_nand_flash_tables[i].dev_id );
+
+			if ( ( (ptr_rtn_device_t->mfr_id) == spi_nand_flash_tables[i].mfr_id) &&
+			     ( (ptr_rtn_device_t->dev_id) == spi_nand_flash_tables[i].dev_id)  )
+			{
+				ecc_size = ((spi_nand_flash_tables[i].device_size / spi_nand_flash_tables[i].erase_size) * ((spi_nand_flash_tables[i].erase_size / spi_nand_flash_tables[i].page_size) * spi_nand_flash_tables[i].oob_size));
+				ptr_rtn_device_t->device_size = ECC_fcheck ? spi_nand_flash_tables[i].device_size : spi_nand_flash_tables[i].device_size + ecc_size;
+				erase_oob_size                = (spi_nand_flash_tables[i].erase_size / spi_nand_flash_tables[i].page_size) * spi_nand_flash_tables[i].oob_size;
+				ptr_rtn_device_t->erase_size  = ECC_fcheck ? spi_nand_flash_tables[i].erase_size : spi_nand_flash_tables[i].erase_size + erase_oob_size;
+				ptr_rtn_device_t->page_size   = ECC_fcheck ? spi_nand_flash_tables[i].page_size : spi_nand_flash_tables[i].page_size + spi_nand_flash_tables[i].oob_size;
+				ptr_rtn_device_t->oob_size    = ECC_fcheck ? spi_nand_flash_tables[i].oob_size : 0;
+				bmt_oob_size                  = spi_nand_flash_tables[i].oob_size;
+				ptr_rtn_device_t->dummy_mode  = spi_nand_flash_tables[i].dummy_mode;
+				ptr_rtn_device_t->read_mode   = spi_nand_flash_tables[i].read_mode;
+				ptr_rtn_device_t->write_mode  = spi_nand_flash_tables[i].write_mode;
+				memcpy( &(ptr_rtn_device_t->ptr_name) , &(spi_nand_flash_tables[i].ptr_name), sizeof(ptr_rtn_device_t->ptr_name));
+				memcpy( &(ptr_rtn_device_t->oob_free_layout) , &(spi_nand_flash_tables[i].oob_free_layout), sizeof(ptr_rtn_device_t->oob_free_layout));
+				ptr_rtn_device_t->feature = spi_nand_flash_tables[i].feature;
+
+				rtn_status = SPI_NAND_FLASH_RTN_NO_ERROR;
+				break;
+			}
+		}
+	}
+
+	if ( rtn_status != SPI_NAND_FLASH_RTN_NO_ERROR )
+	{
+		/* Another protocol for read id  (For example, the Toshiba/KIOXIA SPI NADN chip */
+		_SPI_NAND_SEMAPHORE_LOCK();
+		spi_nand_protocol_read_id_3( ptr_rtn_device_t );
 		_SPI_NAND_SEMAPHORE_UNLOCK();
 
 		for ( i = 0; i < (sizeof(spi_nand_flash_tables) / sizeof(struct SPI_NAND_FLASH_INFO_T)); i++)
