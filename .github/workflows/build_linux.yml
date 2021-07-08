@@ -1,0 +1,81 @@
+name: SNANDer for Linux
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - "v*"
+
+jobs:
+  image_build:
+    name: images build
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Install build dependencies
+        id: install
+        run: |
+          DEBIAN_FRONTEND=noninteractive sudo apt-get update && sudo apt -y autoremove && \
+          sudo apt-get -y install build-essential curl
+
+      - name: Build SNANDer binary
+        id: build
+        run: |
+          HEAD_TAG=$(git tag --points-at HEAD)
+          GIT_HASH=$(git rev-parse --short $GITHUB_SHA)
+          BRANCH_NAME=$(echo $GITHUB_REF | cut -d'/' -f 3)
+          
+          if [ -z "$HEAD_TAG" ]; then
+            TAG_NAME="latest"
+            RELEASE_NAME="Development Build"
+            PRERELEASE=true
+          else
+            TAG_NAME=${{ github.ref }}
+            RELEASE_NAME="Release ${{ github.ref }}"
+            PRERELEASE=false
+          fi
+          
+          ARCHIVE="output/SNANDer"
+          echo "ARCHIVE=$ARCHIVE" >> $GITHUB_ENV
+          echo "TAG_NAME=$TAG_NAME" >> $GITHUB_ENV
+          echo "GIT_HASH=$GIT_HASH" >> $GITHUB_ENV
+          echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_ENV
+          echo "RELEASE_NAME=$RELEASE_NAME" >> $GITHUB_ENV
+          echo "PRERELEASE=$PRERELEASE" >> $GITHUB_ENV
+          
+          cd src
+          make -j1
+          mkdir output
+          mv -v SNANDer output
+          
+        continue-on-error: true
+     
+
+      - name: Create release
+        uses: actions/create-release@v1
+        continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ env.TAG_NAME }}
+          release_name: ${{ env.RELEASE_NAME }}
+          draft: false
+          prerelease: ${{ env.PRERELEASE }}
+
+      - name: Upload binaries to release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file_glob: true
+          file: ${{ env.ARCHIVE }}
+          asset_name: ${{ env.ARCHIVE }}
+          tag: ${{ env.TAG_NAME }}
+          overwrite: true  
+     
+     
+     
+     
