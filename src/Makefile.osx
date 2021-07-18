@@ -3,11 +3,19 @@
 # Build and install cross-tools from https://github.com/tpoechtrager/osxcross
 # export PATH=/home/igor/Work/osxcross/target/bin:$PATH (/home/igor/Work/osxcross/target/bin - replace on your path)
 # make -f Makefile.osx
+# or
+# ARCH=aarch64 make -f Makefile.osx
 
-DRW=x86_64-apple-darwin20.2
+ARCH ?= x86_64
+
+DRW=$(ARCH)-apple-darwin20.2
+ifeq ($(ARCH),x86_64)
 CC=$(DRW)-gcc
-# CC=$(DRW)-clang
 STRIP=$(DRW)-strip
+else
+CC=$(DRW)-clang
+STRIP=echo
+endif
 LDFLAGS=-pthread -lobjc -Wl,-framework,IOKit -Wl,-framework,CoreFoundation
 TOPDIR=$(shell pwd)
 
@@ -41,8 +49,8 @@ all: SNANDer
 	touch $@
 
 SNANDer: .lusb_install_osx $(OBJS)
-	$(CC) $(CFLAGS) -o $@ $(OBJS) $(USB_OBJS) $(LDFLAGS)
-	$(STRIP) $@
+	$(CC) $(CFLAGS) -o $@.$(ARCH) $(OBJS) $(USB_OBJS) $(LDFLAGS)
+	$(STRIP) $@.$(ARCH)
 
 .c.o:
 	$(CC) $(CFLAGS) -c $<
