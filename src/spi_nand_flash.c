@@ -2915,7 +2915,6 @@ static SPI_NAND_FLASH_RTN_T spi_nand_erase_internal( u32 addr, u32 len )
 			{
 				_SPI_NAND_PRINTF("spi_nand_erase_internal : Erase Fail at addr = 0x%x, len = 0x%x, block_idx = 0x%x\n", addr, len, block_index);
 				rtn_status = SPI_NAND_FLASH_RTN_ERASE_FAIL;
-				break;
 			}
 
 			/* 2.7 Erase next block if needed */
