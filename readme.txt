@@ -1,4 +1,4 @@
-SNANDer - Serial Nor/nAND/Eeprom programmeR v.1.7.2 by McMCC <mcmcc_at_mail.ru>
+SNANDer - Serial Nor/nAND/Eeprom programmeR v.1.7.3 by McMCC <mcmcc_at_mail.ru>
 
   Usage:
  -h             display this message
@@ -23,7 +23,7 @@ Examples:
 
 igor@mcmcc-GL553VE:~/Soft/SNANDer-bin/Linux$ ./SNANDer -i
 
-SNANDer - Serial Nor/nAND/Eeprom programmeR v.1.7.2 by McMCC <mcmcc_at_mail.ru>
+SNANDer - Serial Nor/nAND/Eeprom programmeR v.1.7.3 by McMCC <mcmcc_at_mail.ru>
 
 Found programmer device: WinChipHead (WCH) - CH341A
 Device revision is 3.0.4
@@ -35,7 +35,7 @@ Detected SPI NAND Flash: MXIC MX35LF2G, Flash Size: 256 MB
 
 or
 
-SNANDer - Serial Nor/nAND/Eeprom programmeR v.1.7.2 by McMCC <mcmcc_at_mail.ru>
+SNANDer - Serial Nor/nAND/Eeprom programmeR v.1.7.3 by McMCC <mcmcc_at_mail.ru>
 
 Found programmer device: Winchiphead (WCH) - CH341A
 Device revision is 3.0.4
@@ -49,7 +49,7 @@ Detected SPI NAND Flash: WINBOND W25N01G, Flash Size: 128 MB
 
 igor@mcmcc-GL553VE:~/Soft/SNANDer-bin/Linux$ ./SNANDer -d -e
 
-SNANDer - Serial Nor/nAND/Eeprom programmeR v.1.7.2 by McMCC <mcmcc_at_mail.ru>
+SNANDer - Serial Nor/nAND/Eeprom programmeR v.1.7.3 by McMCC <mcmcc_at_mail.ru>
 
 Found programmer device: WinChipHead (WCH) - CH341A
 Device revision is 3.0.4
@@ -70,7 +70,7 @@ igor@mcmcc-GL553VE:~/Soft/SNANDer-bin/Linux$
 
 igor@mcmcc-GL553VE:~/Soft/SNANDer-bin/Linux$ ./SNANDer -d -v -w ecc_2Gb_2K_64_flashimage_rfb1_ac2600.bin 
 
-SNANDer - Serial Nor/nAND/Eeprom programmeR v.1.7.2 by McMCC <mcmcc_at_mail.ru>
+SNANDer - Serial Nor/nAND/Eeprom programmeR v.1.7.3 by McMCC <mcmcc_at_mail.ru>
 
 Found programmer device: WinChipHead (WCH) - CH341A
 Device revision is 3.0.4
@@ -94,7 +94,7 @@ Status: OK
 
 igor@igor-GL553VE:~/Soft/SNANDer-bin/Linux$ ./SNANDer -E 93c46 -r test.bin
 
-SNANDer - Serial Nor/nAND/Eeprom programmeR v.1.7.2 by McMCC <mcmcc_at_mail.ru>
+SNANDer - Serial Nor/nAND/Eeprom programmeR v.1.7.3 by McMCC <mcmcc_at_mail.ru>
 
 Found programmer device: WinChipHead (WCH) - CH341A
 Device revision is 3.0.4
@@ -111,7 +111,7 @@ Status: OK
 
 igor@igor-GL553VE:~/Soft/SNANDer-bin/Linux$ ./SNANDer -E 93c46 -w test.bin -v
 
-SNANDer - Serial Nor/nAND/Eeprom programmeR v.1.7.2 by McMCC <mcmcc_at_mail.ru>
+SNANDer - Serial Nor/nAND/Eeprom programmeR v.1.7.3 by McMCC <mcmcc_at_mail.ru>
 
 Found programmer device: WinChipHead (WCH) - CH341A
 Device revision is 3.0.4
