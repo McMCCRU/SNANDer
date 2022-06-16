@@ -3101,6 +3101,19 @@ static SPI_NAND_FLASH_RTN_T spi_nand_write_page( u32 page_number, u32 data_offse
 		SPI_NAND_FLASH_RTN_T rtn_status = SPI_NAND_FLASH_RTN_NO_ERROR;
 		u16 write_addr;
 
+		int only_ffff = 1;
+
+		for (int i=0; i<data_len; i++){
+			if (ptr_data[i] != 0xff) {
+				only_ffff = 0;
+				break;
+			}
+		}
+
+		if (only_ffff) {
+			return 0;
+		}
+
 		/* write to write_addr index in the page */
 		write_addr = 0;
 
