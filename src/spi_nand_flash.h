@@ -92,6 +92,7 @@ struct spi_nand_flash_ooblayout
 struct SPI_NAND_FLASH_INFO_T {
 	u8					mfr_id;
 	u8					dev_id;
+	u8					dev_id_2;
 	const char				*ptr_name;
 	u32					device_size;	/* Flash total Size */
 	u32					page_size;	/* Page Size */

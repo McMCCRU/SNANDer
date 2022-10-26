@@ -17,6 +17,7 @@
 
 void timer_start(void);
 void timer_end(void);
+int timer_progress(void);
 
 #endif /* __TIMER_H__ */
 /* End of [timer.h] package */

@@ -311,8 +311,10 @@ static struct chip_info chips_data [] = {
 	{ "GD25Q32",		0xc8, 0x40160000, 64 * 1024, 64,  0 },
 	{ "GD25Q64CSIG",	0xc8, 0x4017c840, 64 * 1024, 128, 0 },
 	{ "GD25Q128CSIG",	0xc8, 0x4018c840, 64 * 1024, 256, 0 },
+	{ "YC25Q128",		0xd8, 0x4018d840, 64 * 1024, 256, 0 },
 	{ "GD25Q256CSIG",	0xc8, 0x4019c840, 64 * 1024, 512, 1 },
 
+	{ "MX25L8005M",		0xc2, 0x2014c220, 64 * 1024, 16,  0 },
 	{ "MX25L1605D",		0xc2, 0x2015c220, 64 * 1024, 32,  0 },
 	{ "MX25L3205D",		0xc2, 0x2016c220, 64 * 1024, 64,  0 },
 	{ "MX25L6405D",		0xc2, 0x2017c220, 64 * 1024, 128, 0 },
@@ -342,6 +344,7 @@ static struct chip_info chips_data [] = {
 	{ "EN25QA64A",		0x1c, 0x60170000, 64 * 1024, 128, 0 },
 	{ "EN25QH64A",		0x1c, 0x70171c70, 64 * 1024, 128, 0 },
 	{ "EN25Q128",		0x1c, 0x30181c30, 64 * 1024, 256, 0 },
+	{ "EN25Q256",		0x1c, 0x70191c70, 64 * 1024, 512, 1 },
 	{ "EN25QA128A",		0x1c, 0x60180000, 64 * 1024, 256, 0 },
 	{ "EN25QH128A",		0x1c, 0x70181c70, 64 * 1024, 256, 0 },
 
@@ -358,7 +361,8 @@ static struct chip_info chips_data [] = {
 	{ "W25Q20EW",		0xef, 0x60120000, 64 * 1024, 4,   0 },
 	{ "W25Q80",		0xef, 0x50140000, 64 * 1024, 16,  0 },
 	{ "W25Q80BL",		0xef, 0x40140000, 64 * 1024, 16,  0 },
-	{ "W25Q16BV",		0xef, 0x40150000, 64 * 1024, 32,  0 },
+	{ "W25Q16JQ",		0xef, 0x40150000, 64 * 1024, 32,  0 },
+	{ "W25Q16JM",		0xef, 0x70150000, 64 * 1024, 32,  0 },
 	{ "W25Q32BV",		0xef, 0x40160000, 64 * 1024, 64,  0 },
 	{ "W25Q32DW",		0xef, 0x60160000, 64 * 1024, 64,  0 },
 	{ "W25Q64BV",		0xef, 0x40170000, 64 * 1024, 128, 0 },
@@ -565,10 +569,12 @@ int snor_erase(unsigned long offs, unsigned long len)
 
 		offs += spi_chip_info->sector_size;
 		len -= spi_chip_info->sector_size;
-
-		printf("\bErase %ld%% [%lu] of [%lu] bytes      ", 100 * (plen - len) / plen, plen - len, plen);
-		printf("\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b");
-		fflush(stdout);
+		if( timer_progress() )
+		{
+			printf("\bErase %ld%% [%lu] of [%lu] bytes      ", 100 * (plen - len) / plen, plen - len, plen);
+			printf("\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b");
+			fflush(stdout);
+		}
 	}
 	printf("Erase 100%% [%lu] of [%lu] bytes      \n", plen - len, plen);
 	timer_end();
@@ -635,7 +641,7 @@ int snor_read(unsigned char *buf, unsigned long from, unsigned long len)
 			}
 			remain_len -= spi_chip_info->sector_size - data_offset;
 			read_addr += spi_chip_info->sector_size - data_offset;
-			if ((read_addr & 0xffff) == 0) {
+			if( timer_progress() ) {
 				printf("\bRead %ld%% [%lu] of [%lu] bytes      ", 100 * (len - remain_len) / len, len - remain_len, len);
 				printf("\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b");
 				fflush(stdout);
@@ -710,7 +716,7 @@ int snor_write(unsigned char *buf, unsigned long to, unsigned long len)
 
 		snor_dbg("%s: to:%x page_size:%x ret:%x\n", __func__, to, page_size, rc);
 
-		if ((retlen & 0xffff) == 0) {
+		if( timer_progress() ) {
 			printf("\bWritten %ld%% [%lu] of [%lu] bytes      ", 100 * (plen - len) / plen, plen - len, plen);
 			printf("\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b");
 			fflush(stdout);
