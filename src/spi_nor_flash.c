@@ -510,7 +510,7 @@ struct chip_info *chip_prob(void)
 		info = &chips_data[i];
 		if (info->id == buf[0]) {
 			if ((info->jedec_id == jedec) || ((info->jedec_id & 0xffff0000) == jedec_strip)) {
-				printf("Detected SPI NOR Flash: %s, Flash Size: %ld MB\n", info->name, (info->sector_size * info->n_sectors) >> 20);
+				printf("Detected SPI NOR Flash:\e[93m %s\e[0m, Flash Size:\e[93m %ld \e[0mMB\n", info->name, (info->sector_size * info->n_sectors) >> 20);
 				return info;
 			}
 
