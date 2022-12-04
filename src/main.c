@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 McMCC <mcmcc@mail.ru>
+ * Copyright (C) 2018-2022 McMCC <mcmcc@mail.ru>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,20 +34,24 @@ extern unsigned int bsize;
 #ifdef EEPROM_SUPPORT
 #include "ch341a_i2c.h"
 #include "bitbang_microwire.h"
+#include "spi_eeprom.h"
 extern struct EEPROM eeprom_info;
+extern struct spi_eeprom seeprom_info;
 extern char eepromname[12];
 extern int eepromsize;
+extern int seepromsize;
 extern int mw_eepromsize;
 extern int org;
 #define EHELP	" -E             select I2C EEPROM {24c01|24c02|24c04|24c08|24c16|24c32|24c64|24c128|24c256|24c512|24c1024}\n" \
 		"                select Microwire EEPROM {93c06|93c16|93c46|93c56|93c66|93c76|93c86|93c96} (need SPI-to-MW adapter)\n" \
+		"                select SPI EEPROM 25xxx {25010|25020|25040|25080|25160|25320|25640|25128|25256|25512}\n" \
 		" -8             set organization 8-bit for Microwire EEPROM(default 16-bit) and set jumper on SPI-to-MW adapter\n" \
-		" -f <addr len>  set manual address size in bits for Microwire EEPROM(default auto)\n"
+		" -f <addr len>  set manual address size in bits for Microwire\n"
 #else
 #define EHELP	""
 #endif
 
-#define _VER	"1.7.5"
+#define _VER	"1.7.6_test1"
 
 void title(void)
 {
@@ -111,6 +115,13 @@ int main(int argc, char* argv[])
 					org = 1;
 					if (len > mw_eepromsize) {
 						printf("Error set size %lld, max size %d for EEPROM %s!!!\n", len, mw_eepromsize, eepromname);
+						exit(0);
+					}
+				} else if ((seepromsize = parseSEEPsize(optarg, &seeprom_info)) > 0) {
+					memset(eepromname, 0, sizeof(eepromname));
+					strncpy(eepromname, optarg, 10);
+					if (len > seepromsize) {
+						printf("Error set size %lld, max size %d for EEPROM %s!!!\n", len, seepromsize, eepromname);
 						exit(0);
 					}
 				} else {

@@ -34,7 +34,7 @@ USB_OBJS += $(U)/libusb_1_0_la-core.o $(U)/libusb_1_0_la-descriptor.o $(U)/libus
 
 ifeq ($(EEPROM_SUPPORT),y)
 CFLAGS += -DEEPROM_SUPPORT
-OBJS += ch341a_i2c.o i2c_eeprom.o
+OBJS += ch341a_i2c.o i2c_eeprom.o spi_eeprom.o
 OBJS += bitbang_microwire.o mw_eeprom.o ch341a_gpio.o
 endif
 
