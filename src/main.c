@@ -46,7 +46,7 @@ extern int org;
 		"                select Microwire EEPROM {93c06|93c16|93c46|93c56|93c66|93c76|93c86|93c96} (need SPI-to-MW adapter)\n" \
 		"                select SPI EEPROM 25xxx {25010|25020|25040|25080|25160|25320|25640|25128|25256|25512}\n" \
 		" -8             set organization 8-bit for Microwire EEPROM(default 16-bit) and set jumper on SPI-to-MW adapter\n" \
-		" -f <addr len>  set manual address size in bits for Microwire\n"
+		" -f <addr len>  set manual address size in bits for Microwire EEPROM(default auto)\n"
 #else
 #define EHELP	""
 #endif
