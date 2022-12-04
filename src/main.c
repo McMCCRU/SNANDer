@@ -51,7 +51,7 @@ extern int org;
 #define EHELP	""
 #endif
 
-#define _VER	"1.7.6_test1"
+#define _VER	"1.7.6_test2"
 
 void title(void)
 {
@@ -68,6 +68,7 @@ void usage(void)
 		"  Usage:\n"\
 		" -h             display this message\n"\
 		" -d             disable internal ECC(use read and write page size + OOB size)\n"\
+		" -o <bytes>     manual set OOB size with disable internal ECC(default 0)\n"\
 		" -I             ECC ignore errors(for read test only)\n"\
 		" -L             print list support chips\n"\
 		" -i             read the chip ID info\n"\
@@ -93,9 +94,9 @@ int main(int argc, char* argv[])
 	title();
 
 #ifdef EEPROM_SUPPORT
-	while ((c = getopt(argc, argv, "diIhveLl:a:w:r:E:f:8")) != -1)
+	while ((c = getopt(argc, argv, "diIhveLl:a:w:r:o:E:f:8")) != -1)
 #else
-	while ((c = getopt(argc, argv, "diIhveLl:a:w:r:")) != -1)
+	while ((c = getopt(argc, argv, "diIhveLl:a:w:r:o:")) != -1)
 #endif
 	{
 		switch(c)
@@ -162,6 +163,10 @@ int main(int argc, char* argv[])
 				str = strdup(optarg);
 				len = strtoll(str, NULL, *str && *(str + 1) == 'x' ? 16 : 10);
 				break;
+			case 'o':
+				str = strdup(optarg);
+				OOB_size = strtoll(str, NULL, *str && *(str + 1) == 'x' ? 16 : 10);
+				break;
 			case 'a':
 				str = strdup(optarg);
 				addr = strtoll(str, NULL, *str && *(str + 1) == 'x' ? 16 : 10);
@@ -216,7 +221,22 @@ int main(int argc, char* argv[])
 #else
 	if (op == 'i') goto out;
 #endif
-
+	if (op == 'o') {
+		if (ECC_fcheck == 1) {
+			printf("Ignore option -o, use with -d only!\n");
+			OOB_size = 0;
+		} else {
+			if (OOB_size > 256) {
+				printf("Error: Maximum set OOB size <= 256!!!\n");
+				goto out;
+			}
+			if (OOB_size < 64) {
+				printf("Error: Minimum set OOB size >= 64!!!\n");
+				goto out;
+			}
+			printf("Set manual OOB size = %d.\n", OOB_size);
+		}
+	}
 	if (op == 'e') {
 		printf("ERASE:\n");
 		if(addr && !len)

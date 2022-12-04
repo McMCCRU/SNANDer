@@ -185,6 +185,7 @@
 #define _SPI_NAND_DEVICE_ID_FM25G02		0xF2
 #define _SPI_NAND_DEVICE_ID_FM25G02C		0x92
 #define _SPI_NAND_DEVICE_ID_XT26G02B		0xF2
+#define _SPI_NAND_DEVICE_ID_XT26G01C		0x11
 #define _SPI_NAND_DEVICE_ID_XT26G01A		0xE1
 #define _SPI_NAND_DEVICE_ID_XT26G02A		0xE2
 #define _SPI_NAND_DEVICE_ID_PSU1GS20BN		0x21
@@ -247,6 +248,7 @@
 
 int ECC_fcheck = 1;
 int ECC_ignore = 0;
+int OOB_size = 0;
 
 static unsigned char _plane_select_bit = 0;
 static unsigned char _die_id = 0;
@@ -261,13 +263,10 @@ unsigned char _ondie_ecc_flag = 1;    /* Ondie ECC : [ToDo :  Init this flag bas
 #define BLOCK_SIZE				(_current_flash_info_t.erase_size)
 
 /* STATIC VARIABLE DECLARATIONS ------------------------------------------------------ */
-static unsigned long bmt_oob_size = 64;
+static unsigned long bmt_oob_size = PAGE_OOB_SIZE;
 static u32 erase_oob_size = 0;
 static u32 ecc_size = 0;
 u32 bsize = 0;
-#if 0
-static unsigned int print_dot = 0;
-#endif
 
 static u32 _current_page_num = 0xFFFFFFFF;
 static u8 _current_cache_page[_SPI_NAND_CACHE_SIZE];
@@ -276,208 +275,6 @@ static u8 _current_cache_page_oob[_SPI_NAND_OOB_SIZE];
 static u8 _current_cache_page_oob_mapping[_SPI_NAND_OOB_SIZE];
 
 static struct SPI_NAND_FLASH_INFO_T _current_flash_info_t;	/* Store the current flash information */
-
-
-struct spi_nand_flash_ooblayout ooblayout_esmt = {
-	.oobsize = 36,
-	.oobfree = {{0,1}, {8,8}, {16,1}, {24,8}, {32,1}, {40,8}, {48,1}, {56,8} }
-};
-
-/* only use user meta data with ECC protected */
-struct spi_nand_flash_ooblayout ooblayout_esmt_41lb = {
-	.oobsize = 20,
-	.oobfree = {{0,4}, {4,4}, {20,4}, {36,4}, {52,4}}
-};
-
-struct spi_nand_flash_ooblayout ooblayout_mxic = {
-	.oobsize = 64,
-	.oobfree = {{0,64}}
-};
-
-struct spi_nand_flash_ooblayout ooblayout_winbond = {
-	.oobsize = 32,
-	.oobfree = {{0,8}, {16,8}, {32,8}, {48,8} }
-};
-
-struct spi_nand_flash_ooblayout ooblayout_gigadevice_a = {
-	.oobsize = 48,
-	.oobfree = {{0,12}, {16,12}, {32,12}, {48,12} }
-};
-
-struct spi_nand_flash_ooblayout ooblayout_gigadevice_128 = {
-	.oobsize = 64,
-	.oobfree = {{0,64}}
-};
-
-struct spi_nand_flash_ooblayout ooblayout_gigadevice_256 = {
-	.oobsize = 128,
-	.oobfree = {{0,128}}
-};
-
-struct spi_nand_flash_ooblayout ooblayout_zentel = {
-	.oobsize = 36,
-	.oobfree = {{0,1}, {8,8}, {16,1}, {24,8}, {32,1}, {40,8}, {48,1}, {56,8} }
-};
-
-struct spi_nand_flash_ooblayout ooblayout_etron_73C044SNB = {
-	.oobsize = 64,
-	.oobfree = {{0,16}, {30,16}, {60,16}, {90,16}}
-};
-
-struct spi_nand_flash_ooblayout ooblayout_etron_73D044SNA = {
-	.oobsize = 72,
-	.oobfree = {{0,18}, {32,18}, {64,18}, {96,18}}
-};
-
-/* only use user meta data with ECC protected */
-struct spi_nand_flash_ooblayout ooblayout_etron_73D044SNC = {
-	.oobsize = 64,
-	.oobfree = {{0,16}, {30,16}, {60,16}, {90,16}}
-};
-
-struct spi_nand_flash_ooblayout ooblayout_gigadevice_GD5FXGQ4U = {
-	.oobsize = 52,
-	.oobfree = {{0,16}, {20,12}, {36,12}, {52,12}}
-};
-
-/* only use user meta data with ECC protected */
-struct spi_nand_flash_ooblayout ooblayout_type1 = {
-	.oobsize = 32,
-	.oobfree = {{0,8}, {16,8}, {32,8}, {48,8}}
-};
-
-/* only use user meta data with ECC protected */
-struct spi_nand_flash_ooblayout ooblayout_type2 = {
-	.oobsize = 50,
-	.oobfree = {{0,4}, {4,12}, {20,12}, {36,12}, {52,12}}
-};
-
-/* only use user meta data with ECC protected */
-struct spi_nand_flash_ooblayout ooblayout_type6 = {
-	.oobsize = 33,
-	.oobfree = {{0,1}, {8,8}, {24,8}, {40,8}, {56,8}}
-};
-
-/* only use user meta data with ECC protected */
-struct spi_nand_flash_ooblayout ooblayout_type10 = {
-	.oobsize = 72,
-	.oobfree = {{0,18}, {32,18}, {64,18}, {96,18}}
-};
-
-/* only use user meta data with ECC protected */
-struct spi_nand_flash_ooblayout ooblayout_type14 = {
-	.oobsize = 20,
-	.oobfree = {{0,4}, {4,4}, {36,4}, {68,4}, {100,4}}
-};
-
-/* only use user meta data with ECC protected */
-struct spi_nand_flash_ooblayout ooblayout_type15 = {
-	.oobsize = 36,
-	.oobfree = {{0,4}, {4,8}, {20,8}, {36,8}, {52,8}}
-};
-
-/* only use user meta data with ECC protected */
-struct spi_nand_flash_ooblayout ooblayout_type18 = {
-	.oobsize = 96,
-	.oobfree = {{0,24}, {32,24},  {64,24}, {96,24}}
-};
-
-/* only use user meta data with ECC protected */
-struct spi_nand_flash_ooblayout ooblayout_type19 = {
-	.oobsize = 44,
-	.oobfree = {{0,4}, {8,40}}
-};
-
-struct spi_nand_flash_ooblayout ooblayout_etron_73E044SNA = {
-	.oobsize = 144,
-	.oobfree = {{0,18}, {32,18}, {64,18}, {96,18}, {128,18}, {160,18}, {192,18}, {224,18}}
-};
-
-struct spi_nand_flash_ooblayout ooblayout_toshiba_128 = {
-	.oobsize = 64,
-	.oobfree = {{0,64}}
-};
-
-struct spi_nand_flash_ooblayout ooblayout_toshiba_256 = {
-	.oobsize = 128,
-	.oobfree = {{0,128}}
-};
-
-struct spi_nand_flash_ooblayout ooblayout_micron = {
-	.oobsize = 64,
-	.oobfree = {{0,64}}
-};
-
-struct spi_nand_flash_ooblayout ooblayout_heyang = {
-	.oobsize = 32,
-	.oobfree = {{0,8}, {32,8}, {64,8}, {96,8}}
-};
-
-/* only use user meta data with ECC protected */
-struct spi_nand_flash_ooblayout ooblayout_pn = {
-	.oobsize = 44,
-	.oobfree = {{0,4}, {4,2}, {19,2}, {34,2}, {49,2}, {96,32}}
-};
-
-/* only use user meta data with ECC protected */
-struct spi_nand_flash_ooblayout ooblayout_ato = {
-	.oobsize = 64,
-	.oobfree = {{0,64}}
-};
-
-/* only use user meta data with ECC protected */
-struct spi_nand_flash_ooblayout ooblayout_ato_25D2GA = {
-	.oobsize = 12,
-	.oobfree = {{0,3}, {16,3}, {32,3}, {48,3}}
-};
-
-/* only use user meta data with ECC protected */
-struct spi_nand_flash_ooblayout ooblayout_ato_25D2GB = {
-	.oobsize = 48,
-	.oobfree = {{0,12}, {16,12}, {32,12}, {48,12}}
-};
-
-/* only use user meta data with ECC protected */
-struct spi_nand_flash_ooblayout ooblayout_fm = {
-	.oobsize = 64,
-	.oobfree = {{0,64}}
-};
-
-/* only use user meta data with ECC protected */
-struct spi_nand_flash_ooblayout ooblayout_fm_32 = {
-	.oobsize = 32,
-	.oobfree = {{0,32}}
-};
-
-struct spi_nand_flash_ooblayout ooblayout_spi_controller_ecc_64 = {
-	.oobsize = 32,
-	.oobfree = {{0,8}, {16,8}, {32,8}, {48,8}}
-};
-
-struct spi_nand_flash_ooblayout ooblayout_spi_controller_ecc_128 = {
-	.oobsize = 96,
-	.oobfree = {{0,8}, {16,8}, {32,8}, {48,8}, {64,64}}
-};
-
-struct spi_nand_flash_ooblayout ooblayout_spi_controller_ecc_256 = {
-	.oobsize = 224,
-	.oobfree = {{0,8}, {16,8}, {32,8}, {48,8}, {64,192}}
-};
-
-struct spi_nand_flash_ooblayout ooblayout_ds = {
-	.oobsize = 20,
-	.oobfree = {{0,8}, {20,4}, {36,4}, {52,4}}
-};
-
-struct spi_nand_flash_ooblayout ooblayout_fison = {
-	.oobsize = 64,
-	.oobfree = {{0,64}}
-};
-
-struct spi_nand_flash_ooblayout ooblayout_tym = {
-	.oobsize = 12,
-	.oobfree = {{0,3}, {16,3}, {32,3}, {48,3}}
-};
 
 /*****************************[ Notice]******************************/
 /* If new spi nand chip have page size more than 4KB,  or oob size more than 256 bytes,  than*/
@@ -496,7 +293,6 @@ static const struct SPI_NAND_FLASH_INFO_T spi_nand_flash_tables[] = {
 		dummy_mode:				SPI_NAND_FLASH_READ_DUMMY_BYTE_APPEND,
 		read_mode:				SPI_NAND_FLASH_READ_SPEED_MODE_DUAL,
 		write_mode:				SPI_NAND_FLASH_WRITE_SPEED_MODE_SINGLE,
-		oob_free_layout:			&ooblayout_gigadevice_a,
 		feature:				SPI_NAND_FLASH_FEATURE_NONE,
 	},
 
@@ -511,7 +307,6 @@ static const struct SPI_NAND_FLASH_INFO_T spi_nand_flash_tables[] = {
 		dummy_mode:				SPI_NAND_FLASH_READ_DUMMY_BYTE_APPEND,
 		read_mode:				SPI_NAND_FLASH_READ_SPEED_MODE_DUAL,
 		write_mode:				SPI_NAND_FLASH_WRITE_SPEED_MODE_SINGLE,
-		oob_free_layout:			&ooblayout_gigadevice_128,
 		feature:				SPI_NAND_FLASH_FEATURE_NONE,
 	},
 
@@ -526,7 +321,6 @@ static const struct SPI_NAND_FLASH_INFO_T spi_nand_flash_tables[] = {
 		dummy_mode:				SPI_NAND_FLASH_READ_DUMMY_BYTE_PREPEND,
 		read_mode:				SPI_NAND_FLASH_READ_SPEED_MODE_DUAL,
 		write_mode:				SPI_NAND_FLASH_WRITE_SPEED_MODE_SINGLE,
-		oob_free_layout:			&ooblayout_gigadevice_128,
 		feature:				SPI_NAND_FLASH_FEATURE_NONE,
 	},
 
@@ -541,7 +335,6 @@ static const struct SPI_NAND_FLASH_INFO_T spi_nand_flash_tables[] = {
 		dummy_mode:				SPI_NAND_FLASH_READ_DUMMY_BYTE_APPEND,
 		read_mode:				SPI_NAND_FLASH_READ_SPEED_MODE_DUAL,
 		write_mode:				SPI_NAND_FLASH_WRITE_SPEED_MODE_SINGLE,
-		oob_free_layout:			&ooblayout_gigadevice_GD5FXGQ4U,
 		feature:				SPI_NAND_FLASH_FEATURE_NONE,
 	},
 
@@ -556,7 +349,6 @@ static const struct SPI_NAND_FLASH_INFO_T spi_nand_flash_tables[] = {
 		dummy_mode:				SPI_NAND_FLASH_READ_DUMMY_BYTE_APPEND,
 		read_mode:				SPI_NAND_FLASH_READ_SPEED_MODE_DUAL,
 		write_mode:				SPI_NAND_FLASH_WRITE_SPEED_MODE_SINGLE,
-		oob_free_layout:			&ooblayout_gigadevice_128,
 		feature:				SPI_NAND_FLASH_FEATURE_NONE,
 	},
 
@@ -571,7 +363,6 @@ static const struct SPI_NAND_FLASH_INFO_T spi_nand_flash_tables[] = {
 		dummy_mode:				SPI_NAND_FLASH_READ_DUMMY_BYTE_APPEND,
 		read_mode:				SPI_NAND_FLASH_READ_SPEED_MODE_DUAL,
 		write_mode:				SPI_NAND_FLASH_WRITE_SPEED_MODE_SINGLE,
-		oob_free_layout:			&ooblayout_gigadevice_128,
 		feature:				SPI_NAND_FLASH_FEATURE_NONE,
 	},
 
@@ -586,7 +377,6 @@ static const struct SPI_NAND_FLASH_INFO_T spi_nand_flash_tables[] = {
 		dummy_mode:				SPI_NAND_FLASH_READ_DUMMY_BYTE_APPEND,
 		read_mode:				SPI_NAND_FLASH_READ_SPEED_MODE_DUAL,
 		write_mode:				SPI_NAND_FLASH_WRITE_SPEED_MODE_SINGLE,
-		oob_free_layout:			&ooblayout_gigadevice_128,
 		feature:				SPI_NAND_FLASH_FEATURE_NONE,
 	},
 
@@ -601,7 +391,6 @@ static const struct SPI_NAND_FLASH_INFO_T spi_nand_flash_tables[] = {
 		dummy_mode:				SPI_NAND_FLASH_READ_DUMMY_BYTE_APPEND,
 		read_mode:				SPI_NAND_FLASH_READ_SPEED_MODE_DUAL,
 		write_mode:				SPI_NAND_FLASH_WRITE_SPEED_MODE_SINGLE,
-		oob_free_layout:			&ooblayout_type2,
 		feature:				SPI_NAND_FLASH_FEATURE_NONE,
 	},
 
@@ -616,7 +405,6 @@ static const struct SPI_NAND_FLASH_INFO_T spi_nand_flash_tables[] = {
 		dummy_mode:				SPI_NAND_FLASH_READ_DUMMY_BYTE_PREPEND,
 		read_mode:				SPI_NAND_FLASH_READ_SPEED_MODE_DUAL,
 		write_mode:				SPI_NAND_FLASH_WRITE_SPEED_MODE_SINGLE,
-		oob_free_layout:			&ooblayout_gigadevice_128,
 		feature:				SPI_NAND_FLASH_FEATURE_NONE,
 	},
 
@@ -631,7 +419,6 @@ static const struct SPI_NAND_FLASH_INFO_T spi_nand_flash_tables[] = {
 		dummy_mode:				SPI_NAND_FLASH_READ_DUMMY_BYTE_APPEND,
 		read_mode:				SPI_NAND_FLASH_READ_SPEED_MODE_DUAL,
 		write_mode:				SPI_NAND_FLASH_WRITE_SPEED_MODE_SINGLE,
-		oob_free_layout:			&ooblayout_gigadevice_256,
 		feature:				SPI_NAND_FLASH_FEATURE_NONE,
 	},
 
@@ -646,7 +433,6 @@ static const struct SPI_NAND_FLASH_INFO_T spi_nand_flash_tables[] = {
 		dummy_mode:				SPI_NAND_FLASH_READ_DUMMY_BYTE_PREPEND,
 		read_mode:				SPI_NAND_FLASH_READ_SPEED_MODE_DUAL,
 		write_mode:				SPI_NAND_FLASH_WRITE_SPEED_MODE_SINGLE,
-		oob_free_layout: 			&ooblayout_gigadevice_256,
 		feature:				SPI_NAND_FLASH_FEATURE_NONE,
 	},
 
@@ -661,7 +447,6 @@ static const struct SPI_NAND_FLASH_INFO_T spi_nand_flash_tables[] = {
 		dummy_mode:				SPI_NAND_FLASH_READ_DUMMY_BYTE_APPEND,
 		read_mode:				SPI_NAND_FLASH_READ_SPEED_MODE_DUAL,
 		write_mode:				SPI_NAND_FLASH_WRITE_SPEED_MODE_SINGLE,
-		oob_free_layout:			&ooblayout_esmt,
 		feature:				SPI_NAND_FLASH_FEATURE_NONE,
 	},
 
@@ -676,7 +461,6 @@ static const struct SPI_NAND_FLASH_INFO_T spi_nand_flash_tables[] = {
 		dummy_mode:				SPI_NAND_FLASH_READ_DUMMY_BYTE_APPEND,
 		read_mode:				SPI_NAND_FLASH_READ_SPEED_MODE_DUAL,
 		write_mode:				SPI_NAND_FLASH_WRITE_SPEED_MODE_SINGLE,
-		oob_free_layout:			&ooblayout_esmt,
 		feature:				SPI_NAND_FLASH_FEATURE_NONE,
 	},
 
@@ -691,7 +475,6 @@ static const struct SPI_NAND_FLASH_INFO_T spi_nand_flash_tables[] = {
 		dummy_mode:				SPI_NAND_FLASH_READ_DUMMY_BYTE_APPEND,
 		read_mode:				SPI_NAND_FLASH_READ_SPEED_MODE_DUAL,
 		write_mode:				SPI_NAND_FLASH_WRITE_SPEED_MODE_SINGLE,
-		oob_free_layout:			&ooblayout_esmt_41lb,
 		feature:				SPI_NAND_FLASH_FEATURE_NONE,
 	},
 
@@ -706,7 +489,6 @@ static const struct SPI_NAND_FLASH_INFO_T spi_nand_flash_tables[] = {
 		dummy_mode:				SPI_NAND_FLASH_READ_DUMMY_BYTE_APPEND,
 		read_mode:				SPI_NAND_FLASH_READ_SPEED_MODE_DUAL,
 		write_mode:				SPI_NAND_FLASH_WRITE_SPEED_MODE_SINGLE,
-		oob_free_layout:			&ooblayout_esmt_41lb,
 		feature:				SPI_NAND_FLASH_DIE_SELECT_1_HAVE,
 	},
 
@@ -722,7 +504,6 @@ static const struct SPI_NAND_FLASH_INFO_T spi_nand_flash_tables[] = {
 		dummy_mode:				SPI_NAND_FLASH_READ_DUMMY_BYTE_APPEND,
 		read_mode:				SPI_NAND_FLASH_READ_SPEED_MODE_DUAL,
 		write_mode:				SPI_NAND_FLASH_WRITE_SPEED_MODE_SINGLE,
-		oob_free_layout:			&ooblayout_winbond,
 		feature:				SPI_NAND_FLASH_FEATURE_NONE,
 	},
 
@@ -738,7 +519,6 @@ static const struct SPI_NAND_FLASH_INFO_T spi_nand_flash_tables[] = {
 		dummy_mode:				SPI_NAND_FLASH_READ_DUMMY_BYTE_APPEND,
 		read_mode:				SPI_NAND_FLASH_READ_SPEED_MODE_DUAL,
 		write_mode:				SPI_NAND_FLASH_WRITE_SPEED_MODE_SINGLE,
-		oob_free_layout:			&ooblayout_winbond,
 		feature:				SPI_NAND_FLASH_FEATURE_NONE,
 	},
 
@@ -754,7 +534,6 @@ static const struct SPI_NAND_FLASH_INFO_T spi_nand_flash_tables[] = {
 		dummy_mode:				SPI_NAND_FLASH_READ_DUMMY_BYTE_APPEND,
 		read_mode:				SPI_NAND_FLASH_READ_SPEED_MODE_DUAL,
 		write_mode:				SPI_NAND_FLASH_WRITE_SPEED_MODE_SINGLE,
-		oob_free_layout:			&ooblayout_winbond,
 		feature:				SPI_NAND_FLASH_DIE_SELECT_1_HAVE,
 	},
 
@@ -769,7 +548,6 @@ static const struct SPI_NAND_FLASH_INFO_T spi_nand_flash_tables[] = {
 		dummy_mode:				SPI_NAND_FLASH_READ_DUMMY_BYTE_APPEND,
 		read_mode:				SPI_NAND_FLASH_READ_SPEED_MODE_DUAL,
 		write_mode:				SPI_NAND_FLASH_WRITE_SPEED_MODE_SINGLE,
-		oob_free_layout:			&ooblayout_mxic,
 		feature:				SPI_NAND_FLASH_FEATURE_NONE,
 	},
 
@@ -784,7 +562,6 @@ static const struct SPI_NAND_FLASH_INFO_T spi_nand_flash_tables[] = {
 		dummy_mode:				SPI_NAND_FLASH_READ_DUMMY_BYTE_APPEND,
 		read_mode:				SPI_NAND_FLASH_READ_SPEED_MODE_DUAL,
 		write_mode:				SPI_NAND_FLASH_WRITE_SPEED_MODE_SINGLE,
-		oob_free_layout:			&ooblayout_mxic,
 		feature:				SPI_NAND_FLASH_PLANE_SELECT_HAVE,
 	},
 
@@ -800,7 +577,6 @@ static const struct SPI_NAND_FLASH_INFO_T spi_nand_flash_tables[] = {
 		dummy_mode:				SPI_NAND_FLASH_READ_DUMMY_BYTE_APPEND,
 		read_mode:				SPI_NAND_FLASH_READ_SPEED_MODE_DUAL,
 		write_mode:				SPI_NAND_FLASH_WRITE_SPEED_MODE_SINGLE,
-		oob_free_layout:			&ooblayout_mxic,
 		feature:				SPI_NAND_FLASH_PLANE_SELECT_HAVE,
 	},
 
@@ -815,7 +591,6 @@ static const struct SPI_NAND_FLASH_INFO_T spi_nand_flash_tables[] = {
 		dummy_mode:				SPI_NAND_FLASH_READ_DUMMY_BYTE_APPEND,
 		read_mode:				SPI_NAND_FLASH_READ_SPEED_MODE_DUAL,
 		write_mode:				SPI_NAND_FLASH_WRITE_SPEED_MODE_SINGLE,
-		oob_free_layout:			&ooblayout_zentel,
 		feature:				SPI_NAND_FLASH_FEATURE_NONE,
 	},
 
@@ -830,7 +605,6 @@ static const struct SPI_NAND_FLASH_INFO_T spi_nand_flash_tables[] = {
 		dummy_mode:				SPI_NAND_FLASH_READ_DUMMY_BYTE_APPEND,
 		read_mode:				SPI_NAND_FLASH_READ_SPEED_MODE_DUAL,
 		write_mode:				SPI_NAND_FLASH_WRITE_SPEED_MODE_SINGLE,
-		oob_free_layout:			&ooblayout_zentel,
 		feature:				SPI_NAND_FLASH_FEATURE_NONE,
 	},
 
@@ -846,7 +620,6 @@ static const struct SPI_NAND_FLASH_INFO_T spi_nand_flash_tables[] = {
 		dummy_mode:				SPI_NAND_FLASH_READ_DUMMY_BYTE_APPEND,
 		read_mode:				SPI_NAND_FLASH_READ_SPEED_MODE_DUAL,
 		write_mode:				SPI_NAND_FLASH_WRITE_SPEED_MODE_SINGLE,
-		oob_free_layout:			&ooblayout_etron_73C044SNB,
 		feature:				SPI_NAND_FLASH_FEATURE_NONE,
 	},
 
@@ -861,7 +634,6 @@ static const struct SPI_NAND_FLASH_INFO_T spi_nand_flash_tables[] = {
 		dummy_mode:				SPI_NAND_FLASH_READ_DUMMY_BYTE_APPEND,
 		read_mode:				SPI_NAND_FLASH_READ_SPEED_MODE_DUAL,
 		write_mode:				SPI_NAND_FLASH_WRITE_SPEED_MODE_SINGLE,
-		oob_free_layout:			&ooblayout_type1,
 		feature:				SPI_NAND_FLASH_FEATURE_NONE,
 	},
 
@@ -876,7 +648,6 @@ static const struct SPI_NAND_FLASH_INFO_T spi_nand_flash_tables[] = {
 		dummy_mode:				SPI_NAND_FLASH_READ_DUMMY_BYTE_APPEND,
 		read_mode:				SPI_NAND_FLASH_READ_SPEED_MODE_DUAL,
 		write_mode:				SPI_NAND_FLASH_WRITE_SPEED_MODE_SINGLE,
-		oob_free_layout:			&ooblayout_type10,
 		feature:				SPI_NAND_FLASH_FEATURE_NONE,
 	},
 
@@ -891,7 +662,6 @@ static const struct SPI_NAND_FLASH_INFO_T spi_nand_flash_tables[] = {
 		dummy_mode:				SPI_NAND_FLASH_READ_DUMMY_BYTE_APPEND,
 		read_mode:				SPI_NAND_FLASH_READ_SPEED_MODE_DUAL,
 		write_mode:				SPI_NAND_FLASH_WRITE_SPEED_MODE_SINGLE,
-		oob_free_layout:			&ooblayout_type1,
 		feature:				SPI_NAND_FLASH_FEATURE_NONE,
 	},
 
@@ -906,7 +676,6 @@ static const struct SPI_NAND_FLASH_INFO_T spi_nand_flash_tables[] = {
 		dummy_mode:				SPI_NAND_FLASH_READ_DUMMY_BYTE_APPEND,
 		read_mode:				SPI_NAND_FLASH_READ_SPEED_MODE_DUAL,
 		write_mode:				SPI_NAND_FLASH_WRITE_SPEED_MODE_SINGLE,
-		oob_free_layout:			&ooblayout_type1,
 		feature:				SPI_NAND_FLASH_FEATURE_NONE,
 	},
 
@@ -921,7 +690,6 @@ static const struct SPI_NAND_FLASH_INFO_T spi_nand_flash_tables[] = {
 		dummy_mode:				SPI_NAND_FLASH_READ_DUMMY_BYTE_APPEND,
 		read_mode:				SPI_NAND_FLASH_READ_SPEED_MODE_DUAL,
 		write_mode:				SPI_NAND_FLASH_WRITE_SPEED_MODE_SINGLE,
-		oob_free_layout:			&ooblayout_type18,
 		feature:				SPI_NAND_FLASH_FEATURE_NONE,
 	},
 
@@ -936,7 +704,6 @@ static const struct SPI_NAND_FLASH_INFO_T spi_nand_flash_tables[] = {
 		dummy_mode:				SPI_NAND_FLASH_READ_DUMMY_BYTE_APPEND,
 		read_mode:				SPI_NAND_FLASH_READ_SPEED_MODE_DUAL,
 		write_mode:				SPI_NAND_FLASH_WRITE_SPEED_MODE_SINGLE,
-		oob_free_layout:			&ooblayout_type1,
 		feature:				SPI_NAND_FLASH_FEATURE_NONE,
 	},
 
@@ -951,7 +718,6 @@ static const struct SPI_NAND_FLASH_INFO_T spi_nand_flash_tables[] = {
 		dummy_mode:				SPI_NAND_FLASH_READ_DUMMY_BYTE_APPEND,
 		read_mode:				SPI_NAND_FLASH_READ_SPEED_MODE_DUAL,
 		write_mode:				SPI_NAND_FLASH_WRITE_SPEED_MODE_SINGLE,
-		oob_free_layout:			&ooblayout_type10,
 		feature:				SPI_NAND_FLASH_FEATURE_NONE,
 	},
 
@@ -966,7 +732,6 @@ static const struct SPI_NAND_FLASH_INFO_T spi_nand_flash_tables[] = {
 		dummy_mode:				SPI_NAND_FLASH_READ_DUMMY_BYTE_APPEND,
 		read_mode:				SPI_NAND_FLASH_READ_SPEED_MODE_DUAL,
 		write_mode:				SPI_NAND_FLASH_WRITE_SPEED_MODE_SINGLE,
-		oob_free_layout:			&ooblayout_type1,
 		feature:				SPI_NAND_FLASH_FEATURE_NONE,
 	},
 
@@ -981,7 +746,6 @@ static const struct SPI_NAND_FLASH_INFO_T spi_nand_flash_tables[] = {
 		dummy_mode:				SPI_NAND_FLASH_READ_DUMMY_BYTE_APPEND,
 		read_mode:				SPI_NAND_FLASH_READ_SPEED_MODE_DUAL,
 		write_mode:				SPI_NAND_FLASH_WRITE_SPEED_MODE_SINGLE,
-		oob_free_layout:			&ooblayout_type1,
 		feature:				SPI_NAND_FLASH_FEATURE_NONE,
 	},
 
@@ -996,7 +760,6 @@ static const struct SPI_NAND_FLASH_INFO_T spi_nand_flash_tables[] = {
 		dummy_mode:				SPI_NAND_FLASH_READ_DUMMY_BYTE_APPEND,
 		read_mode:				SPI_NAND_FLASH_READ_SPEED_MODE_DUAL,
 		write_mode:				SPI_NAND_FLASH_WRITE_SPEED_MODE_SINGLE,
-		oob_free_layout:			&ooblayout_etron_73D044SNA,
 		feature:				SPI_NAND_FLASH_FEATURE_NONE,
 	},
 
@@ -1011,7 +774,6 @@ static const struct SPI_NAND_FLASH_INFO_T spi_nand_flash_tables[] = {
 		dummy_mode:				SPI_NAND_FLASH_READ_DUMMY_BYTE_APPEND,
 		read_mode:				SPI_NAND_FLASH_READ_SPEED_MODE_DUAL,
 		write_mode:				SPI_NAND_FLASH_WRITE_SPEED_MODE_SINGLE,
-		oob_free_layout:			&ooblayout_etron_73D044SNC,
 		feature:				SPI_NAND_FLASH_FEATURE_NONE,
 	},
 
@@ -1026,7 +788,6 @@ static const struct SPI_NAND_FLASH_INFO_T spi_nand_flash_tables[] = {
 		dummy_mode:				SPI_NAND_FLASH_READ_DUMMY_BYTE_APPEND,
 		read_mode:				SPI_NAND_FLASH_READ_SPEED_MODE_DUAL,
 		write_mode:				SPI_NAND_FLASH_WRITE_SPEED_MODE_SINGLE,
-		oob_free_layout:			&ooblayout_type1,
 		feature:				SPI_NAND_FLASH_FEATURE_NONE,
 	},
 
@@ -1041,7 +802,6 @@ static const struct SPI_NAND_FLASH_INFO_T spi_nand_flash_tables[] = {
 		dummy_mode:				SPI_NAND_FLASH_READ_DUMMY_BYTE_APPEND,
 		read_mode:				SPI_NAND_FLASH_READ_SPEED_MODE_DUAL,
 		write_mode:				SPI_NAND_FLASH_WRITE_SPEED_MODE_SINGLE,
-		oob_free_layout:			&ooblayout_type10,
 		feature:				SPI_NAND_FLASH_FEATURE_NONE,
 	},
 
@@ -1056,7 +816,6 @@ static const struct SPI_NAND_FLASH_INFO_T spi_nand_flash_tables[] = {
 		dummy_mode:				SPI_NAND_FLASH_READ_DUMMY_BYTE_APPEND,
 		read_mode:				SPI_NAND_FLASH_READ_SPEED_MODE_DUAL,
 		write_mode:				SPI_NAND_FLASH_WRITE_SPEED_MODE_SINGLE,
-		oob_free_layout:			&ooblayout_etron_73E044SNA,
 		feature:				SPI_NAND_FLASH_FEATURE_NONE,
 	},
 
@@ -1071,7 +830,6 @@ static const struct SPI_NAND_FLASH_INFO_T spi_nand_flash_tables[] = {
 		dummy_mode:				SPI_NAND_FLASH_READ_DUMMY_BYTE_APPEND,
 		read_mode:				SPI_NAND_FLASH_READ_SPEED_MODE_DUAL,
 		write_mode:				SPI_NAND_FLASH_WRITE_SPEED_MODE_SINGLE,
-		oob_free_layout: 			&ooblayout_toshiba_128,
 		feature:				SPI_NAND_FLASH_FEATURE_NONE,
 	},
 
@@ -1086,7 +844,6 @@ static const struct SPI_NAND_FLASH_INFO_T spi_nand_flash_tables[] = {
 		dummy_mode:				SPI_NAND_FLASH_READ_DUMMY_BYTE_APPEND,
 		read_mode:				SPI_NAND_FLASH_READ_SPEED_MODE_DUAL,
 		write_mode:				SPI_NAND_FLASH_WRITE_SPEED_MODE_SINGLE,
-		oob_free_layout: 			&ooblayout_toshiba_128,
 		feature:				SPI_NAND_FLASH_FEATURE_NONE,
 	},
 
@@ -1101,7 +858,6 @@ static const struct SPI_NAND_FLASH_INFO_T spi_nand_flash_tables[] = {
 		dummy_mode:				SPI_NAND_FLASH_READ_DUMMY_BYTE_APPEND,
 		read_mode:				SPI_NAND_FLASH_READ_SPEED_MODE_DUAL,
 		write_mode:				SPI_NAND_FLASH_WRITE_SPEED_MODE_SINGLE,
-		oob_free_layout: 			&ooblayout_toshiba_256,
 		feature:				SPI_NAND_FLASH_FEATURE_NONE,
 	},
 
@@ -1116,7 +872,6 @@ static const struct SPI_NAND_FLASH_INFO_T spi_nand_flash_tables[] = {
 		dummy_mode:				SPI_NAND_FLASH_READ_DUMMY_BYTE_APPEND,
 		read_mode:				SPI_NAND_FLASH_READ_SPEED_MODE_DUAL,
 		write_mode:				SPI_NAND_FLASH_WRITE_SPEED_MODE_SINGLE,
-		oob_free_layout: 			&ooblayout_toshiba_256,
 		feature:				SPI_NAND_FLASH_FEATURE_NONE,
 	},
 
@@ -1131,7 +886,6 @@ static const struct SPI_NAND_FLASH_INFO_T spi_nand_flash_tables[] = {
 		dummy_mode:				SPI_NAND_FLASH_READ_DUMMY_BYTE_APPEND,
 		read_mode:				SPI_NAND_FLASH_READ_SPEED_MODE_DUAL,
 		write_mode:				SPI_NAND_FLASH_WRITE_SPEED_MODE_SINGLE,
-		oob_free_layout:			&ooblayout_micron,
 		feature:				SPI_NAND_FLASH_FEATURE_NONE,
 	},
 
@@ -1146,7 +900,6 @@ static const struct SPI_NAND_FLASH_INFO_T spi_nand_flash_tables[] = {
 		dummy_mode:				SPI_NAND_FLASH_READ_DUMMY_BYTE_APPEND,
 		read_mode:				SPI_NAND_FLASH_READ_SPEED_MODE_DUAL,
 		write_mode:				SPI_NAND_FLASH_WRITE_SPEED_MODE_SINGLE,
-		oob_free_layout:			&ooblayout_micron,
 		feature:				SPI_NAND_FLASH_PLANE_SELECT_HAVE,
 	},
 
@@ -1161,7 +914,6 @@ static const struct SPI_NAND_FLASH_INFO_T spi_nand_flash_tables[] = {
 		dummy_mode:				SPI_NAND_FLASH_READ_DUMMY_BYTE_APPEND,
 		read_mode:				SPI_NAND_FLASH_READ_SPEED_MODE_DUAL,
 		write_mode:				SPI_NAND_FLASH_WRITE_SPEED_MODE_SINGLE,
-		oob_free_layout:			&ooblayout_micron,
 		feature:				SPI_NAND_FLASH_PLANE_SELECT_HAVE | SPI_NAND_FLASH_DIE_SELECT_2_HAVE,
 	},
 
@@ -1176,7 +928,6 @@ static const struct SPI_NAND_FLASH_INFO_T spi_nand_flash_tables[] = {
 		dummy_mode:				SPI_NAND_FLASH_READ_DUMMY_BYTE_APPEND,
 		read_mode:				SPI_NAND_FLASH_READ_SPEED_MODE_DUAL,
 		write_mode:				SPI_NAND_FLASH_WRITE_SPEED_MODE_SINGLE,
-		oob_free_layout:			&ooblayout_heyang,
 		feature:				SPI_NAND_FLASH_FEATURE_NONE,
 	},
 
@@ -1191,7 +942,6 @@ static const struct SPI_NAND_FLASH_INFO_T spi_nand_flash_tables[] = {
 		dummy_mode:				SPI_NAND_FLASH_READ_DUMMY_BYTE_APPEND,
 		read_mode:				SPI_NAND_FLASH_READ_SPEED_MODE_DUAL,
 		write_mode:				SPI_NAND_FLASH_WRITE_SPEED_MODE_SINGLE,
-		oob_free_layout:			&ooblayout_heyang,
 		feature:				SPI_NAND_FLASH_FEATURE_NONE,
 	},
 
@@ -1206,7 +956,6 @@ static const struct SPI_NAND_FLASH_INFO_T spi_nand_flash_tables[] = {
 		dummy_mode:				SPI_NAND_FLASH_READ_DUMMY_BYTE_APPEND,
 		read_mode:				SPI_NAND_FLASH_READ_SPEED_MODE_DUAL,
 		write_mode:				SPI_NAND_FLASH_WRITE_SPEED_MODE_SINGLE,
-		oob_free_layout:			&ooblayout_type14,
 		feature:				SPI_NAND_FLASH_FEATURE_NONE,
 	},
 
@@ -1221,7 +970,6 @@ static const struct SPI_NAND_FLASH_INFO_T spi_nand_flash_tables[] = {
 		dummy_mode:				SPI_NAND_FLASH_READ_DUMMY_BYTE_APPEND,
 		read_mode:				SPI_NAND_FLASH_READ_SPEED_MODE_DUAL,
 		write_mode:				SPI_NAND_FLASH_WRITE_SPEED_MODE_SINGLE,
-		oob_free_layout:			&ooblayout_type1,
 		feature:				SPI_NAND_FLASH_FEATURE_NONE,
 	},
 
@@ -1236,7 +984,6 @@ static const struct SPI_NAND_FLASH_INFO_T spi_nand_flash_tables[] = {
 		dummy_mode:				SPI_NAND_FLASH_READ_DUMMY_BYTE_APPEND,
 		read_mode:				SPI_NAND_FLASH_READ_SPEED_MODE_DUAL,
 		write_mode:				SPI_NAND_FLASH_WRITE_SPEED_MODE_SINGLE,
-		oob_free_layout:			&ooblayout_type1,
 		feature:				SPI_NAND_FLASH_FEATURE_NONE,
 	},
 
@@ -1251,7 +998,6 @@ static const struct SPI_NAND_FLASH_INFO_T spi_nand_flash_tables[] = {
 		dummy_mode:				SPI_NAND_FLASH_READ_DUMMY_BYTE_APPEND,
 		read_mode:				SPI_NAND_FLASH_READ_SPEED_MODE_DUAL,
 		write_mode:				SPI_NAND_FLASH_WRITE_SPEED_MODE_SINGLE,
-		oob_free_layout:			&ooblayout_pn,
 		feature:				SPI_NAND_FLASH_FEATURE_NONE,
 	},
 
@@ -1266,7 +1012,6 @@ static const struct SPI_NAND_FLASH_INFO_T spi_nand_flash_tables[] = {
 		dummy_mode:				SPI_NAND_FLASH_READ_DUMMY_BYTE_APPEND,
 		read_mode:				SPI_NAND_FLASH_READ_SPEED_MODE_DUAL,
 		write_mode:				SPI_NAND_FLASH_WRITE_SPEED_MODE_SINGLE,
-		oob_free_layout:			&ooblayout_pn,
 		feature:				SPI_NAND_FLASH_FEATURE_NONE,
 	},
 
@@ -1281,7 +1026,6 @@ static const struct SPI_NAND_FLASH_INFO_T spi_nand_flash_tables[] = {
 		dummy_mode:				SPI_NAND_FLASH_READ_DUMMY_BYTE_APPEND,
 		read_mode:				SPI_NAND_FLASH_READ_SPEED_MODE_DUAL,
 		write_mode:				SPI_NAND_FLASH_WRITE_SPEED_MODE_SINGLE,
-		oob_free_layout:			&ooblayout_pn,
 		feature:				SPI_NAND_FLASH_FEATURE_NONE,
 	},
 
@@ -1296,7 +1040,6 @@ static const struct SPI_NAND_FLASH_INFO_T spi_nand_flash_tables[] = {
 		dummy_mode:				SPI_NAND_FLASH_READ_DUMMY_BYTE_APPEND,
 		read_mode:				SPI_NAND_FLASH_READ_SPEED_MODE_SINGLE,
 		write_mode:				SPI_NAND_FLASH_WRITE_SPEED_MODE_SINGLE,
-		oob_free_layout:			&ooblayout_ato,
 		feature:				SPI_NAND_FLASH_FEATURE_NONE,
 	},
 
@@ -1311,7 +1054,6 @@ static const struct SPI_NAND_FLASH_INFO_T spi_nand_flash_tables[] = {
 		dummy_mode:				SPI_NAND_FLASH_READ_DUMMY_BYTE_APPEND,
 		read_mode:				SPI_NAND_FLASH_READ_SPEED_MODE_DUAL,
 		write_mode:				SPI_NAND_FLASH_WRITE_SPEED_MODE_SINGLE,
-		oob_free_layout:			&ooblayout_ato_25D2GA,
 		feature:				SPI_NAND_FLASH_FEATURE_NONE,
 	},
 
@@ -1326,7 +1068,6 @@ static const struct SPI_NAND_FLASH_INFO_T spi_nand_flash_tables[] = {
 		dummy_mode:				SPI_NAND_FLASH_READ_DUMMY_BYTE_APPEND,
 		read_mode:				SPI_NAND_FLASH_READ_SPEED_MODE_DUAL,
 		write_mode:				SPI_NAND_FLASH_WRITE_SPEED_MODE_SINGLE,
-		oob_free_layout:			&ooblayout_ato_25D2GB,
 		feature:				SPI_NAND_FLASH_FEATURE_NONE,
 	},
 
@@ -1342,7 +1083,6 @@ static const struct SPI_NAND_FLASH_INFO_T spi_nand_flash_tables[] = {
 		dummy_mode:				SPI_NAND_FLASH_READ_DUMMY_BYTE_APPEND,
 		read_mode:				SPI_NAND_FLASH_READ_SPEED_MODE_DUAL,
 		write_mode:				SPI_NAND_FLASH_WRITE_SPEED_MODE_SINGLE,
-		oob_free_layout:			&ooblayout_fm,
 		feature:				SPI_NAND_FLASH_FEATURE_NONE,
 	},
 
@@ -1357,7 +1097,6 @@ static const struct SPI_NAND_FLASH_INFO_T spi_nand_flash_tables[] = {
 		dummy_mode:				SPI_NAND_FLASH_READ_DUMMY_BYTE_APPEND,
 		read_mode:				SPI_NAND_FLASH_READ_SPEED_MODE_DUAL,
 		write_mode:				SPI_NAND_FLASH_WRITE_SPEED_MODE_SINGLE,
-		oob_free_layout:			&ooblayout_fm_32,
 		feature:				SPI_NAND_FLASH_FEATURE_NONE,
 	},
 
@@ -1372,7 +1111,6 @@ static const struct SPI_NAND_FLASH_INFO_T spi_nand_flash_tables[] = {
 		dummy_mode:				SPI_NAND_FLASH_READ_DUMMY_BYTE_APPEND,
 		read_mode:				SPI_NAND_FLASH_READ_SPEED_MODE_DUAL,
 		write_mode:				SPI_NAND_FLASH_WRITE_SPEED_MODE_SINGLE,
-		oob_free_layout:			&ooblayout_fm,
 		feature:				SPI_NAND_FLASH_FEATURE_NONE,
 	},
 
@@ -1387,7 +1125,6 @@ static const struct SPI_NAND_FLASH_INFO_T spi_nand_flash_tables[] = {
 		dummy_mode:				SPI_NAND_FLASH_READ_DUMMY_BYTE_APPEND,
 		read_mode:				SPI_NAND_FLASH_READ_SPEED_MODE_DUAL,
 		write_mode:				SPI_NAND_FLASH_WRITE_SPEED_MODE_SINGLE,
-		oob_free_layout:			&ooblayout_fm,
 		feature:				SPI_NAND_FLASH_FEATURE_NONE,
 	},
 
@@ -1402,7 +1139,6 @@ static const struct SPI_NAND_FLASH_INFO_T spi_nand_flash_tables[] = {
 		dummy_mode:				SPI_NAND_FLASH_READ_DUMMY_BYTE_APPEND,
 		read_mode:				SPI_NAND_FLASH_READ_SPEED_MODE_DUAL,
 		write_mode:				SPI_NAND_FLASH_WRITE_SPEED_MODE_SINGLE,
-		oob_free_layout:			&ooblayout_fm_32,
 		feature:				SPI_NAND_FLASH_FEATURE_NONE,
 	},
 
@@ -1417,7 +1153,6 @@ static const struct SPI_NAND_FLASH_INFO_T spi_nand_flash_tables[] = {
 		dummy_mode:				SPI_NAND_FLASH_READ_DUMMY_BYTE_APPEND,
 		read_mode:				SPI_NAND_FLASH_READ_SPEED_MODE_DUAL,
 		write_mode:				SPI_NAND_FLASH_WRITE_SPEED_MODE_SINGLE,
-		oob_free_layout:			&ooblayout_type1,
 		feature:				SPI_NAND_FLASH_FEATURE_NONE,
 	},
 
@@ -1433,7 +1168,20 @@ static const struct SPI_NAND_FLASH_INFO_T spi_nand_flash_tables[] = {
 		dummy_mode:				SPI_NAND_FLASH_READ_DUMMY_BYTE_APPEND,
 		read_mode:				SPI_NAND_FLASH_READ_SPEED_MODE_DUAL,
 		write_mode:				SPI_NAND_FLASH_WRITE_SPEED_MODE_SINGLE,
-		oob_free_layout:			&ooblayout_type1,
+		feature:				SPI_NAND_FLASH_FEATURE_NONE,
+	},
+
+	{
+		ptr_name:				"XTX XT26G01C",
+		mfr_id:					_SPI_NAND_MANUFACTURER_ID_XTX,
+		dev_id:					_SPI_NAND_DEVICE_ID_XT26G01C,
+		device_size:				_SPI_NAND_CHIP_SIZE_1GBIT,
+		page_size:				_SPI_NAND_PAGE_SIZE_2KBYTE,
+		oob_size:				_SPI_NAND_OOB_SIZE_128BYTE,
+		erase_size:				_SPI_NAND_BLOCK_SIZE_128KBYTE,
+		dummy_mode:				SPI_NAND_FLASH_READ_DUMMY_BYTE_APPEND,
+		read_mode:				SPI_NAND_FLASH_READ_SPEED_MODE_DUAL,
+		write_mode:				SPI_NAND_FLASH_WRITE_SPEED_MODE_SINGLE,
 		feature:				SPI_NAND_FLASH_FEATURE_NONE,
 	},
 
@@ -1448,7 +1196,6 @@ static const struct SPI_NAND_FLASH_INFO_T spi_nand_flash_tables[] = {
 		dummy_mode:				SPI_NAND_FLASH_READ_DUMMY_BYTE_APPEND,
 		read_mode:				SPI_NAND_FLASH_READ_SPEED_MODE_DUAL,
 		write_mode:				SPI_NAND_FLASH_WRITE_SPEED_MODE_SINGLE,
-		oob_free_layout:			&ooblayout_type19,
 		feature:				SPI_NAND_FLASH_FEATURE_NONE,
 	},
 
@@ -1463,7 +1210,6 @@ static const struct SPI_NAND_FLASH_INFO_T spi_nand_flash_tables[] = {
 		dummy_mode:				SPI_NAND_FLASH_READ_DUMMY_BYTE_APPEND,
 		read_mode:				SPI_NAND_FLASH_READ_SPEED_MODE_DUAL,
 		write_mode:				SPI_NAND_FLASH_WRITE_SPEED_MODE_SINGLE,
-		oob_free_layout:			&ooblayout_type19,
 		feature:				SPI_NAND_FLASH_FEATURE_NONE,
 	},
 
@@ -1479,7 +1225,6 @@ static const struct SPI_NAND_FLASH_INFO_T spi_nand_flash_tables[] = {
 		dummy_mode:				SPI_NAND_FLASH_READ_DUMMY_BYTE_APPEND,
 		read_mode:				SPI_NAND_FLASH_READ_SPEED_MODE_DUAL,
 		write_mode:				SPI_NAND_FLASH_WRITE_SPEED_MODE_SINGLE,
-		oob_free_layout:			&ooblayout_type6,
 		feature:				SPI_NAND_FLASH_FEATURE_NONE,
 	},
 
@@ -1495,7 +1240,6 @@ static const struct SPI_NAND_FLASH_INFO_T spi_nand_flash_tables[] = {
 		dummy_mode:				SPI_NAND_FLASH_READ_DUMMY_BYTE_APPEND,
 		read_mode:				SPI_NAND_FLASH_READ_SPEED_MODE_DUAL,
 		write_mode:				SPI_NAND_FLASH_WRITE_SPEED_MODE_SINGLE,
-		oob_free_layout:			&ooblayout_type15,
 		feature:				SPI_NAND_FLASH_FEATURE_NONE,
 	},
 
@@ -1510,7 +1254,6 @@ static const struct SPI_NAND_FLASH_INFO_T spi_nand_flash_tables[] = {
 		dummy_mode:				SPI_NAND_FLASH_READ_DUMMY_BYTE_APPEND,
 		read_mode:				SPI_NAND_FLASH_READ_SPEED_MODE_DUAL,
 		write_mode:				SPI_NAND_FLASH_WRITE_SPEED_MODE_SINGLE,
-		oob_free_layout:			&ooblayout_type10,
 		feature:				SPI_NAND_FLASH_FEATURE_NONE,
 	},
 
@@ -1526,7 +1269,6 @@ static const struct SPI_NAND_FLASH_INFO_T spi_nand_flash_tables[] = {
 		dummy_mode:				SPI_NAND_FLASH_READ_DUMMY_BYTE_APPEND,
 		read_mode:				SPI_NAND_FLASH_READ_SPEED_MODE_DUAL,
 		write_mode:				SPI_NAND_FLASH_WRITE_SPEED_MODE_SINGLE,
-		oob_free_layout:			&ooblayout_type1,
 		feature:				SPI_NAND_FLASH_FEATURE_NONE,
 	},
 
@@ -1541,7 +1283,6 @@ static const struct SPI_NAND_FLASH_INFO_T spi_nand_flash_tables[] = {
 		dummy_mode:				SPI_NAND_FLASH_READ_DUMMY_BYTE_APPEND,
 		read_mode:				SPI_NAND_FLASH_READ_SPEED_MODE_DUAL,
 		write_mode:				SPI_NAND_FLASH_WRITE_SPEED_MODE_SINGLE,
-		oob_free_layout:			&ooblayout_type1,
 		feature:				SPI_NAND_FLASH_FEATURE_NONE,
 	},
 
@@ -1556,7 +1297,6 @@ static const struct SPI_NAND_FLASH_INFO_T spi_nand_flash_tables[] = {
 		dummy_mode:				SPI_NAND_FLASH_READ_DUMMY_BYTE_APPEND,
 		read_mode:				SPI_NAND_FLASH_READ_SPEED_MODE_DUAL,
 		write_mode:				SPI_NAND_FLASH_WRITE_SPEED_MODE_SINGLE,
-		oob_free_layout:			&ooblayout_type1,
 		feature:				SPI_NAND_FLASH_FEATURE_NONE,
 	},
 
@@ -1571,7 +1311,6 @@ static const struct SPI_NAND_FLASH_INFO_T spi_nand_flash_tables[] = {
 		dummy_mode:				SPI_NAND_FLASH_READ_DUMMY_BYTE_APPEND,
 		read_mode:				SPI_NAND_FLASH_READ_SPEED_MODE_DUAL,
 		write_mode:				SPI_NAND_FLASH_WRITE_SPEED_MODE_SINGLE,
-		oob_free_layout:			&ooblayout_type1,
 		feature:				SPI_NAND_FLASH_FEATURE_NONE,
 	},
 
@@ -1586,7 +1325,6 @@ static const struct SPI_NAND_FLASH_INFO_T spi_nand_flash_tables[] = {
 		dummy_mode: 				SPI_NAND_FLASH_READ_DUMMY_BYTE_APPEND,
 		read_mode:				SPI_NAND_FLASH_READ_SPEED_MODE_DUAL,
 		write_mode: 				SPI_NAND_FLASH_WRITE_SPEED_MODE_SINGLE,
-		oob_free_layout:			&ooblayout_ds,
 		feature:				SPI_NAND_FLASH_PLANE_SELECT_HAVE,
 	},
 	{
@@ -1600,7 +1338,6 @@ static const struct SPI_NAND_FLASH_INFO_T spi_nand_flash_tables[] = {
 		dummy_mode: 				SPI_NAND_FLASH_READ_DUMMY_BYTE_APPEND,
 		read_mode:				SPI_NAND_FLASH_READ_SPEED_MODE_DUAL,
 		write_mode: 				SPI_NAND_FLASH_WRITE_SPEED_MODE_SINGLE,
-		oob_free_layout:			&ooblayout_ds,
 		feature:				SPI_NAND_FLASH_FEATURE_NONE,
 	},
 
@@ -1615,7 +1352,6 @@ static const struct SPI_NAND_FLASH_INFO_T spi_nand_flash_tables[] = {
 		dummy_mode: 				SPI_NAND_FLASH_READ_DUMMY_BYTE_APPEND,
 		read_mode:				SPI_NAND_FLASH_READ_SPEED_MODE_DUAL,
 		write_mode: 				SPI_NAND_FLASH_WRITE_SPEED_MODE_SINGLE,
-		oob_free_layout:			&ooblayout_fison,
 		feature:				SPI_NAND_FLASH_FEATURE_NONE,
 	},
 	{
@@ -1629,7 +1365,6 @@ static const struct SPI_NAND_FLASH_INFO_T spi_nand_flash_tables[] = {
 		dummy_mode: 				SPI_NAND_FLASH_READ_DUMMY_BYTE_APPEND,
 		read_mode:				SPI_NAND_FLASH_READ_SPEED_MODE_DUAL,
 		write_mode: 				SPI_NAND_FLASH_WRITE_SPEED_MODE_SINGLE,
-		oob_free_layout:			&ooblayout_fison,
 		feature:				SPI_NAND_FLASH_FEATURE_NONE,
 	},
 	{
@@ -1643,7 +1378,6 @@ static const struct SPI_NAND_FLASH_INFO_T spi_nand_flash_tables[] = {
 		dummy_mode: 				SPI_NAND_FLASH_READ_DUMMY_BYTE_APPEND,
 		read_mode:				SPI_NAND_FLASH_READ_SPEED_MODE_DUAL,
 		write_mode: 				SPI_NAND_FLASH_WRITE_SPEED_MODE_SINGLE,
-		oob_free_layout:			&ooblayout_fison,
 		feature:				SPI_NAND_FLASH_FEATURE_NONE,
 	},
 
@@ -1658,7 +1392,6 @@ static const struct SPI_NAND_FLASH_INFO_T spi_nand_flash_tables[] = {
 		dummy_mode: 				SPI_NAND_FLASH_READ_DUMMY_BYTE_APPEND,
 		read_mode:				SPI_NAND_FLASH_READ_SPEED_MODE_DUAL,
 		write_mode: 				SPI_NAND_FLASH_WRITE_SPEED_MODE_SINGLE,
-		oob_free_layout:			&ooblayout_tym,
 		feature:				SPI_NAND_FLASH_FEATURE_NONE,
 	},
 	{
@@ -1672,7 +1405,6 @@ static const struct SPI_NAND_FLASH_INFO_T spi_nand_flash_tables[] = {
 		dummy_mode: 				SPI_NAND_FLASH_READ_DUMMY_BYTE_APPEND,
 		read_mode:				SPI_NAND_FLASH_READ_SPEED_MODE_DUAL,
 		write_mode: 				SPI_NAND_FLASH_WRITE_SPEED_MODE_SINGLE,
-		oob_free_layout:			&ooblayout_tym,
 		feature:				SPI_NAND_FLASH_FEATURE_NONE,
 	},
 	{
@@ -1686,7 +1418,6 @@ static const struct SPI_NAND_FLASH_INFO_T spi_nand_flash_tables[] = {
 		dummy_mode: 				SPI_NAND_FLASH_READ_DUMMY_BYTE_APPEND,
 		read_mode:				SPI_NAND_FLASH_READ_SPEED_MODE_DUAL,
 		write_mode: 				SPI_NAND_FLASH_WRITE_SPEED_MODE_SINGLE,
-		oob_free_layout:			&ooblayout_tym,
 		feature:				SPI_NAND_FLASH_FEATURE_NONE,
 	},
 };
@@ -2733,6 +2464,13 @@ static SPI_NAND_FLASH_RTN_T ecc_fail_check( u32 page_number )
 			rtn_status = SPI_NAND_FLASH_RTN_DETECTED_BAD_BLOCK;
 		}
 	}
+	else if (((ptr_dev_info_t->mfr_id == _SPI_NAND_MANUFACTURER_ID_XTX) && (ptr_dev_info_t->dev_id == _SPI_NAND_DEVICE_ID_XT26G01C)))
+	{
+		if(((status & 0xF0) >> 4) == 0xF)
+		{
+			rtn_status = SPI_NAND_FLASH_RTN_DETECTED_BAD_BLOCK;
+		}
+	}
 	else if (((ptr_dev_info_t->mfr_id == _SPI_NAND_MANUFACTURER_ID_XTX) && (ptr_dev_info_t->dev_id == _SPI_NAND_DEVICE_ID_XT26G01A)))
 	{
 		if(((status & 0x3C) >> 2) == 0x8)
@@ -2939,15 +2677,6 @@ SPI_NAND_FLASH_RTN_T spi_nand_erase_block ( u32 block_index)
 	/* 2.5 Disable write_flash */
 	spi_nand_protocol_write_disable();
 
-#if 0
-	print_dot++;
-	if( (print_dot % 15) == 0 )
-	{
-		_SPI_NAND_PRINTF(".");
-		fflush(stdout);
-	}
-#endif
-
 	/* 2.6 Check Erase Fail Bit */
 	if( status & _SPI_NAND_VAL_ERASE_FAIL )
 	{
@@ -2982,9 +2711,6 @@ static SPI_NAND_FLASH_RTN_T spi_nand_erase_internal( u32 addr, u32 len )
 	u32 block_index = 0;
 	u32 erase_len = 0;
 	SPI_NAND_FLASH_RTN_T rtn_status = SPI_NAND_FLASH_RTN_NO_ERROR;
-#if 0
-	print_dot  = 0;
-#endif
 
 	_SPI_NAND_DEBUG_PRINTF(SPI_NAND_FLASH_DEBUG_LEVEL_1, "\nspi_nand_erase_internal (in): addr = 0x%x, len = 0x%x\n", addr, len );
 	_SPI_NAND_SEMAPHORE_LOCK();
@@ -3038,12 +2764,8 @@ static SPI_NAND_FLASH_RTN_T spi_nand_erase_internal( u32 addr, u32 len )
 
 static SPI_NAND_FLASH_RTN_T spi_nand_read_page (u32 page_number, SPI_NAND_FLASH_READ_SPEED_MODE_T speed_mode)
 {
-
-	u32 idx = 0;
-	u32 i, j;
 	struct SPI_NAND_FLASH_INFO_T *ptr_dev_info_t;
 	SPI_NAND_FLASH_RTN_T rtn_status = SPI_NAND_FLASH_RTN_NO_ERROR;
-	struct spi_nand_flash_oobfree *ptr_oob_entry_idx;
 	u16 read_addr;
 
 	ptr_dev_info_t = _SPI_NAND_GET_DEVICE_INFO_PTR;
@@ -3087,49 +2809,21 @@ static SPI_NAND_FLASH_RTN_T spi_nand_read_page (u32 page_number, SPI_NAND_FLASH_
 		_SPI_NAND_DEBUG_PRINTF_ARRAY(SPI_NAND_FLASH_DEBUG_LEVEL_2, &_current_cache_page[0], _SPI_NAND_CACHE_SIZE);
 
 		/* Divide read page into data segment and oob segment  */
-		{
-			memcpy( &_current_cache_page_data[0], &_current_cache_page[0], (ptr_dev_info_t->page_size) );
-			if(!ECC_fcheck)
-				goto noecc;
+		memcpy( &_current_cache_page_data[0], &_current_cache_page[0], (ptr_dev_info_t->page_size) );
+
+		if(ECC_fcheck) {
 			memcpy( &_current_cache_page_oob[0],  &_current_cache_page[(ptr_dev_info_t->page_size)], (ptr_dev_info_t->oob_size) );
-
-			idx = 0;
-			ptr_oob_entry_idx = (struct spi_nand_flash_oobfree*) &( (ptr_dev_info_t->oob_free_layout)->oobfree );
-
-			if( _ondie_ecc_flag == 1)   /*  When OnDie ecc is enable,  mapping oob area is neccessary */
-			{
-				/* Transter oob area from physical offset into logical offset */
-				for( i = 0; (i < SPI_NAND_FLASH_OOB_FREE_ENTRY_MAX) && (ptr_oob_entry_idx[i].len) && (idx < ((ptr_dev_info_t->oob_free_layout)->oobsize)) ; i++)
-				{
-					for(j = 0; (j < (ptr_oob_entry_idx[i].len)) && (idx < (ptr_dev_info_t->oob_free_layout->oobsize)) ; j++)
-					{
-						/* _SPI_NAND_PRINTF("i=%d , j=%d, len=%d, idx=%d, size=%d\n", i, j,(ptr_oob_entry_idx[i].len), idx, (ptr_dev_info_t->oob_free_layout->oobsize) ); */
-						_current_cache_page_oob_mapping[idx] = _current_cache_page_oob[(ptr_oob_entry_idx[i].offset)+j];
-						idx++;
-					}
-				}
-			}
-			else
-			{
-				memcpy( &_current_cache_page_oob_mapping[0],  &_current_cache_page_oob[0], (ptr_dev_info_t->oob_size) );
-			}
-			_SPI_NAND_DEBUG_PRINTF(SPI_NAND_FLASH_DEBUG_LEVEL_2, "spi_nand_read_page: _current_cache_page:\n");
-			_SPI_NAND_DEBUG_PRINTF_ARRAY(SPI_NAND_FLASH_DEBUG_LEVEL_2, &_current_cache_page[0], ((ptr_dev_info_t->page_size)+(ptr_dev_info_t->oob_size)));
-			_SPI_NAND_DEBUG_PRINTF(SPI_NAND_FLASH_DEBUG_LEVEL_2, "spi_nand_read_page: _current_cache_page_oob:\n");
-			_SPI_NAND_DEBUG_PRINTF_ARRAY(SPI_NAND_FLASH_DEBUG_LEVEL_2, &_current_cache_page_oob[0], (ptr_dev_info_t->oob_size));
-			_SPI_NAND_DEBUG_PRINTF(SPI_NAND_FLASH_DEBUG_LEVEL_2, "spi_nand_read_page: _current_cache_page_oob_mapping:\n");
-			_SPI_NAND_DEBUG_PRINTF_ARRAY(SPI_NAND_FLASH_DEBUG_LEVEL_2, &_current_cache_page_oob_mapping[0], (ptr_dev_info_t->oob_size));
+			memcpy( &_current_cache_page_oob_mapping[0],  &_current_cache_page_oob[0], (ptr_dev_info_t->oob_size) );
 		}
-noecc:
+
+		_SPI_NAND_DEBUG_PRINTF(SPI_NAND_FLASH_DEBUG_LEVEL_2, "spi_nand_read_page: _current_cache_page:\n");
+		_SPI_NAND_DEBUG_PRINTF_ARRAY(SPI_NAND_FLASH_DEBUG_LEVEL_2, &_current_cache_page[0], ((ptr_dev_info_t->page_size)+(ptr_dev_info_t->oob_size)));
+		_SPI_NAND_DEBUG_PRINTF(SPI_NAND_FLASH_DEBUG_LEVEL_2, "spi_nand_read_page: _current_cache_page_oob:\n");
+		_SPI_NAND_DEBUG_PRINTF_ARRAY(SPI_NAND_FLASH_DEBUG_LEVEL_2, &_current_cache_page_oob[0], (ptr_dev_info_t->oob_size));
+		_SPI_NAND_DEBUG_PRINTF(SPI_NAND_FLASH_DEBUG_LEVEL_2, "spi_nand_read_page: _current_cache_page_oob_mapping:\n");
+		_SPI_NAND_DEBUG_PRINTF_ARRAY(SPI_NAND_FLASH_DEBUG_LEVEL_2, &_current_cache_page_oob_mapping[0], (ptr_dev_info_t->oob_size));
+
 		_current_page_num = page_number;
-#if 0
-		print_dot++;
-		if( (print_dot % 20) == 0 )
-		{
-			_SPI_NAND_PRINTF(".");
-			fflush(stdout);
-		}
-#endif
 	}
 
 	return rtn_status;
@@ -3139,9 +2833,7 @@ static SPI_NAND_FLASH_RTN_T spi_nand_write_page( u32 page_number, u32 data_offse
 											u32 oob_len, SPI_NAND_FLASH_WRITE_SPEED_MODE_T speed_mode )
 {
 		u8 status, status_2;
-		u32 i = 0, j = 0, idx = 0;
 		struct SPI_NAND_FLASH_INFO_T *ptr_dev_info_t;
-		struct spi_nand_flash_oobfree *ptr_oob_entry_idx;
 		SPI_NAND_FLASH_RTN_T rtn_status = SPI_NAND_FLASH_RTN_NO_ERROR;
 		u16 write_addr;
 
@@ -3179,27 +2871,9 @@ static SPI_NAND_FLASH_RTN_T spi_nand_write_page( u32 page_number, u32 data_offse
 
 		if(ECC_fcheck && oob_len > 0 )	/* Write OOB */
 		{
-			{
-				if(_ondie_ecc_flag == 1)	/*  When OnDie ecc is enable,  mapping oob area is neccessary */
-				{
-					ptr_oob_entry_idx = (struct spi_nand_flash_oobfree*) &( ptr_dev_info_t->oob_free_layout->oobfree );
-							
-					for( i = 0; (i < SPI_NAND_FLASH_OOB_FREE_ENTRY_MAX) && (ptr_oob_entry_idx[i].len) && ((idx < (ptr_dev_info_t->oob_free_layout->oobsize)) && (idx < oob_len))  ; i++)
-					{
-						for(j = 0; (j < (ptr_oob_entry_idx[i].len)) && (idx < (ptr_dev_info_t->oob_free_layout->oobsize)) && ((idx < (ptr_dev_info_t->oob_free_layout->oobsize)) && (idx < oob_len)) ; j++)
-						{
-							_current_cache_page_oob[(ptr_oob_entry_idx[i].offset)+j] &= ptr_oob[idx];
-							idx++;
-						}
-					}
-				}
-				else
-				{
-					if(oob_len) memcpy( &_current_cache_page_oob[0], &ptr_oob[0], oob_len);
-				}
-				if(ptr_dev_info_t->oob_size)
-					memcpy( &_current_cache_page[ptr_dev_info_t->page_size],  &_current_cache_page_oob[0], ptr_dev_info_t->oob_size );
-			}
+			memcpy( &_current_cache_page_oob[0], &ptr_oob[0], oob_len);
+			if(ptr_dev_info_t->oob_size)
+				memcpy( &_current_cache_page[ptr_dev_info_t->page_size],  &_current_cache_page_oob[0], ptr_dev_info_t->oob_size );
 		}
 
 		_SPI_NAND_DEBUG_PRINTF(SPI_NAND_FLASH_DEBUG_LEVEL_2, "spi_nand_write_page: page = 0x%x, data_offset = 0x%x, date_len = 0x%x, oob_offset = 0x%x, oob_len = 0x%x\n", page_number, data_offset, data_len, oob_offset, oob_len);
@@ -3257,14 +2931,6 @@ static SPI_NAND_FLASH_RTN_T spi_nand_write_page( u32 page_number, u32 data_offse
 		spi_nand_protocol_get_status_reg_1( &status_2);
 
 		_SPI_NAND_DEBUG_PRINTF(SPI_NAND_FLASH_DEBUG_LEVEL_1, "[spi_nand_write_page]: status 1 = 0x%x, status 3 = 0x%x\n", status_2, status);
-#if 0
-		print_dot++;
-		if( (print_dot % 20) == 0 )
-		{
-			_SPI_NAND_PRINTF(".");
-			fflush(stdout);
-		}
-#endif
 		/* Check Program Fail Bit */
 		if( status & _SPI_NAND_VAL_PROGRAM_FAIL )
 		{
@@ -3307,9 +2973,6 @@ static SPI_NAND_FLASH_RTN_T spi_nand_write_internal( u32 dst_addr, u32 len, u32 
 	u32 addr_offset;
 	struct SPI_NAND_FLASH_INFO_T *ptr_dev_info_t;
 	SPI_NAND_FLASH_RTN_T rtn_status = SPI_NAND_FLASH_RTN_NO_ERROR;
-#if 0
-	print_dot  = 0;
-#endif
 
 	*ptr_rtn_len = 0;
 	ptr_dev_info_t = _SPI_NAND_GET_DEVICE_INFO_PTR;
@@ -3388,9 +3051,7 @@ static SPI_NAND_FLASH_RTN_T spi_nand_read_internal ( u32 addr, u32 len, u8 *ptr_
 	SPI_NAND_FLASH_RTN_T rtn_status = SPI_NAND_FLASH_RTN_NO_ERROR;
 
 	ptr_dev_info_t = _SPI_NAND_GET_DEVICE_INFO_PTR;
-#if 0
-	print_dot  = 0;
-#endif
+
 	read_addr = addr;
 	remain_len = len;
 
@@ -3916,18 +3577,18 @@ static SPI_NAND_FLASH_RTN_T spi_nand_probe( struct SPI_NAND_FLASH_INFO_T *ptr_rt
 	{
 		if ( spi_nand_compare( ptr_rtn_device_t, &spi_nand_flash_tables[i] ) == SPI_NAND_FLASH_RTN_NO_ERROR )
 		{
+			int oob_size = OOB_size ? OOB_size : spi_nand_flash_tables[i].oob_size;
 			ecc_size = ((spi_nand_flash_tables[i].device_size / spi_nand_flash_tables[i].erase_size) * ((spi_nand_flash_tables[i].erase_size / spi_nand_flash_tables[i].page_size) * spi_nand_flash_tables[i].oob_size));
 			ptr_rtn_device_t->device_size = ECC_fcheck ? spi_nand_flash_tables[i].device_size : spi_nand_flash_tables[i].device_size + ecc_size;
 			erase_oob_size                = (spi_nand_flash_tables[i].erase_size / spi_nand_flash_tables[i].page_size) * spi_nand_flash_tables[i].oob_size;
 			ptr_rtn_device_t->erase_size  = ECC_fcheck ? spi_nand_flash_tables[i].erase_size : spi_nand_flash_tables[i].erase_size + erase_oob_size;
-			ptr_rtn_device_t->page_size   = ECC_fcheck ? spi_nand_flash_tables[i].page_size : spi_nand_flash_tables[i].page_size + spi_nand_flash_tables[i].oob_size;
-			ptr_rtn_device_t->oob_size    = ECC_fcheck ? spi_nand_flash_tables[i].oob_size : 0;
+			ptr_rtn_device_t->page_size   = ECC_fcheck ? spi_nand_flash_tables[i].page_size : spi_nand_flash_tables[i].page_size + oob_size;
+			ptr_rtn_device_t->oob_size    = ECC_fcheck ? oob_size : 0;
 			bmt_oob_size                  = spi_nand_flash_tables[i].oob_size;
 			ptr_rtn_device_t->dummy_mode  = spi_nand_flash_tables[i].dummy_mode;
 			ptr_rtn_device_t->read_mode   = spi_nand_flash_tables[i].read_mode;
 			ptr_rtn_device_t->write_mode  = spi_nand_flash_tables[i].write_mode;
 			memcpy( &(ptr_rtn_device_t->ptr_name) , &(spi_nand_flash_tables[i].ptr_name), sizeof(ptr_rtn_device_t->ptr_name));
-			memcpy( &(ptr_rtn_device_t->oob_free_layout) , &(spi_nand_flash_tables[i].oob_free_layout), sizeof(ptr_rtn_device_t->oob_free_layout));
 			ptr_rtn_device_t->feature = spi_nand_flash_tables[i].feature;
 
 			rtn_status = SPI_NAND_FLASH_RTN_NO_ERROR;
@@ -3946,18 +3607,18 @@ static SPI_NAND_FLASH_RTN_T spi_nand_probe( struct SPI_NAND_FLASH_INFO_T *ptr_rt
 		{
 			if ( spi_nand_compare( ptr_rtn_device_t, &spi_nand_flash_tables[i] ) == SPI_NAND_FLASH_RTN_NO_ERROR )
 			{
+				int oob_size = OOB_size ? OOB_size : spi_nand_flash_tables[i].oob_size;
 				ecc_size = ((spi_nand_flash_tables[i].device_size / spi_nand_flash_tables[i].erase_size) * ((spi_nand_flash_tables[i].erase_size / spi_nand_flash_tables[i].page_size) * spi_nand_flash_tables[i].oob_size));
 				ptr_rtn_device_t->device_size = ECC_fcheck ? spi_nand_flash_tables[i].device_size : spi_nand_flash_tables[i].device_size + ecc_size;
 				erase_oob_size                = (spi_nand_flash_tables[i].erase_size / spi_nand_flash_tables[i].page_size) * spi_nand_flash_tables[i].oob_size;
 				ptr_rtn_device_t->erase_size  = ECC_fcheck ? spi_nand_flash_tables[i].erase_size : spi_nand_flash_tables[i].erase_size + erase_oob_size;
-				ptr_rtn_device_t->page_size   = ECC_fcheck ? spi_nand_flash_tables[i].page_size : spi_nand_flash_tables[i].page_size + spi_nand_flash_tables[i].oob_size;
-				ptr_rtn_device_t->oob_size    = ECC_fcheck ? spi_nand_flash_tables[i].oob_size : 0;
+				ptr_rtn_device_t->page_size   = ECC_fcheck ? spi_nand_flash_tables[i].page_size : spi_nand_flash_tables[i].page_size + oob_size;
+				ptr_rtn_device_t->oob_size    = ECC_fcheck ? oob_size : 0;
 				bmt_oob_size                  = spi_nand_flash_tables[i].oob_size;
 				ptr_rtn_device_t->dummy_mode  = spi_nand_flash_tables[i].dummy_mode;
 				ptr_rtn_device_t->read_mode   = spi_nand_flash_tables[i].read_mode;
 				ptr_rtn_device_t->write_mode  = spi_nand_flash_tables[i].write_mode;
 				memcpy( &(ptr_rtn_device_t->ptr_name) , &(spi_nand_flash_tables[i].ptr_name), sizeof(ptr_rtn_device_t->ptr_name));
-				memcpy( &(ptr_rtn_device_t->oob_free_layout) , &(spi_nand_flash_tables[i].oob_free_layout), sizeof(ptr_rtn_device_t->oob_free_layout));
 				ptr_rtn_device_t->feature = spi_nand_flash_tables[i].feature;
 
 				rtn_status = SPI_NAND_FLASH_RTN_NO_ERROR;
@@ -3980,18 +3641,18 @@ static SPI_NAND_FLASH_RTN_T spi_nand_probe( struct SPI_NAND_FLASH_INFO_T *ptr_rt
 			if ( ( (ptr_rtn_device_t->mfr_id) == spi_nand_flash_tables[i].mfr_id) &&
 			     ( (ptr_rtn_device_t->dev_id) == spi_nand_flash_tables[i].dev_id)  )
 			{
+				int oob_size = OOB_size ? OOB_size : spi_nand_flash_tables[i].oob_size;
 				ecc_size = ((spi_nand_flash_tables[i].device_size / spi_nand_flash_tables[i].erase_size) * ((spi_nand_flash_tables[i].erase_size / spi_nand_flash_tables[i].page_size) * spi_nand_flash_tables[i].oob_size));
 				ptr_rtn_device_t->device_size = ECC_fcheck ? spi_nand_flash_tables[i].device_size : spi_nand_flash_tables[i].device_size + ecc_size;
 				erase_oob_size                = (spi_nand_flash_tables[i].erase_size / spi_nand_flash_tables[i].page_size) * spi_nand_flash_tables[i].oob_size;
 				ptr_rtn_device_t->erase_size  = ECC_fcheck ? spi_nand_flash_tables[i].erase_size : spi_nand_flash_tables[i].erase_size + erase_oob_size;
-				ptr_rtn_device_t->page_size   = ECC_fcheck ? spi_nand_flash_tables[i].page_size : spi_nand_flash_tables[i].page_size + spi_nand_flash_tables[i].oob_size;
-				ptr_rtn_device_t->oob_size    = ECC_fcheck ? spi_nand_flash_tables[i].oob_size : 0;
+				ptr_rtn_device_t->page_size   = ECC_fcheck ? spi_nand_flash_tables[i].page_size : spi_nand_flash_tables[i].page_size + oob_size;
+				ptr_rtn_device_t->oob_size    = ECC_fcheck ? oob_size : 0;
 				bmt_oob_size                  = spi_nand_flash_tables[i].oob_size;
 				ptr_rtn_device_t->dummy_mode  = spi_nand_flash_tables[i].dummy_mode;
 				ptr_rtn_device_t->read_mode   = spi_nand_flash_tables[i].read_mode;
 				ptr_rtn_device_t->write_mode  = spi_nand_flash_tables[i].write_mode;
 				memcpy( &(ptr_rtn_device_t->ptr_name) , &(spi_nand_flash_tables[i].ptr_name), sizeof(ptr_rtn_device_t->ptr_name));
-				memcpy( &(ptr_rtn_device_t->oob_free_layout) , &(spi_nand_flash_tables[i].oob_free_layout), sizeof(ptr_rtn_device_t->oob_free_layout));
 				ptr_rtn_device_t->feature = spi_nand_flash_tables[i].feature;
 
 				rtn_status = SPI_NAND_FLASH_RTN_NO_ERROR;
@@ -4066,9 +3727,15 @@ SPI_NAND_FLASH_RTN_T SPI_NAND_Flash_Init(u32 rom_base)
 			_SPI_NAND_PRINTF("Using Flash ECC.\n");
 		} else {
 			_SPI_NAND_PRINTF("Disable Flash ECC.\n");
+			if(OOB_size > bmt_oob_size) {
+				_SPI_NAND_PRINTF("Setting OOB size %dB cannot be larger %ldB!\n", OOB_size, bmt_oob_size);
+				return SPI_NAND_FLASH_RTN_PROBE_ERROR;
+			}
+			if(OOB_size)
+				_SPI_NAND_PRINTF("OOB Resize: %ldB to %dB.\n", bmt_oob_size, OOB_size);
 		}
 		SPI_NAND_Flash_Enable_OnDie_ECC();
-		_SPI_NAND_PRINTF("Detected SPI NAND Flash: %s, Flash Size: %d MB\n", _current_flash_info_t.ptr_name,  ECC_fcheck ? _current_flash_info_t.device_size >> 20 : (_current_flash_info_t.device_size - ecc_size) >> 20);
+		_SPI_NAND_PRINTF("Detected SPI NAND Flash: %s, Flash Size: %dMB, OOB Size: %ldB\n", _current_flash_info_t.ptr_name,  ECC_fcheck ? _current_flash_info_t.device_size >> 20 : (_current_flash_info_t.device_size - ecc_size) >> 20, OOB_size ? OOB_size : bmt_oob_size);
 
 		rtn_status = SPI_NAND_FLASH_RTN_NO_ERROR;
 	}

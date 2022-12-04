@@ -79,16 +79,6 @@ typedef enum{
 #define SPI_NAND_FLASH_DIE_SELECT_1_HAVE	( 0x01 << 1 )
 #define SPI_NAND_FLASH_DIE_SELECT_2_HAVE	( 0x01 << 2 )
 
-struct spi_nand_flash_oobfree{
-	unsigned long offset;
-	unsigned long len;
-};
-
-struct spi_nand_flash_ooblayout
-{	unsigned long oobsize;
-	struct spi_nand_flash_oobfree oobfree[SPI_NAND_FLASH_OOB_FREE_ENTRY_MAX];
-};
-
 struct SPI_NAND_FLASH_INFO_T {
 	u8					mfr_id;
 	u8					dev_id;
@@ -101,7 +91,6 @@ struct SPI_NAND_FLASH_INFO_T {
 	SPI_NAND_FLASH_READ_DUMMY_BYTE_T	dummy_mode;
 	SPI_NAND_FLASH_READ_SPEED_MODE_T	read_mode;
 	SPI_NAND_FLASH_WRITE_SPEED_MODE_T	write_mode;
-	struct spi_nand_flash_ooblayout		*oob_free_layout;
 	u32					feature;
 };
 
