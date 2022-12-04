@@ -23,7 +23,6 @@
 #include <string.h>
 #include <getopt.h>
 #include <time.h>
-#include <stdio.h>
 
 #include "flashcmd_api.h"
 #include "ch341a_spi.h"
@@ -221,8 +220,10 @@ int main(int argc, char* argv[])
 		}
 		printf("Erase addr = 0x%016llX, len = 0x%016llX\n", addr, len);
 		ret = prog.flash_erase(addr, len);
-		if(!ret)
+		if(!ret){
 			printf("Status: OK\n");
+			goto okout;
+		}
 		else
 			printf("Status: BAD(%d)\n", ret);
 		goto out;
@@ -297,8 +298,12 @@ very:
 			while ((ch1 != EOF) && (i < len - 1) && (ch1 == buf[i++]))
 				ch1 = (unsigned char)getc(fp);
 
-			if (ch1 == buf[i])
+			if (ch1 == buf[i]){
 				printf("Status: OK\n");
+				fclose(fp);
+				free(buf);
+				goto okout;
+			}
 			else
 				printf("Status: BAD\n");
 			fclose(fp);
@@ -312,14 +317,22 @@ very:
 			goto out;
 		}
 		fwrite(buf, 1, len, fp);
-		if (ferror(fp))
+		if (ferror(fp)){
 			printf("Error writing file [%s]\n", fname);
+			fclose(fp);
+			free(buf);
+			goto out;
+		}
 		fclose(fp);
 		free(buf);
 		printf("Status: OK\n");
+		goto okout;
 	}
 
-out:
+out:	//exit with errors
+	ch341a_spi_shutdown();
+	return -1;
+okout:	//exit without errors
 	ch341a_spi_shutdown();
 	return 0;
 }
