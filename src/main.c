@@ -51,7 +51,7 @@ extern int org;
 #define EHELP	""
 #endif
 
-#define _VER	"1.7.6_test2"
+#define _VER	"1.7.6"
 
 void title(void)
 {
@@ -214,7 +214,7 @@ int main(int argc, char* argv[])
 		goto out;
 
 #ifdef EEPROM_SUPPORT
-	if ((eepromsize || mw_eepromsize) && op == 'i') {
+	if ((eepromsize || mw_eepromsize || seepromsize) && op == 'i') {
 		printf("Programmer not supported auto detect EEPROM!\n\n");
 		goto out;
 	}

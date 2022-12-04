@@ -22,6 +22,7 @@
 #include "spi_eeprom.h"
 #include "spi_controller.h"
 
+extern unsigned int bsize;
 extern char eepromname[12];
 struct spi_eeprom seeprom_info;
 int seepromsize = 0;
@@ -140,12 +141,18 @@ int spi_eeprom_read(unsigned char *buf, unsigned long from, unsigned long len)
 	memset(ebuf, 0, sizeof(ebuf));
 	pbuf = ebuf;
 
-	for (i = 0; i < seepromsize; i++)
+	for (i = 0; i < seepromsize; i++) {
 		pbuf[i] = eeprom_read_byte(&seeprom_info, (uint16_t)i);
-
+		if( timer_progress() )
+		{
+			printf("\bRead %d%% [%d] of [%d] bytes      ", 100 * i / seepromsize, i, seepromsize);
+			printf("\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b");
+			fflush(stdout);
+		}
+	}
 	memcpy(buf, pbuf + from, len);
 
-	printf("Read [%d] bytes from [%s] EEPROM address 0x%08lu\n", (int)len, eepromname, from);
+	printf("Read 100%% [%d] bytes from [%s] EEPROM address 0x%08lu\n", (int)len, eepromname, from);
 	timer_end();
 
 	return (int)len;
@@ -169,10 +176,17 @@ int spi_eeprom_erase(unsigned long offs, unsigned long len)
 		memset(pbuf + offs, 0xff, len);
 	}
 
-	for (i = 0; i < seepromsize; i++)
+	for (i = 0; i < seepromsize; i++) {
 		eeprom_write_byte(&seeprom_info, (uint16_t)i, pbuf[i]);
+		if( timer_progress() )
+		{
+			printf("\bErase %d%% [%d] of [%d] bytes      ", 100 * i / seepromsize, i, seepromsize);
+			printf("\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b");
+			fflush(stdout);
+		}
+	}
 
-	printf("Erased [%d] bytes of [%s] EEPROM address 0x%08lu\n", (int)len, eepromname, offs);
+	printf("Erased 100%% [%d] bytes of [%s] EEPROM address 0x%08lu\n", (int)len, eepromname, offs);
 	timer_end();
 
 	return 0;
@@ -196,10 +210,17 @@ int spi_eeprom_write(unsigned char *buf, unsigned long to, unsigned long len)
 	}
 	memcpy(pbuf + to, buf, len);
 
-	for (i = 0; i < seepromsize; i++)
+	for (i = 0; i < seepromsize; i++) {
 		eeprom_write_byte(&seeprom_info, (uint16_t)i, pbuf[i]);
+		if( timer_progress() )
+		{
+			printf("\bWritten %d%% [%d] of [%d] bytes      ", 100 * i / seepromsize, i, seepromsize);
+			printf("\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b");
+			fflush(stdout);
+		}
+	}
 
-	printf("Wrote [%d] bytes to [%s] EEPROM address 0x%08lu\n", (int)len, eepromname, to);
+	printf("Written 100%% [%d] bytes to [%s] EEPROM address 0x%08lu\n", (int)len, eepromname, to);
 	timer_end();
 
 	return (int)len;
@@ -211,6 +232,8 @@ long spi_eeprom_init(void)
 		printf("SPI EEPROM Not Detected!\n");
 		return -1;
 	}
+
+	bsize = 1;
 
 	printf("SPI EEPROM chip: %s, Size: %d bytes\n", eepromname, seepromsize);
 
