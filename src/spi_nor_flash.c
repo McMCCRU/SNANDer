@@ -324,6 +324,7 @@ static struct chip_info chips_data [] = {
 
 	{ "FL016AIF",		0x01, 0x02140000, 64 * 1024, 32,  0 },
 	{ "FL064AIF",		0x01, 0x02160000, 64 * 1024, 128, 0 },
+	{ "S25FL016P",		0x01, 0x02144D00, 64 * 1024, 32,  0 },
 	{ "S25FL032P",		0x01, 0x02154D00, 64 * 1024, 64,  0 },
 	{ "S25FL064P",		0x01, 0x02164D00, 64 * 1024, 128, 0 },
 	{ "S25FL128P",		0x01, 0x20180301, 64 * 1024, 256, 0 },
@@ -397,7 +398,8 @@ static struct chip_info chips_data [] = {
 	{ "XT25F32B",		0x0b, 0x40160000, 64 * 1024, 64,  0 },
 	{ "XT25F64B",		0x0b, 0x40170000, 64 * 1024, 128, 0 },
 	{ "XT25F128B",		0x0b, 0x40180000, 64 * 1024, 256, 0 },
-
+        { "XT25Q128D",		0x0b, 0x60180000, 64 * 1024, 256, 0 },
+	
 	{ "PM25LQ016",		0x7f, 0x9d450000, 64 * 1024, 32,  0 },
 	{ "PM25LQ032",		0x7f, 0x9d460000, 64 * 1024, 64,  0 },
 	{ "PM25LQ064",		0x7f, 0x9d470000, 64 * 1024, 128, 0 },
@@ -512,7 +514,7 @@ struct chip_info *chip_prob(void)
 		info = &chips_data[i];
 		if (info->id == buf[0]) {
 			if ((info->jedec_id == jedec) || ((info->jedec_id & 0xffff0000) == jedec_strip)) {
-				printf("Detected SPI NOR Flash: %s, Flash Size: %ld MB\n", info->name, (info->sector_size * info->n_sectors) >> 20);
+				printf("Detected SPI NOR Flash:\e[93m %s\e[0m, Flash Size:\e[93m %ld \e[0mMB\n", info->name, (info->sector_size * info->n_sectors) >> 20);
 				return info;
 			}
 
