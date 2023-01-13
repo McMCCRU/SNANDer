@@ -21,7 +21,7 @@ all: SNANDer.exe
 .lusb_install_win:
 	mkdir -p lusb_build_win
 	cd lusb_build_win; \
-	../libusb-1.0.22/configure --host=x86_64-w64-mingw32 --prefix=$(TOPDIR)/lusb_build_win; \
+	../libusb-1.0.26/configure --host=x86_64-w64-mingw32 --prefix=$(TOPDIR)/lusb_build_win; \
 	make; \
 	make install
 	touch $@

@@ -24,6 +24,7 @@ void support_snand_list(void);
 extern int ECC_fcheck;
 extern int ECC_ignore;
 extern int OOB_size;
+extern int Skip_BAD_page;
 extern unsigned char _ondie_ecc_flag;
 
 #endif /* __NANDCMD_API_H__ */

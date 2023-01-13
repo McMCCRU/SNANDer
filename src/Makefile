@@ -21,7 +21,7 @@ all: SNANDer
 .lusb_install:
 	mkdir -p lusb_build
 	cd lusb_build; \
-	../libusb-1.0.22/configure --prefix=$(TOPDIR)/lusb_build --disable-udev; \
+	../libusb-1.0.26/configure --prefix=$(TOPDIR)/lusb_build --disable-udev; \
 	make; \
 	make install
 	touch $@

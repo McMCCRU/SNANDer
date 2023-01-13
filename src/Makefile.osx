@@ -6,9 +6,12 @@
 # or
 # ARCH=aarch64 make -f Makefile.osx
 
+PATH  := /opt/osxcross/darwin21-toolchain/bin:$(PATH)
+SHELL := env PATH=$(PATH) /bin/bash
+
 ARCH ?= x86_64
 
-DRW=$(ARCH)-apple-darwin20.2
+DRW=$(ARCH)-apple-darwin21.1
 ifeq ($(ARCH),x86_64)
 CC=$(DRW)-gcc
 STRIP=$(DRW)-strip
@@ -16,7 +19,7 @@ else
 CC=$(DRW)-clang
 STRIP=echo
 endif
-LDFLAGS=-pthread -lobjc -Wl,-framework,IOKit -Wl,-framework,CoreFoundation
+LDFLAGS=-pthread -lobjc -Wl,-framework,IOKit -Wl,-framework,CoreFoundation -Wl,-framework,Security
 TOPDIR=$(shell pwd)
 
 EEPROM_SUPPORT = y
@@ -24,13 +27,10 @@ EEPROM_SUPPORT = y
 BIGFILES=-D_FILE_OFFSET_BITS=64
 CFLAGS=-O2 -std=gnu99 -Wall -Wno-gnu-designator -I./lusb_build_osx/include $(BIGFILES)
 
-U=lusb_build_osx/libusb
-O=lusb_build_osx/libusb/os
+ULIB=lusb_build_osx/lib
 
 OBJS = flashcmd_api.o spi_controller.o spi_nand_flash.o spi_nor_flash.o ch341a_spi.o timer.o main.o
-USB_OBJS += $(U)/libusb_1_0_la-core.o $(U)/libusb_1_0_la-descriptor.o $(U)/libusb_1_0_la-hotplug.o \
-           $(U)/libusb_1_0_la-io.o $(U)/libusb_1_0_la-strerror.o $(U)/libusb_1_0_la-sync.o \
-           $(O)/libusb_1_0_la-darwin_usb.o $(O)/libusb_1_0_la-poll_posix.o $(O)/libusb_1_0_la-threads_posix.o
+USB_OBJS += $(ULIB)/libusb-1.0.a
 
 ifeq ($(EEPROM_SUPPORT),y)
 CFLAGS += -DEEPROM_SUPPORT
@@ -43,7 +43,7 @@ all: SNANDer
 .lusb_install_osx:
 	mkdir -p lusb_build_osx
 	cd lusb_build_osx; \
-	CC=$(CC) ../libusb-1.0.22/configure --host=$(DRW) --prefix=$(TOPDIR)/lusb_build_osx; \
+	CC=$(CC) ../libusb-1.0.26/configure --host=$(DRW) --prefix=$(TOPDIR)/lusb_build_osx; \
 	make; \
 	make install
 	touch $@

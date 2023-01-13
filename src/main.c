@@ -53,7 +53,7 @@ extern int org;
 #define EHELP	""
 #endif
 
-#define _VER	"1.7.7"
+#define _VER	"1.7.8b1"
 
 void title(void)
 {
@@ -72,6 +72,7 @@ void usage(void)
 		" -d             disable internal ECC(use read and write page size + OOB size)\n"\
 		" -o <bytes>     manual set OOB size with disable internal ECC(default 0)\n"\
 		" -I             ECC ignore errors(for read test only)\n"\
+		" -k             Skip BAD pages, try read or write in to next page\n"\
 		" -L             print list support chips\n"\
 		" -i             read the chip ID info\n"\
 		"" EHELP ""\
@@ -96,9 +97,9 @@ int main(int argc, char* argv[])
 	title();
 
 #ifdef EEPROM_SUPPORT
-	while ((c = getopt(argc, argv, "diIhveLl:a:w:r:o:s:E:f:8")) != -1)
+	while ((c = getopt(argc, argv, "diIhveLlk:a:w:r:o:s:E:f:8")) != -1)
 #else
-	while ((c = getopt(argc, argv, "diIhveLl:a:w:r:o:s:")) != -1)
+	while ((c = getopt(argc, argv, "diIhveLlk:a:w:r:o:s:")) != -1)
 #endif
 	{
 		switch(c)
@@ -156,6 +157,9 @@ int main(int argc, char* argv[])
 #endif
 			case 'I':
 				ECC_ignore = 1;
+				break;
+			case 'k':
+				Skip_BAD_page = 1;
 				break;
 			case 'd':
 				ECC_fcheck = 0;

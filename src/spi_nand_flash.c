@@ -249,6 +249,7 @@
 int ECC_fcheck = 1;
 int ECC_ignore = 0;
 int OOB_size = 0;
+int Skip_BAD_page = 0;
 
 static unsigned char _plane_select_bit = 0;
 static unsigned char _die_id = 0;
@@ -2779,7 +2780,7 @@ static SPI_NAND_FLASH_RTN_T spi_nand_read_page (u32 page_number, SPI_NAND_FLASH_
 	/* 1. Load Page into cache of NAND Flash Chip */
 	if( spi_nand_load_page_into_cache(page_number) == SPI_NAND_FLASH_RTN_DETECTED_BAD_BLOCK )
 	{
-		_SPI_NAND_PRINTF("spi_nand_read_page: Bad Block, ECC cannot recovery detecte, page = 0x%x\n", page_number);
+		_SPI_NAND_PRINTF("spi_nand_read_page: Bad Block, ECC cannot recovery detected, page = 0x%x\n", page_number);
 		rtn_status = SPI_NAND_FLASH_RTN_DETECTED_BAD_BLOCK;
 	}
 
@@ -2859,7 +2860,10 @@ static SPI_NAND_FLASH_RTN_T spi_nand_write_page( u32 page_number, u32 data_offse
 		ptr_dev_info_t = _SPI_NAND_GET_DEVICE_INFO_PTR;
 
 		/* Read Current page data to software cache buffer */
-		spi_nand_read_page(page_number, speed_mode);
+		rtn_status = spi_nand_read_page(page_number, speed_mode);
+		if (Skip_BAD_page && (rtn_status == SPI_NAND_FLASH_RTN_DETECTED_BAD_BLOCK)) { /* skip BAD page, go to next page */
+			return SPI_NAND_FLASH_RTN_DETECTED_BAD_BLOCK;
+		}
 
 		/* Rewirte the software cahe buffer */
 		if(data_len > 0)
@@ -3004,6 +3008,13 @@ static SPI_NAND_FLASH_RTN_T spi_nand_write_internal( u32 dst_addr, u32 len, u32 
 		}
 
 		rtn_status = spi_nand_write_page(page_number, addr_offset, &(ptr_buf[len - remain_len]), data_len, 0, NULL, 0 , speed_mode);
+		/* skip BAD page or internal error on write page, go to next page */
+		if( Skip_BAD_page && ((rtn_status == SPI_NAND_FLASH_RTN_PROGRAM_FAIL) || (rtn_status == SPI_NAND_FLASH_RTN_DETECTED_BAD_BLOCK)) ) {
+			if( ((addr_offset + remain_len ) < (ptr_dev_info_t->page_size)) )
+				break;
+			write_addr += data_len;
+			continue;
+		}
 
 		/* 8. Write remain data if neccessary */
 		write_addr += data_len;
@@ -3073,8 +3084,15 @@ static SPI_NAND_FLASH_RTN_T spi_nand_read_internal ( u32 addr, u32 len, u8 *ptr_
 
 		rtn_status = spi_nand_read_page(page_number, speed_mode);
 		if(rtn_status == SPI_NAND_FLASH_RTN_DETECTED_BAD_BLOCK) {
-			*status = SPI_NAND_FLASH_RTN_DETECTED_BAD_BLOCK;
-			return (rtn_status);
+			if (!Skip_BAD_page) {
+				*status = SPI_NAND_FLASH_RTN_DETECTED_BAD_BLOCK;
+				return (rtn_status);
+			}
+			/* skip BAD page, go to next page */
+			if( (data_offset + remain_len) < ptr_dev_info_t->page_size )
+				break;
+			read_addr += (ptr_dev_info_t->page_size - data_offset);
+			continue;
 		}
 
 		/* 3. Retrieve the request data */
