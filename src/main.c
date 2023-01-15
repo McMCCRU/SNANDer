@@ -53,7 +53,7 @@ extern int org;
 #define EHELP	""
 #endif
 
-#define _VER	"1.7.8b1"
+#define _VER	"1.7.8b2"
 
 void title(void)
 {
@@ -97,9 +97,9 @@ int main(int argc, char* argv[])
 	title();
 
 #ifdef EEPROM_SUPPORT
-	while ((c = getopt(argc, argv, "diIhveLlk:a:w:r:o:s:E:f:8")) != -1)
+	while ((c = getopt(argc, argv, "diIhveLkl:a:w:r:o:s:E:f:8")) != -1)
 #else
-	while ((c = getopt(argc, argv, "diIhveLlk:a:w:r:o:s:")) != -1)
+	while ((c = getopt(argc, argv, "diIhveLkl:a:w:r:o:s:")) != -1)
 #endif
 	{
 		switch(c)
@@ -210,7 +210,7 @@ int main(int argc, char* argv[])
 
 	if (op == 0) usage();
 
-	if (op == 'x' || (ECC_ignore && !ECC_fcheck) || (op == 'w' && ECC_ignore)) {
+	if (op == 'x' || (ECC_ignore && !ECC_fcheck) || (ECC_ignore && Skip_BAD_page) || (op == 'w' && ECC_ignore)) {
 		printf("Conflicting options, only one option at a time.\n\n");
 		return -1;
 	}
