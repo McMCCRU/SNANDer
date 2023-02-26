@@ -233,11 +233,20 @@
 #define _SPI_NAND_SEMAPHORE_UNLOCK()			/* Enable interrupt  */
 #define _SPI_NAND_PRINTF			printf	/* Always print information */
 #if !defined(SPI_NAND_FLASH_DEBUG)
-#define _SPI_NAND_DEBUG_PRINTF(args...)
-#define _SPI_NAND_DEBUG_PRINTF_ARRAY(args...)
+#define _SPI_NAND_DEBUG_PRINTF(level, fmt, args...)
+#define _SPI_NAND_DEBUG_PRINTF_ARRAY(level, array, len)
 #else
-#define _SPI_NAND_DEBUG_PRINTF			/* spi_nand_flash_debug_printf */
-#define _SPI_NAND_DEBUG_PRINTF_ARRAY		/* spi_nand_flash_debug_printf_array */
+#define _SPI_NAND_DEBUG_PRINTF(level, fmt, args...)	printf(fmt, ##args)
+void _SPI_NAND_DEBUG_PRINTF_ARRAY(int level, u8 *array, int len)
+{
+	for(int i = 0; i < len; i++) {
+		_SPI_NAND_DEBUG_PRINTF(level, "  %02X", array[i]);
+		if((i % 16) == 15)
+			_SPI_NAND_DEBUG_PRINTF(level, "\n");
+	}
+	if((len % 16) != 0)
+		_SPI_NAND_DEBUG_PRINTF(level, "\n");
+}
 #endif
 #define _SPI_NAND_ENABLE_MANUAL_MODE		SPI_CONTROLLER_Enable_Manual_Mode
 #define _SPI_NAND_WRITE_ONE_BYTE		SPI_CONTROLLER_Write_One_Byte
@@ -3538,7 +3547,7 @@ static SPI_NAND_FLASH_RTN_T spi_nand_compare( const struct SPI_NAND_FLASH_INFO_T
 	if ( spi_nand_flash_table->dev_id_2 == 0 )
 	{
 		_SPI_NAND_DEBUG_PRINTF(SPI_NAND_FLASH_DEBUG_LEVEL_1, "spi_nand_compare: mfr_id = 0x%x, dev_id = 0x%x\n",
-				       spi_nand_flash_table->.mfr_id, spi_nand_flash_table->.dev_id);
+				       spi_nand_flash_table->mfr_id, spi_nand_flash_table->dev_id);
 
 		if ( ( (ptr_rtn_device_t->mfr_id) == spi_nand_flash_table->mfr_id) &&
 		     ( (ptr_rtn_device_t->dev_id) == spi_nand_flash_table->dev_id) )
@@ -3549,7 +3558,7 @@ static SPI_NAND_FLASH_RTN_T spi_nand_compare( const struct SPI_NAND_FLASH_INFO_T
 	else
 	{
 		_SPI_NAND_DEBUG_PRINTF(SPI_NAND_FLASH_DEBUG_LEVEL_1, "spi_nand_compare: mfr_id = 0x%x, dev_id = 0x%x, dev_id_2 = 0x%x\n",
-				       spi_nand_flash_table->.mfr_id, spi_nand_flash_table->dev_id, spi_nand_flash_table->.dev_id_2);
+				       spi_nand_flash_table->mfr_id, spi_nand_flash_table->dev_id, spi_nand_flash_table->dev_id_2);
 
 		if ( ( (ptr_rtn_device_t->mfr_id) == spi_nand_flash_table->mfr_id) &&
 		     ( (ptr_rtn_device_t->dev_id) == spi_nand_flash_table->dev_id) &&
