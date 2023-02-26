@@ -127,6 +127,7 @@
 #define _SPI_NAND_DEVICE_ID_GD5F4GQ4UCYIG	0xB4
 #define _SPI_NAND_DEVICE_ID_GD5F1GQ5UEYIG	0x51
 #define _SPI_NAND_DEVICE_ID_GD5F1GQ5REYIG	0x41
+#define _SPI_NAND_DEVICE_ID_F50D1G41LB		0x11
 #define _SPI_NAND_DEVICE_ID_F50L512M41A		0x20
 #define _SPI_NAND_DEVICE_ID_F50L1G41A0		0x21
 #define _SPI_NAND_DEVICE_ID_F50L1G41LB		0x01
@@ -432,6 +433,20 @@ static const struct SPI_NAND_FLASH_INFO_T spi_nand_flash_tables[] = {
 		oob_size:				_SPI_NAND_OOB_SIZE_256BYTE,
 		erase_size:				_SPI_NAND_BLOCK_SIZE_256KBYTE,
 		dummy_mode:				SPI_NAND_FLASH_READ_DUMMY_BYTE_PREPEND,
+		read_mode:				SPI_NAND_FLASH_READ_SPEED_MODE_DUAL,
+		write_mode:				SPI_NAND_FLASH_WRITE_SPEED_MODE_SINGLE,
+		feature:				SPI_NAND_FLASH_FEATURE_NONE,
+	},
+
+	{
+		mfr_id:					_SPI_NAND_MANUFACTURER_ID_ESMT,
+		dev_id:					_SPI_NAND_DEVICE_ID_F50D1G41LB,
+		ptr_name:				"ESMT F50D1G41LB(2M)",
+		device_size:				_SPI_NAND_CHIP_SIZE_1GBIT,
+		page_size:				_SPI_NAND_PAGE_SIZE_2KBYTE,
+		oob_size:				_SPI_NAND_OOB_SIZE_128BYTE,
+		erase_size:				_SPI_NAND_BLOCK_SIZE_128KBYTE,
+		dummy_mode:				SPI_NAND_FLASH_READ_DUMMY_BYTE_APPEND,
 		read_mode:				SPI_NAND_FLASH_READ_SPEED_MODE_DUAL,
 		write_mode:				SPI_NAND_FLASH_WRITE_SPEED_MODE_SINGLE,
 		feature:				SPI_NAND_FLASH_FEATURE_NONE,
@@ -2377,7 +2392,8 @@ static SPI_NAND_FLASH_RTN_T ecc_fail_check( u32 page_number )
 		}
 	}
 	else if((ptr_dev_info_t->mfr_id == _SPI_NAND_MANUFACTURER_ID_ESMT) &&
-		((ptr_dev_info_t->dev_id == _SPI_NAND_DEVICE_ID_F50L512M41A) ||
+		((ptr_dev_info_t->dev_id == _SPI_NAND_DEVICE_ID_F50D1G41LB) ||
+		 (ptr_dev_info_t->dev_id == _SPI_NAND_DEVICE_ID_F50L512M41A) ||
 		 (ptr_dev_info_t->dev_id == _SPI_NAND_DEVICE_ID_F50L1G41A0) ||
 		 (ptr_dev_info_t->dev_id == _SPI_NAND_DEVICE_ID_F50L1G41LB) ||
 		 (ptr_dev_info_t->dev_id == _SPI_NAND_DEVICE_ID_F50L2G41LB)))
@@ -3248,7 +3264,8 @@ static void spi_nand_manufacute_init( struct SPI_NAND_FLASH_INFO_T *ptr_device_t
 
 		_SPI_NAND_DEBUG_PRINTF(SPI_NAND_FLASH_DEBUG_LEVEL_1, "After Unlock all block setup, the status register1 = 0x%x\n", feature);
 	}
-	else if(((ptr_device_t->mfr_id == _SPI_NAND_MANUFACTURER_ID_ESMT) && (ptr_device_t->dev_id == _SPI_NAND_DEVICE_ID_F50L1G41LB)) ||
+	else if(((ptr_device_t->mfr_id == _SPI_NAND_MANUFACTURER_ID_ESMT) && (ptr_device_t->dev_id == _SPI_NAND_DEVICE_ID_F50D1G41LB)) ||
+			((ptr_device_t->mfr_id == _SPI_NAND_MANUFACTURER_ID_ESMT) && (ptr_device_t->dev_id == _SPI_NAND_DEVICE_ID_F50L1G41LB)) ||
 			((ptr_device_t->mfr_id == _SPI_NAND_MANUFACTURER_ID_ESMT) && (ptr_device_t->dev_id == _SPI_NAND_DEVICE_ID_F50L2G41LB)))
 	{
 		if(((ptr_device_t->feature) & SPI_NAND_FLASH_DIE_SELECT_1_HAVE))
