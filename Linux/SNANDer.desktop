@@ -1,0 +1,13 @@
+[Desktop Entry]
+Name=SNANDer
+Name[ru]=Программатор SNANDer
+Comment=24xx/25xx programming tool for the CH341A USB-programmer
+Comment[ru]=Программатор микросхем 24xx/25xx для CH341A USB-programmer
+Exec=/home/<путь до snander.sh>/snander.sh
+Type=Application
+Terminal=true
+StartupNotify=true
+Path=/home/<путь до snander.sh>/
+Icon=/home/<путь до snander.sh>/24Cxx_icon64.png
+Encoding=UTF-8
+Categories=Application;Development;
