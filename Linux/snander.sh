@@ -108,13 +108,13 @@ epromtype=$(zenity --height=320 --width=320 --list --radiolist --text \
         SNANDer -E$eeprom_model -r $filepath/$filename | tee >(zenity --width=200 --height=100 \
   				    --title="Считывание" --progress \
 			            --pulsate --text="Подождите, процесс выполняется..." \
-                                    --auto-kill --auto-close \
+                                    --no-cancel --auto-close \
                                     --percentage=10)
         else
         SNANDer -r $filepath/$filename | tee >(zenity --width=320 --height=100 \
   				    --title="Считывание" --progress \
 			            --pulsate --text="$ruinfo\n\nПодождите, процесс выполняется..." \
-                                    --auto-kill --auto-close \
+                                    --no-cancel --auto-close \
                                     --percentage=10)
         fi
      fi
@@ -128,13 +128,13 @@ epromtype=$(zenity --height=320 --width=320 --list --radiolist --text \
         SNANDer -E$eeprom_model -w $filename | tee >(zenity --width=200 --height=100 \
   				    --title="Запись" --progress \
 			            --pulsate --text="Подождите, процесс выполняется..." \
-                                    --auto-kill --auto-close \
+                                    --no-cancel --auto-close \
                                     --percentage=10)
         else
         SNANDer -w $filename | tee >(zenity --width=320 --height=100 \
   				    --title="Запись" --progress \
 			            --pulsate --text="$ruinfo\n\nПодождите, процесс выполняется..." \
-                                    --auto-kill --auto-close \
+                                    --no-cancel --auto-close \
                                     --percentage=10)
         fi
      fi
@@ -145,13 +145,13 @@ epromtype=$(zenity --height=320 --width=320 --list --radiolist --text \
         SNANDer -E$eeprom_model -e | tee >(zenity --width=200 --height=100 \
   				    --title="Стирание" --progress \
 			            --pulsate --text="Подождите, процесс выполняется..." \
-                                    --auto-kill --auto-close \
+                                    --no-cancel --auto-close \
                                     --percentage=10)
         else
         SNANDer -e | tee >(zenity --width=320 --height=100 \
   				    --title="Стирание" --progress \
 			            --pulsate --text="$ruinfo\n\nПодождите, процесс выполняется..." \
-                                    --auto-kill --auto-close \
+                                    --no-cancel --auto-close \
                                     --percentage=10)
         fi
      fi
