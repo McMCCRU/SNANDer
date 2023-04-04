@@ -327,7 +327,7 @@ static struct chip_info chips_data [] = {
 	{ "GD25Q128CSIG",	0xc8, 0x4018c840, 64 * 1024, 256,  0, 2.70, 3.60 },
 	{ "YC25Q128",		0xd8, 0x4018d840, 64 * 1024, 256,  0, 2.70, 3.60 },
 	{ "GD25Q256CSIG",	0xc8, 0x4019c840, 64 * 1024, 512,  1, 2.70, 3.60 },
-//MXIC
+//MXIC --> https://www.macronix.com/en-us/products/NOR-Flash/Serial-NOR-Flash/Pages/default.aspx#!tabs=2-5-3V64Mb
 	{ "MX25L8005M",		0xc2, 0x2014c220, 64 * 1024, 16,   0, 2.70, 3.60 },
 	{ "MX25L1605D",		0xc2, 0x2015c220, 64 * 1024, 32,   0, 2.70, 3.60 },
 	{ "MX25L3205D",		0xc2, 0x2016c220, 64 * 1024, 64,   0, 2.70, 3.60 },
