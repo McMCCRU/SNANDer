@@ -498,6 +498,7 @@ static struct chip_info chips_data [] = {
 //Fidelix Semiconductor --> http://www.fidelix.co.kr/pages/sub223_en.php
 	{ "FM25Q16A",		0xf8, 0x32150000, 64 * 1024, 32,   0, 2.70, 3.60 },
 	{ "FM25Q32A",		0xf8, 0x32160000, 64 * 1024, 64,   0, 2.70, 3.60 },
+	{ "FM25M32B",		0xf8, 0x42160000, 64 * 1024, 64,   0, 1.65, 1.95 },
 	{ "FM25Q64A",		0xf8, 0x32170000, 64 * 1024, 128,  0, 2.70, 3.60 },
 	{ "FM25Q128A",		0xf8, 0x32180000, 64 * 1024, 256,  0, 2.70, 3.60 },
 //PARAGON 
