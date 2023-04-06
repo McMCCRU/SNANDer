@@ -1,4 +1,5 @@
 #!/bin/bash
+mode=""
 t1="24Cxx - Two-Wire Serial EEPROM"
 t2="93Cxx - MICROWIRE Serial EEPROM"
 ch_dev=$(lsusb | grep "1a86:" -o)
@@ -93,7 +94,9 @@ epromtype=$(zenity --height=320 --width=320 --list --radiolist --text \
 "Выберите действие:" --column="Set" --column="Действие"\
  TRUE "Считать"\
  FALSE "Записать"\
+ FALSE "Записать/проверить"\
  FALSE "Стереть" )
+     if [[ "$action_type" == "Записать/проверить" ]] ; then mode="-v"; else mode=""; fi
      if [[ "$action_type" == "Считать" ]]
      then
      zenity --warning --width=320 \
@@ -118,20 +121,20 @@ epromtype=$(zenity --height=320 --width=320 --list --radiolist --text \
                                     --percentage=10)
         fi
      fi
-     if [[ "$action_type" == "Записать" ]]
+     if [ "$action_type" == "Записать" ] || [ "$action_type" == "Записать/проверить" ]
      then
      zenity --warning \
 --text="Выберите файл для записи микросхемы"
      filename=$(zenity --file-selection)     
         if [ -n "$eeprom_model" ]
         then
-        SNANDer -E$eeprom_model -w $filename | tee >(zenity --width=200 --height=100 \
+        SNANDer -E$eeprom_model -w $filename $mode| tee >(zenity --width=200 --height=100 \
   				    --title="Запись" --progress \
 			            --pulsate --text="Подождите, процесс выполняется..." \
                                     --no-cancel --auto-close \
                                     --percentage=10)
         else
-        SNANDer -w $filename | tee >(zenity --width=320 --height=100 \
+        SNANDer -w $filename  $mode| tee >(zenity --width=320 --height=100 \
   				    --title="Запись" --progress \
 			            --pulsate --text="$ruinfo\n\nПодождите, процесс выполняется..." \
                                     --no-cancel --auto-close \
