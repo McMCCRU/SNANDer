@@ -458,6 +458,7 @@ static struct chip_info chips_data [] = {
 	{ "XM25QU512C",		0x20, 0x41200000, 64 * 1024, 1024, 1, 1.65, 1.95 },
 	{ "XM25QW512C",		0x20, 0x42200000, 64 * 1024, 1024, 1, 1.65, 3.60 },
 //Zbit Semiconductor --> http://zbitsemi.com/en/info.php?class_id=102101
+//                   --> https://www.szxghc.com/flash/28.html
 	{ "ZB25VQ16",		0x5e, 0x40150000, 64 * 1024, 32,   0, 2.30, 3.60 },
 	{ "ZB25LQ16",		0x5e, 0x50150000, 64 * 1024, 32,   0, 1.65, 1.95 },
 	{ "ZB25VQ32",		0x5e, 0x40160000, 64 * 1024, 64,   0, 2.30, 3.60 },
