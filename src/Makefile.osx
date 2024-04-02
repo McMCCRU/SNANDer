@@ -41,9 +41,12 @@ endif
 all: SNANDer
 
 .lusb_install_osx:
+	cd ./libusb-1.0.27; \
+	test -f Makefile.in || ./bootstrap.sh; \
+	cd ..
 	mkdir -p lusb_build_osx
 	cd lusb_build_osx; \
-	CC=$(CC) ../libusb-1.0.26/configure --host=$(DRW) --prefix=$(TOPDIR)/lusb_build_osx; \
+	CC=$(CC) ../libusb-1.0.27/configure --host=$(DRW) --prefix=$(TOPDIR)/lusb_build_osx; \
 	make; \
 	make install
 	touch $@
@@ -55,6 +58,6 @@ SNANDer: .lusb_install_osx $(OBJS)
 .c.o:
 	$(CC) $(CFLAGS) -c $<
 
-clean: 
+clean:
 	rm -f *.o SNANDer .lusb_install_osx
 	rm -rf lusb_build_osx

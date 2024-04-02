@@ -19,9 +19,12 @@ endif
 all: SNANDer
 
 .lusb_install:
+	cd ./libusb-1.0.27; \
+	test -f Makefile.in || ./bootstrap.sh; \
+	cd ..
 	mkdir -p lusb_build
 	cd lusb_build; \
-	../libusb-1.0.26/configure --prefix=$(TOPDIR)/lusb_build --disable-udev; \
+	../libusb-1.0.27/configure --prefix=$(TOPDIR)/lusb_build --disable-udev; \
 	make; \
 	make install
 	touch $@
@@ -32,6 +35,6 @@ SNANDer: .lusb_install $(OBJS)
 .c.o:
 	$(CC) $(CFLAGS) -c $<
 
-clean: 
+clean:
 	rm -f *.o SNANDer* .lusb_install*
 	rm -rf lusb_build*
