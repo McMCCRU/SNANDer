@@ -148,12 +148,11 @@ static int mw_gpio_init(void)
 
 static char *__itoa(int a)
 {
-	char *p, tmp[32];
-	p = tmp;
-	snprintf(p, sizeof(tmp), "%d", a);
-	return p;
+	static char tmpi[32];
+	memset(tmpi, 0, sizeof(tmpi));
+	snprintf(tmpi, sizeof(tmpi), "%d", a);
+	return tmpi;
 }
-
 
 long mw_init(void)
 {
