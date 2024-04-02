@@ -53,7 +53,7 @@ extern int org;
 #define EHELP	""
 #endif
 
-#define _VER	"1.7.8b2"
+#define _VER	"1.7.8"
 
 void title(void)
 {
@@ -69,7 +69,7 @@ void usage(void)
 	const char use[] =
 		"  Usage:\n"\
 		" -h             display this message\n"\
-		" -d             disable internal ECC(use read and write page size + OOB size)\n"\
+		" -d             disable internal ECC(use read and write page size + OOB size - On-die ECC)\n"\
 		" -o <bytes>     manual set OOB size with disable internal ECC(default 0)\n"\
 		" -I             ECC ignore errors(for read test only)\n"\
 		" -k             Skip BAD pages, try read or write in to next page\n"\
