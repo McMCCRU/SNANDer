@@ -38,6 +38,10 @@
 #define OPCODE_WRDI			4	/* Write disable */
 #define OPCODE_RDSR			5	/* Read status register */
 #define OPCODE_WRSR			1	/* Write status register */
+#define OPCODE_RDSR2			0x35	/* Read status register 2*/
+#define OPCODE_WRSR2			0x31	/* Write status register 2*/
+#define OPCODE_RDSR3			0x15	/* Read status register 3 */
+#define OPCODE_WRSR3			0x11	/* Write status register 3*/
 #define OPCODE_READ			3	/* Read data bytes */
 #define OPCODE_PP			2	/* Page program */
 #define OPCODE_SE			0xD8	/* Sector erase */
@@ -72,6 +76,20 @@
 #define SR_EPE				0x20	/* Erase/Program error */
 #define SR_SRWD				0x80	/* SR write protect */
 
+#define SR2_SRP1			1
+#define SR2_QE				2
+#define SR2_R				4
+#define SR2_LB1				8
+#define SR2_LB2				0x10 
+#define SR2_LB3				0x20
+#define SR2_CMP				0x40
+#define SR2_SUS				0x80
+
+#define SR3_WPS				4
+#define SR3_DRV0			8
+#define SR3_DRV1			0x10
+#define SR3_HOLD			0x80
+
 #define snor_dbg(args...)
 /* #define snor_dbg(args...) do { if (1) printf(args); } while(0) */
 
@@ -89,8 +107,8 @@ struct chip_info {
 struct chip_info *spi_chip_info;
 
 static int snor_wait_ready(int sleep_ms);
-static int snor_read_sr(u8 *val);
-static int snor_write_sr(u8 *val);
+static int snor_read_sr(u8 opcode, u8 *val);
+static int snor_write_sr(u8 opcode, u8 *val);
 
 extern unsigned int bsize;
 
@@ -116,19 +134,46 @@ static inline void snor_write_disable(void)
  * Set all sectors (global) unprotected if they are protected.
  * Returns negative if error occurred.
  */
-static inline int snor_unprotect(void)
+int snor_unprotect(void)
 {
 	u8 sr = 0;
 
-	if (snor_read_sr(&sr) < 0) {
+	if (snor_read_sr(OPCODE_RDSR, &sr) < 0) {
 		printf("%s: read_sr fail: %x\n", __func__, sr);
 		return -1;
 	}
 
 	if ((sr & (SR_BP0 | SR_BP1 | SR_BP2)) != 0) {
 		sr = 0;
-		snor_write_sr(&sr);
+		snor_wait_ready(1);
+		snor_write_enable();
+		snor_write_sr(OPCODE_WRSR, &sr);
 	}
+
+	if (snor_read_sr(OPCODE_RDSR2, &sr) < 0) {
+		printf("%s: read_sr2 fail: %x\n", __func__, sr);
+		return -1;
+	}
+
+	if ((sr & (SR2_QE | SR2_SRP1 | SR2_CMP))) {
+		sr = 0;
+		snor_wait_ready(1);
+		snor_write_enable();
+		snor_write_sr(OPCODE_WRSR2, &sr);
+	}
+
+	if (snor_read_sr(OPCODE_RDSR3, &sr) < 0) {
+		printf("%s: read_sr3 fail: %x\n", __func__, sr);
+		return -1;
+	}
+
+	if ((sr & SR3_WPS)) {
+		sr ^= SR3_WPS;
+		snor_wait_ready(1);
+		snor_write_enable();
+		snor_write_sr(OPCODE_WRSR3, &sr);
+	}
+
 	return 0;
 }
 
@@ -145,9 +190,9 @@ static int snor_wait_ready(int sleep_ms)
 	 * but potentially three seconds (!) after page erase.
 	 */
 	for (count = 0; count < ((sleep_ms + 1) * 1000); count++) {
-		if ((snor_read_sr((u8 *)&sr)) < 0)
+		if ((snor_read_sr(OPCODE_RDSR,(u8 *)&sr)) < 0)
 			break;
-		else if (!(sr & (SR_WIP | SR_EPE | SR_WEL))) {
+		else if ((sr & (SR_WIP | SR_EPE | SR_WEL)) != sr || !sr) {
 			return 0;
 		}
 		udelay(500);
@@ -348,6 +393,7 @@ static struct chip_info chips_data [] = {
 	{ "EN25Q256",		0x1c, 0x70191c70, 64 * 1024, 512, 1 },
 	{ "EN25QA128A",		0x1c, 0x60180000, 64 * 1024, 256, 0 },
 	{ "EN25QH128A",		0x1c, 0x70181c70, 64 * 1024, 256, 0 },
+	{ "GM25Q128A",		0x1c, 0x40181c40, 64 * 1024, 256, 0 },
 
 	{ "W25X05",		0xef, 0x30100000, 64 * 1024, 1,   0 },
 	{ "W25X10",		0xef, 0x30110000, 64 * 1024, 2,   0 },
@@ -381,7 +427,9 @@ static struct chip_info chips_data [] = {
 	{ "XM25QH32B",		0x20, 0x40160000, 64 * 1024, 64,  0 },
 	{ "XM25QH32A",		0x20, 0x70160000, 64 * 1024, 64,  0 },
 	{ "XM25QH64A",		0x20, 0x70170000, 64 * 1024, 128, 0 },
+	{ "XM25QH64C",		0x20, 0x40170000, 64 * 1024, 128, 0 },
 	{ "XM25QH128A",		0x20, 0x70182070, 64 * 1024, 256, 0 },
+	{ "XM25QH128C",		0x20, 0x40182070, 64 * 1024, 256, 0 },
 	{ "N25Q256A",		0x20, 0xba191000, 64 * 1024, 512, 1 },
 	{ "MT25QL512AB",	0x20, 0xba201044, 64 * 1024, 1024, 1 },
 
@@ -405,6 +453,16 @@ static struct chip_info chips_data [] = {
 	{ "PM25LQ032",		0x7f, 0x9d460000, 64 * 1024, 64,  0 },
 	{ "PM25LQ064",		0x7f, 0x9d470000, 64 * 1024, 128, 0 },
 	{ "PM25LQ128",		0x7f, 0x9d480000, 64 * 1024, 256, 0 },
+
+	{ "NM25Q64E",		0x52, 0x22170000, 64 * 1024, 128, 0 },
+	{ "NM25Q128E",		0x52, 0x21180000, 64 * 1024, 256, 0 },
+	{ "NM25L256F",		0x52, 0x10190000, 64 * 1024, 512, 1 },
+
+	{ "SK25P32",		0x25, 0x60162560, 64 * 1024, 64,  0 },
+	{ "SK25P64",		0x25, 0x60172560, 64 * 1024, 128, 0 },
+	{ "SK25P64",		0x25, 0x60172560, 64 * 1024, 128, 0 },
+	{ "SK25P128",		0x25, 0x60182560, 64 * 1024, 256, 0 },
+	{ "SK25P128",		0x25, 0x60182560, 64 * 1024, 256, 0 },
 
 	{ "IC25LP016",		0x9d, 0x60150000, 64 * 1024, 32,  0 },
 	{ "IC25LP032",		0x9d, 0x60160000, 64 * 1024, 64,  0 },
@@ -432,8 +490,10 @@ static struct chip_info chips_data [] = {
 
 	{ "P25Q16H",		0x85, 0x60150000, 64 * 1024, 32,  0 },
 	{ "P25Q32H",		0x85, 0x60160000, 64 * 1024, 64,  0 },
+	{ "PY25Q32HB",		0x85, 0x20160000, 64 * 1024, 64,  0 },
 	{ "P25Q64H",		0x85, 0x60170000, 64 * 1024, 128, 0 },
 	{ "P25Q128H",		0x85, 0x60180000, 64 * 1024, 256, 0 },
+	{ "PY25Q128HA",		0x85, 0x20180000, 64 * 1024, 256, 0 },
 
 	/* Zetta */
 	{ "ZD25Q16A",		0xba, 0x40150000, 64 * 1024, 32,  0 },
@@ -444,6 +504,10 @@ static struct chip_info chips_data [] = {
 	{ "ZD25Q32B",		0xba, 0x32160000, 64 * 1024, 64,  0 },
 	{ "ZD25Q64B",		0xba, 0x32170000, 64 * 1024, 128, 0 },
 	{ "ZD25Q128B",		0xba, 0x32180000, 64 * 1024, 256, 0 },
+	{ "ZD25Q16C",		0xba, 0x60150000, 64 * 1024, 32,  0 },
+	{ "ZD25Q32C",		0xba, 0x60160000, 64 * 1024, 64,  0 },
+	{ "ZD25Q64C",		0xba, 0x60170000, 64 * 1024, 128, 0 },
+	{ "ZD25Q128C",		0xba, 0x60180000, 64 * 1024, 256, 0 },
 };
 
 /*
@@ -469,12 +533,12 @@ static int snor_read_devid(u8 *rxbuf, int n_rx)
 /*
  * read status register
  */
-static int snor_read_sr(u8 *val)
+static int snor_read_sr(u8 opcode, u8 *val)
 {
 	int retval = 0;
 
 	SPI_CONTROLLER_Chip_Select_Low();
-	SPI_CONTROLLER_Write_One_Byte(OPCODE_RDSR);
+	SPI_CONTROLLER_Write_One_Byte(opcode);
 
 	retval = SPI_CONTROLLER_Read_NByte(val, 1, SPI_CONTROLLER_SPEED_SINGLE);
 	SPI_CONTROLLER_Chip_Select_High();
@@ -489,12 +553,12 @@ static int snor_read_sr(u8 *val)
 /*
  * write status register
  */
-static int snor_write_sr(u8 *val)
+static int snor_write_sr(u8 opcode, u8 *val)
 {
 	int retval = 0;
 
 	SPI_CONTROLLER_Chip_Select_Low();
-	SPI_CONTROLLER_Write_One_Byte(OPCODE_WRSR);
+	SPI_CONTROLLER_Write_One_Byte(opcode);
 
 	retval = SPI_CONTROLLER_Write_NByte(val, 1, SPI_CONTROLLER_SPEED_SINGLE);
 	SPI_CONTROLLER_Chip_Select_High();
@@ -526,11 +590,16 @@ struct chip_info *chip_prob(void)
 		if (info->id == buf[0]) {
 			if ((info->jedec_id == jedec) || ((info->jedec_id & 0xffff0000) == jedec_strip)) {
 				long int size = (info->sector_size * info->n_sectors);
+				u8 sr = 0, sr2 = 0, sr3 = 0;
+				snor_read_sr(OPCODE_RDSR, &sr);
+				snor_read_sr(OPCODE_RDSR2, &sr2);
+				snor_read_sr(OPCODE_RDSR3, &sr3);
 				if ((size >> 10) >= 1024) {
 					printf("Detected SPI NOR Flash:\e[93m %s\e[0m, Flash Size:\e[93m %ld \e[0mMB\n", info->name, size >> 20);
 				} else {
 					printf("Detected SPI NOR Flash:\e[93m %s\e[0m, Flash Size:\e[93m %ld \e[0mKB\n", info->name, size >> 10);
 				}
+				printf("SR: [%02x] [%02x] [%02x]\n", sr, sr2, sr3);
 				return info;
 			}
 
