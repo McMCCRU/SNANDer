@@ -116,6 +116,7 @@
 #define _SPI_NAND_MANUFACTURER_ID_TYM			0x19
 
 /* SPI NAND Device ID */
+#define _SPI_NAND_DEVICE_ID_GD5F1GM7UE		0x91
 #define _SPI_NAND_DEVICE_ID_GD5F1GQ4UAYIG	0xF1
 #define _SPI_NAND_DEVICE_ID_GD5F1GQ4UBYIG	0xD1
 #define _SPI_NAND_DEVICE_ID_GD5F1GQ4UCYIG	0xB1
@@ -295,6 +296,20 @@ static struct SPI_NAND_FLASH_INFO_T _current_flash_info_t;	/* Store the current 
 /*****************************[ Notice]******************************/
 
 static const struct SPI_NAND_FLASH_INFO_T spi_nand_flash_tables[] = {
+	{
+		mfr_id:					_SPI_NAND_MANUFACTURER_ID_GIGADEVICE,
+		dev_id:					_SPI_NAND_DEVICE_ID_GD5F1GM7UE,
+		ptr_name:				"GIGADEVICE GD5F1GM7UE",
+		device_size:				_SPI_NAND_CHIP_SIZE_1GBIT,
+		page_size:				_SPI_NAND_PAGE_SIZE_2KBYTE,
+		oob_size:				_SPI_NAND_OOB_SIZE_64BYTE,
+		erase_size:				_SPI_NAND_BLOCK_SIZE_128KBYTE,
+		dummy_mode:				SPI_NAND_FLASH_READ_DUMMY_BYTE_APPEND,
+		read_mode:				SPI_NAND_FLASH_READ_SPEED_MODE_SINGLE,
+		write_mode:				SPI_NAND_FLASH_WRITE_SPEED_MODE_SINGLE,
+		feature:				SPI_NAND_FLASH_FEATURE_NONE,
+	},
+
 	{
 		mfr_id:					_SPI_NAND_MANUFACTURER_ID_GIGADEVICE,
 		dev_id:					_SPI_NAND_DEVICE_ID_GD5F1GQ4UAYIG,
