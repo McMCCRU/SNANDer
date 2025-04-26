@@ -207,6 +207,7 @@
 #define _SPI_NAND_DEVICE_ID_TYM25D2GA01		0x01
 #define _SPI_NAND_DEVICE_ID_TYM25D2GA02		0x02
 #define _SPI_NAND_DEVICE_ID_TYM25D1GA03		0x03
+#define _SPI_NAND_DEVICE_ID_F35SQA001G		0x71
 
 /* Others Define */
 #define _SPI_NAND_LEN_ONE_BYTE			(1)
@@ -1362,6 +1363,20 @@ static const struct SPI_NAND_FLASH_INFO_T spi_nand_flash_tables[] = {
 		mfr_id:					_SPI_NAND_MANUFACTURER_ID_FORESEE,
 		dev_id:					_SPI_NAND_DEVICE_ID_FS35ND02GD1F1,
 		device_size:				_SPI_NAND_CHIP_SIZE_2GBIT,
+		page_size:				_SPI_NAND_PAGE_SIZE_2KBYTE,
+		oob_size:				_SPI_NAND_OOB_SIZE_128BYTE,
+		erase_size:				_SPI_NAND_BLOCK_SIZE_128KBYTE,
+		dummy_mode:				SPI_NAND_FLASH_READ_DUMMY_BYTE_APPEND,
+		read_mode:				SPI_NAND_FLASH_READ_SPEED_MODE_DUAL,
+		write_mode:				SPI_NAND_FLASH_WRITE_SPEED_MODE_SINGLE,
+		feature:				SPI_NAND_FLASH_FEATURE_NONE,
+	},
+
+	{
+		ptr_name:				"FORESEE F35SQA001G",
+		mfr_id:					_SPI_NAND_MANUFACTURER_ID_FORESEE,
+		dev_id:					_SPI_NAND_DEVICE_ID_F35SQA001G,
+		device_size:				_SPI_NAND_CHIP_SIZE_1GBIT,
 		page_size:				_SPI_NAND_PAGE_SIZE_2KBYTE,
 		oob_size:				_SPI_NAND_OOB_SIZE_128BYTE,
 		erase_size:				_SPI_NAND_BLOCK_SIZE_128KBYTE,
