@@ -81,7 +81,6 @@ void usage(void)
 		" -a <address>   manually set address\n"\
 		" -w <filename>  write chip with data from filename\n"\
 		" -r <filename>  read chip and save data to filename\n"\
-		" -u             unprotect chip\n"\
 		" -v             verify after write on chip\n";
 	printf(use);
 	exit(0);
@@ -98,9 +97,9 @@ int main(int argc, char* argv[])
 	title();
 
 #ifdef EEPROM_SUPPORT
-	while ((c = getopt(argc, argv, "diIhveLkul:a:w:r:o:s:E:f:8")) != -1)
+	while ((c = getopt(argc, argv, "diIhveLkl:a:w:r:o:s:E:f:8")) != -1)
 #else
-	while ((c = getopt(argc, argv, "diIhveLkul:a:w:r:o:s:")) != -1)
+	while ((c = getopt(argc, argv, "diIhveLkl:a:w:r:o:s:")) != -1)
 #endif
 	{
 		switch(c)
@@ -200,9 +199,6 @@ int main(int argc, char* argv[])
 				} else
 					op = 'x';
 				break;
-			case 'u':
-				op = c;
-				break;
 			case 'L':
 				support_flash_list();
 				exit(0);
@@ -286,18 +282,6 @@ int main(int argc, char* argv[])
 		else
 			printf("Status: BAD(%d)\n", ret);
 		goto out;
-	}
-
-	if (op == 'u') {
-		if(prog.flash_unprotect != NULL) {
-			printf("UNLOCK:\n");
-			ret = prog.flash_unprotect();
-			if(!ret)
-				printf("Status: OK\n");
-			else
-				printf("Status: BAD(%d)\n", ret);
-			goto out;
-		}
 	}
 
 	if ((op == 'r') || (op == 'w')) {
