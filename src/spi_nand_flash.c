@@ -303,7 +303,7 @@ static const struct SPI_NAND_FLASH_INFO_T spi_nand_flash_tables[] = {
 		ptr_name:				"GIGADEVICE GD5F1GM7UE",
 		device_size:				_SPI_NAND_CHIP_SIZE_1GBIT,
 		page_size:				_SPI_NAND_PAGE_SIZE_2KBYTE,
-		oob_size:				_SPI_NAND_OOB_SIZE_64BYTE,
+		oob_size:				_SPI_NAND_OOB_SIZE_128BYTE,
 		erase_size:				_SPI_NAND_BLOCK_SIZE_128KBYTE,
 		dummy_mode:				SPI_NAND_FLASH_READ_DUMMY_BYTE_APPEND,
 		read_mode:				SPI_NAND_FLASH_READ_SPEED_MODE_SINGLE,
