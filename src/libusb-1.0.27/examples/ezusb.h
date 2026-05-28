@@ -43,19 +43,21 @@
 #define IMG_TYPE_NAMES     { "Intel HEX", "Cypress 8051 IIC", "Cypress 8051 BIX", "Cypress IMG format" }
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
-/*
+    /*
  * Automatically identified devices (VID, PID, type, designation).
  * TODO: Could use some validation. Also where's the FX2?
  */
-typedef struct {
-	uint16_t vid;
-	uint16_t pid;
-	int type;
-	const char* designation;
-} fx_known_device;
+    typedef struct
+    {
+        uint16_t vid;
+        uint16_t pid;
+        int type;
+        const char *designation;
+    } fx_known_device;
 
 #define FX_KNOWN_DEVICES { \
 	{ 0x0547, 0x2122, FX_TYPE_AN21, "Cypress EZ-USB (2122S)" },\
@@ -72,7 +74,7 @@ typedef struct {
 	{ 0x04b4, 0x00f3, FX_TYPE_FX3, "Cypress FX3" },\
 }
 
-/*
+    /*
  * This function uploads the firmware from the given file into RAM.
  * Stage == 0 means this is a single stage load (or the first of
  * two stages).  Otherwise it's the second of two stages; the 
@@ -80,10 +82,9 @@ typedef struct {
  *
  * The target processor is reset at the end of this upload.
  */
-extern int ezusb_load_ram(libusb_device_handle *device,
-	const char *path, int fx_type, int img_type, int stage);
+    extern int ezusb_load_ram(libusb_device_handle *device, const char *path, int fx_type, int img_type, int stage);
 
-/*
+    /*
  * This function uploads the firmware from the given file into EEPROM.
  * This uses the right CPUCS address to terminate the EEPROM load with
  * a reset command where FX parts behave differently than FX2 ones.
@@ -94,13 +95,12 @@ extern int ezusb_load_ram(libusb_device_handle *device,
  * The caller must have preloaded a second stage loader that knows
  * how to respond to the EEPROM write request.
  */
-extern int ezusb_load_eeprom(libusb_device_handle *device,
-	const char *path, int fx_type, int img_type, int config);
+    extern int ezusb_load_eeprom(libusb_device_handle *device, const char *path, int fx_type, int img_type, int config);
 
-/* Verbosity level (default 1). Can be increased or decreased with options v/q  */
-extern int verbose;
+    /* Verbosity level (default 1). Can be increased or decreased with options v/q  */
+    extern int verbose;
 
-extern void logerror(const char *format, ...) PRINTF_FORMAT(1, 2);
+    extern void logerror(const char *format, ...) PRINTF_FORMAT(1, 2);
 
 #ifdef __cplusplus
 }

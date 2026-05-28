@@ -91,7 +91,6 @@
 /* End of part based on (closed-source) DLL V1.9 for USB by WinChipHead (c) 2005.
    Since is largely unused we can replace it */
 
-
 #define CH341_I2C_LOW_SPEED		0 // low speed - 20kHz
 #define CH341_I2C_STANDARD_SPEED	1 // standard speed - 100kHz
 #define CH341_I2C_FAST_SPEED		2 // fast speed - 400kHz
@@ -121,7 +120,6 @@
 */
 
 /* CH341a READ EEPROM next packet for 24c01  (no packets!!!)*/
-
 
 /* CH341a READ EEPROM setup packet for the 24c02
    this needs putting into a struct to allow convenient access to individual elements*/
@@ -164,7 +162,6 @@
 00a0  aa df c0 75 00                                     ...u.
 */
 
-
 /* CH341a READ EEPROM setup packet for the 24c04
    this needs putting into a struct to allow convenient access to individual elements*/
 #define CH341_EEPROM_24c04_READ_SETUP_CMD "\xaa\x74\x82\xa0\x00\x74\x81\xa1\xe0\x00\x11\x00\x06\x04\x00\x00" \
@@ -205,7 +202,6 @@
 0090  0f 00 00 00 00 00 00 00  00 00 00 00 8c e8 67 00   ........ ......g.
 00a0  aa df c0 75 00                                     ...u.
 */
-
 
 /* CH341a READ EEPROM setup packet for the 24c08
    this needs putting into a struct to allow convenient access to individual elements*/
@@ -248,7 +244,6 @@
 00a0  aa df c0 75 00                                     ...u.
 */
 
-
 /* CH341a READ EEPROM setup packet for the 24c16
    this needs putting into a struct to allow convenient access to individual elements*/
 #define CH341_EEPROM_24c16_READ_SETUP_CMD "\xaa\x74\x82\xa0\x00\x74\x81\xa1\xe0\x00\x0e\x00\x06\x04\x00\x00" \
@@ -289,7 +284,6 @@
 0090  0f 00 00 00 00 00 00 00  00 00 00 00 8c e8 67 00   ........ ......g.
 00a0  aa df c0 75 00                                     ...u.
 */
-
 
 /* CH341a READ EEPROM setup packet for the 24c64
    this needs putting into a struct to allow convenient access to individual elements*/
@@ -332,36 +326,34 @@
 00a0  aa df c0 75 00                                     ...u.
 */
 
-#define MIN(a,b) (((a)<(b))?(a):(b))
-#define MAX(a,b) (((a)>(b))?(a):(b))
+#define MIN(a, b) (((a)<(b))?(a):(b))
+#define MAX(a, b) (((a)>(b))?(a):(b))
 
 #define TRUE	1
 #define FALSE	0
 
-struct EEPROM {
-	char *name;
-	uint32_t size;
-	uint16_t page_size;
-	uint8_t addr_size; // Length of addres in bytes
-	uint8_t i2c_addr_mask;
+struct EEPROM
+{
+    char *name;
+    uint32_t size;
+    uint16_t page_size;
+    uint8_t addr_size; // Length of addres in bytes
+    uint8_t i2c_addr_mask;
 };
 
-const static struct EEPROM eepromlist[] = {
-	{ "24c01",   128,     8,  1, 0x00 }, // 16 pages of 8 bytes each = 128 bytes
-	{ "24c02",   256,     8,  1, 0x00 }, // 32 pages of 8 bytes each = 256 bytes
-	{ "24c04",   512,    16,  1, 0x01 }, // 32 pages of 16 bytes each = 512 bytes
-	{ "24c08",   1024,   16,  1, 0x03 }, // 64 pages of 16 bytes each = 1024 bytes
-	{ "24c16",   2048,   16,  1, 0x07 }, // 128 pages of 16 bytes each = 2048 bytes
-	{ "24c32",   4096,   32,  2, 0x00 }, // 32kbit = 4kbyte
-	{ "24c64",   8192,   32,  2, 0x00 },
-	{ "24c128",  16384,  32/*64*/,  2, 0x00 },
-	{ "24c256",  32768,  32/*64*/,  2, 0x00 },
-	{ "24c512",  65536,  32/*128*/, 2, 0x00 },
-	{ "24c1024", 131072, 32/*128*/, 2, 0x01 },
-	{ "24c2048", 262144, 32/*256*/, 2, 0x03 },
-	{ 0, 0, 0, 0 }
-};
-
+const static struct EEPROM eepromlist[] = {{"24c01", 128, 8, 1, 0x00},   // 16 pages of 8 bytes each = 128 bytes
+                                           {"24c02", 256, 8, 1, 0x00},   // 32 pages of 8 bytes each = 256 bytes
+                                           {"24c04", 512, 16, 1, 0x01},  // 32 pages of 16 bytes each = 512 bytes
+                                           {"24c08", 1024, 16, 1, 0x03}, // 64 pages of 16 bytes each = 1024 bytes
+                                           {"24c16", 2048, 16, 1, 0x07}, // 128 pages of 16 bytes each = 2048 bytes
+                                           {"24c32", 4096, 32, 2, 0x00}, // 32kbit = 4kbyte
+                                           {"24c64", 8192, 32, 2, 0x00},
+                                           {"24c128", 16384, 32 /*64*/, 2, 0x00},
+                                           {"24c256", 32768, 32 /*64*/, 2, 0x00},
+                                           {"24c512", 65536, 32 /*128*/, 2, 0x00},
+                                           {"24c1024", 131072, 32 /*128*/, 2, 0x01},
+                                           {"24c2048", 262144, 32 /*256*/, 2, 0x03},
+                                           {0, 0, 0, 0}};
 
 int32_t ch341readEEPROM(uint8_t *buf, uint32_t bytes, struct EEPROM *eeprom_info);
 int32_t ch341writeEEPROM(uint8_t *buf, uint32_t bytes, struct EEPROM *eeprom_info);

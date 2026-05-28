@@ -25,10 +25,10 @@
 
 #include "libusbi.h"
 
-#include <IOKit/IOTypes.h>
 #include <IOKit/IOCFBundle.h>
-#include <IOKit/usb/IOUSBLib.h>
 #include <IOKit/IOCFPlugIn.h>
+#include <IOKit/IOTypes.h>
+#include <IOKit/usb/IOUSBLib.h>
 
 #if defined(HAVE_IOKIT_USB_IOUSBHOSTFAMILYDEFINITIONS_H)
 #include <IOKit/usb/IOUSBHostFamilyDefinitions.h>
@@ -39,7 +39,7 @@
 #if defined(kIOUSBInterfaceInterfaceID800)
 #define MAX_INTERFACE_VERSION 800
 #elif defined(kIOUSBInterfaceInterfaceID700)
-#define	MAX_INTERFACE_VERSION 700
+#define MAX_INTERFACE_VERSION 700
 #elif defined(kIOUSBInterfaceInterfaceID650)
 #define MAX_INTERFACE_VERSION 650
 #elif defined(kIOUSBInterfaceInterfaceID550)
@@ -47,7 +47,7 @@
 #elif defined(kIOUSBInterfaceInterfaceID245)
 #define MAX_INTERFACE_VERSION 245
 #else
-#define	MAX_INTERFACE_VERSION 220
+#define MAX_INTERFACE_VERSION 220
 #endif
 
 /* set to the minimum version and casted up as needed. */
@@ -62,7 +62,7 @@ typedef IOUSBInterfaceInterface220 **usb_interface_t;
 #if defined(kIOUSBDeviceInterfaceID650)
 #define MAX_DEVICE_VERSION 650
 #elif defined(kIOUSBDeviceInterfaceID500)
-#define	MAX_DEVICE_VERSION 500
+#define MAX_DEVICE_VERSION 500
 #elif defined(kIOUSBDeviceInterfaceID320)
 #define MAX_DEVICE_VERSION 320
 #elif defined(kIOUSBDeviceInterfaceID300)
@@ -70,7 +70,7 @@ typedef IOUSBInterfaceInterface220 **usb_interface_t;
 #elif defined(kIOUSBDeviceInterfaceID245)
 #define MAX_DEVICE_VERSION 245
 #else
-#define	MAX_DEVICE_VERSION 197
+#define MAX_DEVICE_VERSION 197
 #endif
 
 /* set to the minimum version and casted up as needed */
@@ -103,54 +103,59 @@ typedef IOCFPlugInInterface *io_cf_plugin_ref_t;
 typedef IONotificationPortRef io_notification_port_t;
 
 /* private structures */
-struct darwin_cached_device {
-  struct list_head      list;
-  IOUSBDeviceDescriptor dev_descriptor;
-  UInt32                location;
-  UInt64                parent_session;
-  UInt64                session;
-  USBDeviceAddress      address;
-  char                  sys_path[21];
-  usb_device_t          device;
-  io_service_t          service;
-  int                   open_count;
-  UInt8                 first_config, active_config, port;
-  int                   can_enumerate;
-  int                   refcount;
-  bool                  in_reenumerate;
-  int                   capture_count;
+struct darwin_cached_device
+{
+    struct list_head list;
+    IOUSBDeviceDescriptor dev_descriptor;
+    UInt32 location;
+    UInt64 parent_session;
+    UInt64 session;
+    USBDeviceAddress address;
+    char sys_path[21];
+    usb_device_t device;
+    io_service_t service;
+    int open_count;
+    UInt8 first_config, active_config, port;
+    int can_enumerate;
+    int refcount;
+    bool in_reenumerate;
+    int capture_count;
 };
 
-struct darwin_device_priv {
-  struct darwin_cached_device *dev;
+struct darwin_device_priv
+{
+    struct darwin_cached_device *dev;
 };
 
-struct darwin_device_handle_priv {
-  bool                 is_open;
-  CFRunLoopSourceRef   cfSource;
+struct darwin_device_handle_priv
+{
+    bool is_open;
+    CFRunLoopSourceRef cfSource;
 
-  struct darwin_interface {
-    usb_interface_t      interface;
-    uint8_t              num_endpoints;
-    CFRunLoopSourceRef   cfSource;
-    uint64_t             frames[256];
-    uint8_t              endpoint_addrs[USB_MAXENDPOINTS];
-  } interfaces[USB_MAXINTERFACES];
+    struct darwin_interface
+    {
+        usb_interface_t interface;
+        uint8_t num_endpoints;
+        CFRunLoopSourceRef cfSource;
+        uint64_t frames[256];
+        uint8_t endpoint_addrs[USB_MAXENDPOINTS];
+    } interfaces[USB_MAXINTERFACES];
 };
 
-struct darwin_transfer_priv {
-  /* Isoc */
-  IOUSBIsocFrame *isoc_framelist;
-  int num_iso_packets;
+struct darwin_transfer_priv
+{
+    /* Isoc */
+    IOUSBIsocFrame *isoc_framelist;
+    int num_iso_packets;
 
-  /* Control */
-  IOUSBDevRequestTO req;
+    /* Control */
+    IOUSBDevRequestTO req;
 
-  /* Bulk */
+    /* Bulk */
 
-  /* Completion status */
-  IOReturn result;
-  UInt32 size;
+    /* Completion status */
+    IOReturn result;
+    UInt32 size;
 };
 
 #endif

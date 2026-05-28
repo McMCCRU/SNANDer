@@ -28,49 +28,52 @@
 #define __SPI_NAND_FLASH_H__
 
 /* INCLUDE FILE DECLARATIONS --------------------------------------------------------- */
-#include "types.h"
 #include "ch341a_spi.h"
+#include "types.h"
 
 /* MACRO DECLARATIONS ---------------------------------------------------------------- */
 #define SPI_NAND_FLASH_OOB_FREE_ENTRY_MAX	32
 
 /* TYPE DECLARATIONS ----------------------------------------------------------------- */
-typedef enum{
-	SPI_NAND_FLASH_READ_DUMMY_BYTE_PREPEND,
-	SPI_NAND_FLASH_READ_DUMMY_BYTE_APPEND,
-	SPI_NAND_FLASH_READ_DUMMY_BYTE_DEF_NO
+typedef enum
+{
+    SPI_NAND_FLASH_READ_DUMMY_BYTE_PREPEND,
+    SPI_NAND_FLASH_READ_DUMMY_BYTE_APPEND,
+    SPI_NAND_FLASH_READ_DUMMY_BYTE_DEF_NO
 } SPI_NAND_FLASH_READ_DUMMY_BYTE_T;
 
-typedef enum{
-	SPI_NAND_FLASH_RTN_NO_ERROR = 0,
-	SPI_NAND_FLASH_RTN_PROBE_ERROR,
-	SPI_NAND_FLASH_RTN_ALIGNED_CHECK_FAIL,
-	SPI_NAND_FLASH_RTN_DETECTED_BAD_BLOCK,
-	SPI_NAND_FLASH_RTN_ERASE_FAIL,
-	SPI_NAND_FLASH_RTN_PROGRAM_FAIL,
-	SPI_NAND_FLASH_RTN_DEF_NO
+typedef enum
+{
+    SPI_NAND_FLASH_RTN_NO_ERROR = 0,
+    SPI_NAND_FLASH_RTN_PROBE_ERROR,
+    SPI_NAND_FLASH_RTN_ALIGNED_CHECK_FAIL,
+    SPI_NAND_FLASH_RTN_DETECTED_BAD_BLOCK,
+    SPI_NAND_FLASH_RTN_ERASE_FAIL,
+    SPI_NAND_FLASH_RTN_PROGRAM_FAIL,
+    SPI_NAND_FLASH_RTN_DEF_NO
 } SPI_NAND_FLASH_RTN_T;
 
-typedef enum{
-	SPI_NAND_FLASH_READ_SPEED_MODE_SINGLE = 0,
-	SPI_NAND_FLASH_READ_SPEED_MODE_DUAL,
-	SPI_NAND_FLASH_READ_SPEED_MODE_QUAD,
-	SPI_NAND_FLASH_READ_SPEED_MODE_DEF_NO
+typedef enum
+{
+    SPI_NAND_FLASH_READ_SPEED_MODE_SINGLE = 0,
+    SPI_NAND_FLASH_READ_SPEED_MODE_DUAL,
+    SPI_NAND_FLASH_READ_SPEED_MODE_QUAD,
+    SPI_NAND_FLASH_READ_SPEED_MODE_DEF_NO
 } SPI_NAND_FLASH_READ_SPEED_MODE_T;
 
-
-typedef enum{
-	SPI_NAND_FLASH_WRITE_SPEED_MODE_SINGLE = 0,
-	SPI_NAND_FLASH_WRITE_SPEED_MODE_QUAD,
-	SPI_NAND_FLASH_WRITE_SPEED_MODE_DEF_NO
+typedef enum
+{
+    SPI_NAND_FLASH_WRITE_SPEED_MODE_SINGLE = 0,
+    SPI_NAND_FLASH_WRITE_SPEED_MODE_QUAD,
+    SPI_NAND_FLASH_WRITE_SPEED_MODE_DEF_NO
 } SPI_NAND_FLASH_WRITE_SPEED_MODE_T;
 
-
-typedef enum{
-	SPI_NAND_FLASH_DEBUG_LEVEL_0 = 0,
-	SPI_NAND_FLASH_DEBUG_LEVEL_1,
-	SPI_NAND_FLASH_DEBUG_LEVEL_2,
-	SPI_NAND_FLASH_DEBUG_LEVEL_DEF_NO
+typedef enum
+{
+    SPI_NAND_FLASH_DEBUG_LEVEL_0 = 0,
+    SPI_NAND_FLASH_DEBUG_LEVEL_1,
+    SPI_NAND_FLASH_DEBUG_LEVEL_2,
+    SPI_NAND_FLASH_DEBUG_LEVEL_DEF_NO
 } SPI_NAND_FLASH_DEBUG_LEVEL_T;
 
 /* Bitwise */
@@ -79,36 +82,39 @@ typedef enum{
 #define SPI_NAND_FLASH_DIE_SELECT_1_HAVE	( 0x01 << 1 )
 #define SPI_NAND_FLASH_DIE_SELECT_2_HAVE	( 0x01 << 2 )
 
-struct SPI_NAND_FLASH_INFO_T {
-	u8					mfr_id;
-	u8					dev_id;
-	u8					dev_id_2;
-	const char				*ptr_name;
-	u32					device_size;	/* Flash total Size */
-	u32					page_size;	/* Page Size */
-	u32					erase_size;	/* Block Size */
-	u32					oob_size;	/* Spare Area (OOB) Size */
-	SPI_NAND_FLASH_READ_DUMMY_BYTE_T	dummy_mode;
-	SPI_NAND_FLASH_READ_SPEED_MODE_T	read_mode;
-	SPI_NAND_FLASH_WRITE_SPEED_MODE_T	write_mode;
-	u32					feature;
+struct SPI_NAND_FLASH_INFO_T
+{
+    u8 mfr_id;
+    u8 dev_id;
+    u8 dev_id_2;
+    const char *ptr_name;
+    u32 device_size; /* Flash total Size */
+    u32 page_size;   /* Page Size */
+    u32 erase_size;  /* Block Size */
+    u32 oob_size;    /* Spare Area (OOB) Size */
+    SPI_NAND_FLASH_READ_DUMMY_BYTE_T dummy_mode;
+    SPI_NAND_FLASH_READ_SPEED_MODE_T read_mode;
+    SPI_NAND_FLASH_WRITE_SPEED_MODE_T write_mode;
+    u32 feature;
 };
 
-struct nand_info {
-	int mfr_id;
-	int dev_id;
-	char *name;
-	int numchips;
-	int chip_shift;
-	int page_shift;
-	int erase_shift;
-	int oob_shift;
-	int badblockpos;
-	int opcode_type;
+struct nand_info
+{
+    int mfr_id;
+    int dev_id;
+    char *name;
+    int numchips;
+    int chip_shift;
+    int page_shift;
+    int erase_shift;
+    int oob_shift;
+    int badblockpos;
+    int opcode_type;
 };
 
-struct ra_nand_chip {
-	struct nand_info *flash;
+struct ra_nand_chip
+{
+    struct nand_info *flash;
 };
 
 /* EXPORTED SUBPROGRAM SPECIFICATION ------------------------------------------------- */
@@ -130,7 +136,7 @@ struct ra_nand_chip {
  *
  *------------------------------------------------------------------------------------
  */
-SPI_NAND_FLASH_RTN_T SPI_NAND_Flash_Init( u32   rom_base );
+SPI_NAND_FLASH_RTN_T SPI_NAND_Flash_Init(u32 rom_base);
 
 /*------------------------------------------------------------------------------------
  * FUNCTION: SPI_NAND_FLASH_RTN_T SPI_NAND_Flash_Get_Flash_Info( struct SPI_NAND_FLASH_INFO_T    *ptr_rtn_into_t )
@@ -149,7 +155,7 @@ SPI_NAND_FLASH_RTN_T SPI_NAND_Flash_Init( u32   rom_base );
  *
  *------------------------------------------------------------------------------------
  */
-SPI_NAND_FLASH_RTN_T SPI_NAND_Flash_Get_Flash_Info( struct SPI_NAND_FLASH_INFO_T *ptr_rtn_into_t);
+SPI_NAND_FLASH_RTN_T SPI_NAND_Flash_Get_Flash_Info(struct SPI_NAND_FLASH_INFO_T *ptr_rtn_into_t);
 
 /*------------------------------------------------------------------------------------
  * FUNCTION: SPI_NAND_FLASH_RTN_T SPI_NAND_Flash_Write_Nbyte( u32    dst_addr,
@@ -173,11 +179,8 @@ SPI_NAND_FLASH_RTN_T SPI_NAND_Flash_Get_Flash_Info( struct SPI_NAND_FLASH_INFO_T
  *
  *------------------------------------------------------------------------------------
  */
-SPI_NAND_FLASH_RTN_T SPI_NAND_Flash_Write_Nbyte( u32					dst_addr,
-                                                 u32					len,
-                                                 u32					*ptr_rtn_len,
-                                                 u8					*ptr_buf,
-                                                 SPI_NAND_FLASH_WRITE_SPEED_MODE_T	speed_mode );
+SPI_NAND_FLASH_RTN_T SPI_NAND_Flash_Write_Nbyte(u32 dst_addr, u32 len, u32 *ptr_rtn_len, u8 *ptr_buf,
+                                                SPI_NAND_FLASH_WRITE_SPEED_MODE_T speed_mode);
 
 /*------------------------------------------------------------------------------------
  * FUNCTION: int SPI_NAND_Flash_Read_NByte( long     addr,
@@ -202,12 +205,8 @@ SPI_NAND_FLASH_RTN_T SPI_NAND_Flash_Write_Nbyte( u32					dst_addr,
  *
  *------------------------------------------------------------------------------------
  */
-u32 SPI_NAND_Flash_Read_NByte( u32					addr,
-                               u32					len,
-                               u32					*retlen,
-                               u8					*buf,
-                               SPI_NAND_FLASH_READ_SPEED_MODE_T		speed_mode,
-                               SPI_NAND_FLASH_RTN_T			*status );
+u32 SPI_NAND_Flash_Read_NByte(u32 addr, u32 len, u32 *retlen, u8 *buf, SPI_NAND_FLASH_READ_SPEED_MODE_T speed_mode,
+                              SPI_NAND_FLASH_RTN_T *status);
 
 /*------------------------------------------------------------------------------------
  * FUNCTION: SPI_NAND_FLASH_RTN_T SPI_NAND_Flash_Erase( u32  dst_addr,
@@ -228,8 +227,7 @@ u32 SPI_NAND_Flash_Read_NByte( u32					addr,
  *
  *------------------------------------------------------------------------------------
  */
-SPI_NAND_FLASH_RTN_T SPI_NAND_Flash_Erase( u32  dst_addr,
-                                           u32  len      );
+SPI_NAND_FLASH_RTN_T SPI_NAND_Flash_Erase(u32 dst_addr, u32 len);
 
 /*------------------------------------------------------------------------------------
  * FUNCTION: char SPI_NAND_Flash_Read_Byte( long     addr )
@@ -248,7 +246,7 @@ SPI_NAND_FLASH_RTN_T SPI_NAND_Flash_Erase( u32  dst_addr,
  *
  *------------------------------------------------------------------------------------
  */
-unsigned char SPI_NAND_Flash_Read_Byte( unsigned long    addr, SPI_NAND_FLASH_RTN_T *status);
+unsigned char SPI_NAND_Flash_Read_Byte(unsigned long addr, SPI_NAND_FLASH_RTN_T *status);
 
 /*------------------------------------------------------------------------------------
  * FUNCTION: long SPI_NAND_Flash_Read_DWord( long    addr )
@@ -267,7 +265,7 @@ unsigned char SPI_NAND_Flash_Read_Byte( unsigned long    addr, SPI_NAND_FLASH_RT
  *
  *------------------------------------------------------------------------------------
  */
-unsigned long SPI_NAND_Flash_Read_DWord( unsigned long  addr, SPI_NAND_FLASH_RTN_T *status);
+unsigned long SPI_NAND_Flash_Read_DWord(unsigned long addr, SPI_NAND_FLASH_RTN_T *status);
 
 /*------------------------------------------------------------------------------------
  * FUNCTION: void SPI_NAND_Flash_Clear_Read_Cache_Data( void )
@@ -287,11 +285,11 @@ unsigned long SPI_NAND_Flash_Read_DWord( unsigned long  addr, SPI_NAND_FLASH_RTN
  *
  *------------------------------------------------------------------------------------
  */
-void SPI_NAND_Flash_Clear_Read_Cache_Data( void );
+void SPI_NAND_Flash_Clear_Read_Cache_Data(void);
 
-SPI_NAND_FLASH_RTN_T SPI_NAND_Flash_Enable_OnDie_ECC( void );
+SPI_NAND_FLASH_RTN_T SPI_NAND_Flash_Enable_OnDie_ECC(void);
 
-SPI_NAND_FLASH_RTN_T spi_nand_erase_block ( u32 block_index);
+SPI_NAND_FLASH_RTN_T spi_nand_erase_block(u32 block_index);
 
 #endif /* ifndef __SPI_NAND_FLASH_H__ */
 /* End of [spi_nand_flash.h] package */

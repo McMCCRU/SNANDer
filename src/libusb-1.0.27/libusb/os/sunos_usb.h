@@ -17,63 +17,71 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#ifndef	LIBUSB_SUNOS_H
-#define	LIBUSB_SUNOS_H
+#ifndef LIBUSB_SUNOS_H
+#define LIBUSB_SUNOS_H
 
+#include "libusbi.h"
 #include <libdevinfo.h>
 #include <pthread.h>
-#include "libusbi.h"
 
-#define	READ	0
-#define	WRITE	1
+#define READ	0
+#define WRITE	1
 
-typedef struct sunos_device_priv {
-	uint8_t	cfgvalue;		/* active config value */
-	uint8_t	*raw_cfgdescr;		/* active config descriptor */
-	char	*ugenpath;		/* name of the ugen(4) node */
-	char	*phypath;		/* physical path */
+typedef struct sunos_device_priv
+{
+    uint8_t cfgvalue;      /* active config value */
+    uint8_t *raw_cfgdescr; /* active config descriptor */
+    char *ugenpath;        /* name of the ugen(4) node */
+    char *phypath;         /* physical path */
 } sunos_dev_priv_t;
 
-typedef	struct endpoint {
-	int datafd;	/* data file */
-	int statfd;	/* state file */
+typedef struct endpoint
+{
+    int datafd; /* data file */
+    int statfd; /* state file */
 } sunos_ep_priv_t;
 
-typedef struct sunos_device_handle_priv {
-	uint8_t			altsetting[USB_MAXINTERFACES];	/* a interface's alt */
-	uint8_t			config_index;
-	sunos_ep_priv_t		eps[USB_MAXENDPOINTS];
-	sunos_dev_priv_t	*dpriv; /* device private */
+typedef struct sunos_device_handle_priv
+{
+    uint8_t altsetting[USB_MAXINTERFACES]; /* a interface's alt */
+    uint8_t config_index;
+    sunos_ep_priv_t eps[USB_MAXENDPOINTS];
+    sunos_dev_priv_t *dpriv; /* device private */
 } sunos_dev_handle_priv_t;
 
-typedef	struct sunos_transfer_priv {
-	struct aiocb		aiocb;
-	struct libusb_transfer	*transfer;
+typedef struct sunos_transfer_priv
+{
+    struct aiocb aiocb;
+    struct libusb_transfer *transfer;
 } sunos_xfer_priv_t;
 
-struct node_args {
-	struct libusb_context	*ctx;
-	struct discovered_devs	**discdevs;
-	const char		*last_ugenpath;
-	di_devlink_handle_t	dlink_hdl;
+struct node_args
+{
+    struct libusb_context *ctx;
+    struct discovered_devs **discdevs;
+    const char *last_ugenpath;
+    di_devlink_handle_t dlink_hdl;
 };
 
-struct devlink_cbarg {
-	struct node_args	*nargs;	/* di node walk arguments */
-	di_node_t		myself;	/* the di node */
-	di_minor_t		minor;
+struct devlink_cbarg
+{
+    struct node_args *nargs; /* di node walk arguments */
+    di_node_t myself;        /* the di node */
+    di_minor_t minor;
 };
 
-typedef struct walk_link {
-	char *path;
-	int len;
-	char **linkpp;
+typedef struct walk_link
+{
+    char *path;
+    int len;
+    char **linkpp;
 } walk_link_t;
 
 /* AIO callback args */
-struct aio_callback_args{
-	struct libusb_transfer *transfer;
-	struct aiocb aiocb;
+struct aio_callback_args
+{
+    struct libusb_transfer *transfer;
+    struct aiocb aiocb;
 };
 
 #endif /* LIBUSB_SUNOS_H */

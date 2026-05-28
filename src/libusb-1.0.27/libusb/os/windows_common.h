@@ -144,269 +144,290 @@ typedef LONG USBD_STATUS;
 #endif
 
 /* Windows versions */
-enum windows_version {
-	WINDOWS_UNDEFINED,
-	WINDOWS_2000,
-	WINDOWS_XP,
-	WINDOWS_2003,	// Also XP x64
-	WINDOWS_VISTA,
-	WINDOWS_7,
-	WINDOWS_8,
-	WINDOWS_8_1,
-	WINDOWS_10,
-	WINDOWS_11,
-	WINDOWS_12_OR_LATER
+enum windows_version
+{
+    WINDOWS_UNDEFINED,
+    WINDOWS_2000,
+    WINDOWS_XP,
+    WINDOWS_2003, // Also XP x64
+    WINDOWS_VISTA,
+    WINDOWS_7,
+    WINDOWS_8,
+    WINDOWS_8_1,
+    WINDOWS_10,
+    WINDOWS_11,
+    WINDOWS_12_OR_LATER
 };
 
 extern enum windows_version windows_version;
 
 #include <pshpack1.h>
 
-typedef struct USB_DEVICE_DESCRIPTOR {
-	UCHAR  bLength;
-	UCHAR  bDescriptorType;
-	USHORT bcdUSB;
-	UCHAR  bDeviceClass;
-	UCHAR  bDeviceSubClass;
-	UCHAR  bDeviceProtocol;
-	UCHAR  bMaxPacketSize0;
-	USHORT idVendor;
-	USHORT idProduct;
-	USHORT bcdDevice;
-	UCHAR  iManufacturer;
-	UCHAR  iProduct;
-	UCHAR  iSerialNumber;
-	UCHAR  bNumConfigurations;
+typedef struct USB_DEVICE_DESCRIPTOR
+{
+    UCHAR bLength;
+    UCHAR bDescriptorType;
+    USHORT bcdUSB;
+    UCHAR bDeviceClass;
+    UCHAR bDeviceSubClass;
+    UCHAR bDeviceProtocol;
+    UCHAR bMaxPacketSize0;
+    USHORT idVendor;
+    USHORT idProduct;
+    USHORT bcdDevice;
+    UCHAR iManufacturer;
+    UCHAR iProduct;
+    UCHAR iSerialNumber;
+    UCHAR bNumConfigurations;
 } USB_DEVICE_DESCRIPTOR, *PUSB_DEVICE_DESCRIPTOR;
 
-typedef struct USB_CONFIGURATION_DESCRIPTOR {
-	UCHAR  bLength;
-	UCHAR  bDescriptorType;
-	USHORT wTotalLength;
-	UCHAR  bNumInterfaces;
-	UCHAR  bConfigurationValue;
-	UCHAR  iConfiguration;
-	UCHAR  bmAttributes;
-	UCHAR  MaxPower;
+typedef struct USB_CONFIGURATION_DESCRIPTOR
+{
+    UCHAR bLength;
+    UCHAR bDescriptorType;
+    USHORT wTotalLength;
+    UCHAR bNumInterfaces;
+    UCHAR bConfigurationValue;
+    UCHAR iConfiguration;
+    UCHAR bmAttributes;
+    UCHAR MaxPower;
 } USB_CONFIGURATION_DESCRIPTOR, *PUSB_CONFIGURATION_DESCRIPTOR;
 
 #include <poppack.h>
 
 #define MAX_DEVICE_ID_LEN	200
 
-typedef struct USB_DK_DEVICE_ID {
-	WCHAR DeviceID[MAX_DEVICE_ID_LEN];
-	WCHAR InstanceID[MAX_DEVICE_ID_LEN];
+typedef struct USB_DK_DEVICE_ID
+{
+    WCHAR DeviceID[MAX_DEVICE_ID_LEN];
+    WCHAR InstanceID[MAX_DEVICE_ID_LEN];
 } USB_DK_DEVICE_ID, *PUSB_DK_DEVICE_ID;
 
-typedef struct USB_DK_DEVICE_INFO {
-	USB_DK_DEVICE_ID ID;
-	ULONG64 FilterID;
-	ULONG64 Port;
-	ULONG64 Speed;
-	USB_DEVICE_DESCRIPTOR DeviceDescriptor;
+typedef struct USB_DK_DEVICE_INFO
+{
+    USB_DK_DEVICE_ID ID;
+    ULONG64 FilterID;
+    ULONG64 Port;
+    ULONG64 Speed;
+    USB_DEVICE_DESCRIPTOR DeviceDescriptor;
 } USB_DK_DEVICE_INFO, *PUSB_DK_DEVICE_INFO;
 
-typedef struct USB_DK_ISO_TRANSFER_RESULT {
-	ULONG64 ActualLength;
-	ULONG64 TransferResult;
+typedef struct USB_DK_ISO_TRANSFER_RESULT
+{
+    ULONG64 ActualLength;
+    ULONG64 TransferResult;
 } USB_DK_ISO_TRANSFER_RESULT, *PUSB_DK_ISO_TRANSFER_RESULT;
 
-typedef struct USB_DK_GEN_TRANSFER_RESULT {
-	ULONG64 BytesTransferred;
-	ULONG64 UsbdStatus; // USBD_STATUS code
+typedef struct USB_DK_GEN_TRANSFER_RESULT
+{
+    ULONG64 BytesTransferred;
+    ULONG64 UsbdStatus; // USBD_STATUS code
 } USB_DK_GEN_TRANSFER_RESULT, *PUSB_DK_GEN_TRANSFER_RESULT;
 
-typedef struct USB_DK_TRANSFER_RESULT {
-	USB_DK_GEN_TRANSFER_RESULT GenResult;
-	PVOID64 IsochronousResultsArray; // array of USB_DK_ISO_TRANSFER_RESULT
+typedef struct USB_DK_TRANSFER_RESULT
+{
+    USB_DK_GEN_TRANSFER_RESULT GenResult;
+    PVOID64 IsochronousResultsArray; // array of USB_DK_ISO_TRANSFER_RESULT
 } USB_DK_TRANSFER_RESULT, *PUSB_DK_TRANSFER_RESULT;
 
-typedef struct USB_DK_TRANSFER_REQUEST {
-	ULONG64 EndpointAddress;
-	PVOID64 Buffer;
-	ULONG64 BufferLength;
-	ULONG64 TransferType;
-	ULONG64 IsochronousPacketsArraySize;
-	PVOID64 IsochronousPacketsArray;
-	USB_DK_TRANSFER_RESULT Result;
+typedef struct USB_DK_TRANSFER_REQUEST
+{
+    ULONG64 EndpointAddress;
+    PVOID64 Buffer;
+    ULONG64 BufferLength;
+    ULONG64 TransferType;
+    ULONG64 IsochronousPacketsArraySize;
+    PVOID64 IsochronousPacketsArray;
+    USB_DK_TRANSFER_RESULT Result;
 } USB_DK_TRANSFER_REQUEST, *PUSB_DK_TRANSFER_REQUEST;
 
-struct usbdk_device_priv {
-	USB_DK_DEVICE_ID ID;
-	PUSB_CONFIGURATION_DESCRIPTOR *config_descriptors;
-	HANDLE redirector_handle;
-	HANDLE system_handle;
-	uint8_t active_configuration;
+struct usbdk_device_priv
+{
+    USB_DK_DEVICE_ID ID;
+    PUSB_CONFIGURATION_DESCRIPTOR *config_descriptors;
+    HANDLE redirector_handle;
+    HANDLE system_handle;
+    uint8_t active_configuration;
 };
 
-struct winusb_device_priv {
-	bool initialized;
-	bool root_hub;
-	uint8_t active_config;
-	uint8_t depth; // distance to HCD
-	const struct windows_usb_api_backend *apib;
-	char *dev_id;
-	char *path;  // device interface path
-	int sub_api; // for WinUSB-like APIs
-	struct {
-		char *path; // each interface needs a device interface path,
-		const struct windows_usb_api_backend *apib; // an API backend (multiple drivers support),
-		int sub_api;
-		int8_t nb_endpoints; // and a set of endpoint addresses (USB_MAXENDPOINTS)
-		uint8_t *endpoint;
-		int current_altsetting;
-		bool restricted_functionality;  // indicates if the interface functionality is restricted
-						// by Windows (eg. HID keyboards or mice cannot do R/W)
-		uint8_t num_associated_interfaces; // If non-zero, the interface is part of a grouped
-		                                   // set of associated interfaces (defined by an IAD)
-						   // and this is the number of interfaces within the
-						   // associated group (bInterfaceCount in IAD).
-		uint8_t first_associated_interface; // For associated interfaces, this is the index of
-						    // the first interface (bFirstInterface in IAD) for
-		                                    // the grouped set of associated interfaces.
-	} usb_interface[USB_MAXINTERFACES];
-	struct hid_device_priv *hid;
-	PUSB_CONFIGURATION_DESCRIPTOR *config_descriptor; // list of pointers to the cached config descriptors
-	GUID class_guid; // checked for change during re-enumeration
+struct winusb_device_priv
+{
+    bool initialized;
+    bool root_hub;
+    uint8_t active_config;
+    uint8_t depth; // distance to HCD
+    const struct windows_usb_api_backend *apib;
+    char *dev_id;
+    char *path;  // device interface path
+    int sub_api; // for WinUSB-like APIs
+    struct
+    {
+        char *path;                                 // each interface needs a device interface path,
+        const struct windows_usb_api_backend *apib; // an API backend (multiple drivers support),
+        int sub_api;
+        int8_t nb_endpoints; // and a set of endpoint addresses (USB_MAXENDPOINTS)
+        uint8_t *endpoint;
+        int current_altsetting;
+        bool restricted_functionality; // indicates if the interface functionality is restricted
+        // by Windows (eg. HID keyboards or mice cannot do R/W)
+        uint8_t num_associated_interfaces;  // If non-zero, the interface is part of a grouped
+                                            // set of associated interfaces (defined by an IAD)
+                                            // and this is the number of interfaces within the
+                                            // associated group (bInterfaceCount in IAD).
+        uint8_t first_associated_interface; // For associated interfaces, this is the index of
+                                            // the first interface (bFirstInterface in IAD) for
+                                            // the grouped set of associated interfaces.
+    } usb_interface[USB_MAXINTERFACES];
+    struct hid_device_priv *hid;
+    PUSB_CONFIGURATION_DESCRIPTOR *config_descriptor; // list of pointers to the cached config descriptors
+    GUID class_guid;                                  // checked for change during re-enumeration
 };
 
-struct usbdk_device_handle_priv {
-	// Not currently used
-	char dummy;
-};
- 
-enum WINUSB_ZLP {
-	WINUSB_ZLP_UNSET = 0,
-	WINUSB_ZLP_OFF = 1,
-	WINUSB_ZLP_ON = 2
+struct usbdk_device_handle_priv
+{
+    // Not currently used
+    char dummy;
 };
 
-struct winusb_device_handle_priv {
-	int active_interface;
-	struct {
-		HANDLE dev_handle; // WinUSB needs an extra handle for the file
-		HANDLE api_handle; // used by the API to communicate with the device
-		uint8_t zlp[USB_MAXENDPOINTS]; // Current per-endpoint SHORT_PACKET_TERMINATE status (enum WINUSB_ZLP)
-	} interface_handle[USB_MAXINTERFACES];
-	int autoclaim_count[USB_MAXINTERFACES]; // For auto-release
+enum WINUSB_ZLP
+{
+    WINUSB_ZLP_UNSET = 0,
+    WINUSB_ZLP_OFF = 1,
+    WINUSB_ZLP_ON = 2
 };
 
-struct usbdk_transfer_priv {
-	USB_DK_TRANSFER_REQUEST request;
-	PULONG64 IsochronousPacketsArray;
-	PUSB_DK_ISO_TRANSFER_RESULT IsochronousResultsArray;
+struct winusb_device_handle_priv
+{
+    int active_interface;
+    struct
+    {
+        HANDLE dev_handle;             // WinUSB needs an extra handle for the file
+        HANDLE api_handle;             // used by the API to communicate with the device
+        uint8_t zlp[USB_MAXENDPOINTS]; // Current per-endpoint SHORT_PACKET_TERMINATE status (enum WINUSB_ZLP)
+    } interface_handle[USB_MAXINTERFACES];
+    int autoclaim_count[USB_MAXINTERFACES]; // For auto-release
 };
 
-struct winusb_transfer_priv {
-	uint8_t interface_number;
-
-	uint8_t *hid_buffer; // 1 byte extended data buffer, required for HID
-	uint8_t *hid_dest;   // transfer buffer destination, required for HID
-	size_t hid_expected_size;
-
-	// For isochronous transfers with LibUSBk driver:
-	void *iso_context;
-
-	// For isochronous transfers with Microsoft WinUSB driver:
-	void *isoch_buffer_handle; // The isoch_buffer_handle to free at the end of the transfer
-	BOOL iso_break_stream;	// Whether the isoch. stream was to be continued in the last call of libusb_submit_transfer.
-							// As we this structure is zeroed out upon initialization, we need to use inverse logic here.
-	libusb_transfer_cb_fn iso_user_callback; // Original transfer callback of the user. Might be used for isochronous transfers.
+struct usbdk_transfer_priv
+{
+    USB_DK_TRANSFER_REQUEST request;
+    PULONG64 IsochronousPacketsArray;
+    PUSB_DK_ISO_TRANSFER_RESULT IsochronousResultsArray;
 };
 
-struct windows_backend {
-	int (*init)(struct libusb_context *ctx);
-	void (*exit)(struct libusb_context *ctx);
-	int (*get_device_list)(struct libusb_context *ctx,
-		struct discovered_devs **discdevs);
-	int (*open)(struct libusb_device_handle *dev_handle);
-	void (*close)(struct libusb_device_handle *dev_handle);
-	int (*get_active_config_descriptor)(struct libusb_device *device,
-		void *buffer, size_t len);
-	int (*get_config_descriptor)(struct libusb_device *device,
-		uint8_t config_index, void *buffer, size_t len);
-	int (*get_config_descriptor_by_value)(struct libusb_device *device,
-		uint8_t bConfigurationValue, void **buffer);
-	int (*get_configuration)(struct libusb_device_handle *dev_handle, uint8_t *config);
-	int (*set_configuration)(struct libusb_device_handle *dev_handle, uint8_t config);
-	int (*claim_interface)(struct libusb_device_handle *dev_handle, uint8_t interface_number);
-	int (*release_interface)(struct libusb_device_handle *dev_handle, uint8_t interface_number);
-	int (*set_interface_altsetting)(struct libusb_device_handle *dev_handle,
-		uint8_t interface_number, uint8_t altsetting);
-	int (*clear_halt)(struct libusb_device_handle *dev_handle,
-		unsigned char endpoint);
-	int (*reset_device)(struct libusb_device_handle *dev_handle);
-	void (*destroy_device)(struct libusb_device *dev);
-	int (*submit_transfer)(struct usbi_transfer *itransfer);
-	int (*cancel_transfer)(struct usbi_transfer *itransfer);
-	void (*clear_transfer_priv)(struct usbi_transfer *itransfer);
-	enum libusb_transfer_status (*copy_transfer_data)(struct usbi_transfer *itransfer, DWORD length);
+struct winusb_transfer_priv
+{
+    uint8_t interface_number;
+
+    uint8_t *hid_buffer; // 1 byte extended data buffer, required for HID
+    uint8_t *hid_dest;   // transfer buffer destination, required for HID
+    size_t hid_expected_size;
+
+    // For isochronous transfers with LibUSBk driver:
+    void *iso_context;
+
+    // For isochronous transfers with Microsoft WinUSB driver:
+    void *isoch_buffer_handle; // The isoch_buffer_handle to free at the end of the transfer
+    BOOL iso_break_stream; // Whether the isoch. stream was to be continued in the last call of libusb_submit_transfer.
+                           // As we this structure is zeroed out upon initialization, we need to use inverse logic here.
+    libusb_transfer_cb_fn
+        iso_user_callback; // Original transfer callback of the user. Might be used for isochronous transfers.
 };
 
-struct windows_context_priv {
-	const struct windows_backend *backend;
-	HANDLE completion_port;
-	HANDLE completion_port_thread;
+struct windows_backend
+{
+    int (*init)(struct libusb_context *ctx);
+    void (*exit)(struct libusb_context *ctx);
+    int (*get_device_list)(struct libusb_context *ctx, struct discovered_devs **discdevs);
+    int (*open)(struct libusb_device_handle *dev_handle);
+    void (*close)(struct libusb_device_handle *dev_handle);
+    int (*get_active_config_descriptor)(struct libusb_device *device, void *buffer, size_t len);
+    int (*get_config_descriptor)(struct libusb_device *device, uint8_t config_index, void *buffer, size_t len);
+    int (*get_config_descriptor_by_value)(struct libusb_device *device, uint8_t bConfigurationValue, void **buffer);
+    int (*get_configuration)(struct libusb_device_handle *dev_handle, uint8_t *config);
+    int (*set_configuration)(struct libusb_device_handle *dev_handle, uint8_t config);
+    int (*claim_interface)(struct libusb_device_handle *dev_handle, uint8_t interface_number);
+    int (*release_interface)(struct libusb_device_handle *dev_handle, uint8_t interface_number);
+    int (*set_interface_altsetting)(struct libusb_device_handle *dev_handle, uint8_t interface_number,
+                                    uint8_t altsetting);
+    int (*clear_halt)(struct libusb_device_handle *dev_handle, unsigned char endpoint);
+    int (*reset_device)(struct libusb_device_handle *dev_handle);
+    void (*destroy_device)(struct libusb_device *dev);
+    int (*submit_transfer)(struct usbi_transfer *itransfer);
+    int (*cancel_transfer)(struct usbi_transfer *itransfer);
+    void (*clear_transfer_priv)(struct usbi_transfer *itransfer);
+    enum libusb_transfer_status (*copy_transfer_data)(struct usbi_transfer *itransfer, DWORD length);
 };
 
-union windows_device_priv {
-	struct usbdk_device_priv usbdk_priv;
-	struct winusb_device_priv winusb_priv;
+struct windows_context_priv
+{
+    const struct windows_backend *backend;
+    HANDLE completion_port;
+    HANDLE completion_port_thread;
 };
 
-struct windows_device_handle_priv {
-	struct list_head active_transfers;
-	union {
-		struct usbdk_device_handle_priv usbdk_priv;
-		struct winusb_device_handle_priv winusb_priv;
-	};
+union windows_device_priv
+{
+    struct usbdk_device_priv usbdk_priv;
+    struct winusb_device_priv winusb_priv;
 };
 
-struct windows_transfer_priv {
-	OVERLAPPED overlapped;
-	HANDLE handle;
-	struct list_head list;
-	union {
-		struct usbdk_transfer_priv usbdk_priv;
-		struct winusb_transfer_priv winusb_priv;
-	};
+struct windows_device_handle_priv
+{
+    struct list_head active_transfers;
+    union
+    {
+        struct usbdk_device_handle_priv usbdk_priv;
+        struct winusb_device_handle_priv winusb_priv;
+    };
+};
+
+struct windows_transfer_priv
+{
+    OVERLAPPED overlapped;
+    HANDLE handle;
+    struct list_head list;
+    union
+    {
+        struct usbdk_transfer_priv usbdk_priv;
+        struct winusb_transfer_priv winusb_priv;
+    };
 };
 
 static inline struct usbdk_device_handle_priv *get_usbdk_device_handle_priv(struct libusb_device_handle *dev_handle)
 {
-	struct windows_device_handle_priv *handle_priv = usbi_get_device_handle_priv(dev_handle);
-	return &handle_priv->usbdk_priv;
+    struct windows_device_handle_priv *handle_priv = usbi_get_device_handle_priv(dev_handle);
+    return &handle_priv->usbdk_priv;
 }
 
 static inline struct winusb_device_handle_priv *get_winusb_device_handle_priv(struct libusb_device_handle *dev_handle)
 {
-	struct windows_device_handle_priv *handle_priv = usbi_get_device_handle_priv(dev_handle);
-	return &handle_priv->winusb_priv;
+    struct windows_device_handle_priv *handle_priv = usbi_get_device_handle_priv(dev_handle);
+    return &handle_priv->winusb_priv;
 }
 
 static inline OVERLAPPED *get_transfer_priv_overlapped(struct usbi_transfer *itransfer)
 {
-	struct windows_transfer_priv *transfer_priv = usbi_get_transfer_priv(itransfer);
-	return &transfer_priv->overlapped;
+    struct windows_transfer_priv *transfer_priv = usbi_get_transfer_priv(itransfer);
+    return &transfer_priv->overlapped;
 }
 
 static inline void set_transfer_priv_handle(struct usbi_transfer *itransfer, HANDLE handle)
 {
-	struct windows_transfer_priv *transfer_priv = usbi_get_transfer_priv(itransfer);
-	transfer_priv->handle = handle;
+    struct windows_transfer_priv *transfer_priv = usbi_get_transfer_priv(itransfer);
+    transfer_priv->handle = handle;
 }
 
 static inline struct usbdk_transfer_priv *get_usbdk_transfer_priv(struct usbi_transfer *itransfer)
 {
-	struct windows_transfer_priv *transfer_priv = usbi_get_transfer_priv(itransfer);
-	return &transfer_priv->usbdk_priv;
+    struct windows_transfer_priv *transfer_priv = usbi_get_transfer_priv(itransfer);
+    return &transfer_priv->usbdk_priv;
 }
 
 static inline struct winusb_transfer_priv *get_winusb_transfer_priv(struct usbi_transfer *itransfer)
 {
-	struct windows_transfer_priv *transfer_priv = usbi_get_transfer_priv(itransfer);
-	return &transfer_priv->winusb_priv;
+    struct windows_transfer_priv *transfer_priv = usbi_get_transfer_priv(itransfer);
+    return &transfer_priv->winusb_priv;
 }
 
 extern const struct windows_backend usbdk_backend;

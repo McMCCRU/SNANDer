@@ -23,16 +23,17 @@
 #include <config.h>
 
 /** Values returned from a test function to indicate test result */
-typedef enum {
-	/** Indicates that the test ran successfully. */
-	TEST_STATUS_SUCCESS,
-	/** Indicates that the test failed one or more test. */
-	TEST_STATUS_FAILURE,
-	/** Indicates that an unexpected error occurred. */
-	TEST_STATUS_ERROR,
-	/** Indicates that the test can't be run. For example this may be
+typedef enum
+{
+    /** Indicates that the test ran successfully. */
+    TEST_STATUS_SUCCESS,
+    /** Indicates that the test failed one or more test. */
+    TEST_STATUS_FAILURE,
+    /** Indicates that an unexpected error occurred. */
+    TEST_STATUS_ERROR,
+    /** Indicates that the test can't be run. For example this may be
 	 * due to no suitable device being connected to perform the tests. */
-	TEST_STATUS_SKIP
+    TEST_STATUS_SKIP
 } libusb_testlib_result;
 
 /**
@@ -43,14 +44,15 @@ void libusb_testlib_logf(const char *fmt, ...) PRINTF_FORMAT(1, 2);
 /**
  * Structure holding a test description.
  */
-typedef struct {
-	/** Human readable name of the test. */
-	const char *name;
-	/** The test library will call this function to run the test.
+typedef struct
+{
+    /** Human readable name of the test. */
+    const char *name;
+    /** The test library will call this function to run the test.
 	 *
 	 * Should return TEST_STATUS_SUCCESS on success or another TEST_STATUS value.
 	 */
-	libusb_testlib_result (*function)(void);
+    libusb_testlib_result (*function)(void);
 } libusb_testlib_test;
 
 /**
@@ -70,7 +72,6 @@ typedef struct {
  * \param tests A NULL_TEST terminated array of tests
  * \return 0 on success, non-zero on failure
  */
-int libusb_testlib_run_tests(int argc, char *argv[],
-	const libusb_testlib_test *tests);
+int libusb_testlib_run_tests(int argc, char *argv[], const libusb_testlib_test *tests);
 
 #endif //LIBUSB_TESTLIB_H

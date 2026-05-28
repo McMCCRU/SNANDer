@@ -34,15 +34,17 @@ extern int org;
 extern int mw_eepromsize;
 extern int fix_addr_len;
 
-struct MW_EEPROM {
-	char *name;
-	unsigned int size;
+struct MW_EEPROM
+{
+    char *name;
+    unsigned int size;
 };
 
-struct gpio_cmd {
-	int (*gpio_setdir)(void);
-	int (*gpio_setbits)(unsigned char bit);
-	int (*gpio_getbits)(unsigned char *data);
+struct gpio_cmd
+{
+    int (*gpio_setdir)(void);
+    int (*gpio_setbits)(unsigned char bit);
+    int (*gpio_getbits)(unsigned char *data);
 };
 
 void Erase_EEPROM_3wire(int size_eeprom);
@@ -50,17 +52,9 @@ int Read_EEPROM_3wire(unsigned char *buffer, int size_eeprom);
 int Write_EEPROM_3wire(unsigned char *buffer, int size_eeprom);
 int deviceSize_3wire(char *eepromname);
 
-const static struct MW_EEPROM mw_eepromlist[] = {
-	{ "93c06", 32 },
-	{ "93c16", 64 },
-	{ "93c46", 128 },
-	{ "93c56", 256 },
-	{ "93c66", 512 },
-	{ "93c76", 1024 },
-	{ "93c86", 2048 },
-	{ "93c96", 4096 },
-	{ 0, 0 }
-};
+const static struct MW_EEPROM mw_eepromlist[] = {{"93c06", 32},   {"93c16", 64},   {"93c46", 128},
+                                                 {"93c56", 256},  {"93c66", 512},  {"93c76", 1024},
+                                                 {"93c86", 2048}, {"93c96", 4096}, {0, 0}};
 
 #define MAX_MW_EEPROM_SIZE	4096
 

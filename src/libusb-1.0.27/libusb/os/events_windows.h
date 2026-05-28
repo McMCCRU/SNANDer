@@ -24,23 +24,25 @@
 typedef HANDLE usbi_os_handle_t;
 #define USBI_OS_HANDLE_FORMAT_STRING	"HANDLE %p"
 
-typedef struct usbi_event {
-	HANDLE hEvent;
+typedef struct usbi_event
+{
+    HANDLE hEvent;
 } usbi_event_t;
 #define USBI_EVENT_OS_HANDLE(e)	((e)->hEvent)
 #define USBI_EVENT_POLL_EVENTS	0
 #define USBI_INVALID_EVENT	{ INVALID_HANDLE_VALUE }
 
 #define HAVE_OS_TIMER 1
-typedef struct usbi_timer {
-	HANDLE hTimer;
+typedef struct usbi_timer
+{
+    HANDLE hTimer;
 } usbi_timer_t;
 #define USBI_TIMER_OS_HANDLE(t)	((t)->hTimer)
 #define USBI_TIMER_POLL_EVENTS	0
 
 static inline int usbi_timer_valid(usbi_timer_t *timer)
 {
-	return timer->hTimer != NULL;
+    return timer->hTimer != NULL;
 }
 
 #endif
