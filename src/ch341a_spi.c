@@ -24,7 +24,7 @@
 #include <string.h>
 #include <stdio.h>
 #include "ch341a_spi.h"
-#include <libusb-1.0/libusb.h>
+#include <libusb.h>
 #include <stdbool.h>
 
 /* LIBUSB_CALL ensures the right calling conventions on libusb callbacks.

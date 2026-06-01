@@ -1,0 +1,5 @@
+option('eeprom_support',
+  type : 'boolean',
+  value : true,
+  description : 'Build with EEPROM support (I2C, SPI, Microwire)',
+)
