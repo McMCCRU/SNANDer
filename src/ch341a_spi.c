@@ -72,7 +72,7 @@
 #define	 CH341A_STM_I2C_400K		0x02
 #define	 CH341A_STM_I2C_750K		0x03
 #define	 CH341A_STM_SPI_DBL		0x04
-
+#define CH341A_CMD_SPI_UID 0x4B   /* Read Unique ID cmd */
 
 /* Number of parallel IN transfers. 32 seems to produce the most stable throughput on Windows. */
 #define USB_IN_TRANSFERS		32
@@ -144,7 +144,7 @@ static int32_t usb_transfer(const char *func, unsigned int writecnt, unsigned in
 {
 	if (handle == NULL)
 		return -1;
-
+    
 	int state_out = TRANS_IDLE;
 	transfer_out->buffer = (uint8_t*)writearr;
 	transfer_out->length = writecnt;
@@ -262,6 +262,7 @@ err:
 		libusb_handle_events_timeout(NULL, &(struct timeval){1, 0});
 	}
 	return -1;
+
 }
 
 /*   Set the I2C bus speed (speed(b1b0): 0 = 20kHz; 1 = 100kHz, 2 = 400kHz, 3 = 750kHz).
@@ -500,4 +501,48 @@ close_handle:
 	handle = NULL;
 	return -1;
 }
+
+/**
+ * Read SPI NOR Flash Unique ID (UID)
+ * 
+ * Parameters:
+ *   uid: Buffer to store UID data (recommended size 8-16 bytes)
+ *   uid_len: Number of bytes to read
+ * 
+ * Returns:
+ *   Number of bytes read on success, -1 on failure
+ */
+int ch341a_spi_read_uid(unsigned char *uid, unsigned int uid_len)
+{
+    if (handle == NULL || uid == NULL || uid_len == 0) {
+        printf("Invalid parameters for UID read\n");
+        return -1;
+    }
+
+    if (uid_len > 255) {
+        printf("UID length too large (max 255 bytes)\n");
+        return -1;
+    }
+
+    const unsigned int cmd_len = 5;  /* CMD + 4 dummy bytes */
+    uint8_t cmd[cmd_len + uid_len];
+    uint8_t resp[cmd_len + uid_len];
+
+    /* Initialize command buffer */
+    memset(cmd, 0, sizeof(cmd));
+    cmd[0] = CH341A_CMD_SPI_UID;
+
+    /* Send command and receive response */
+    int ret = ch341a_spi_send_command(cmd_len, uid_len, cmd, resp);
+    if (ret < 0) {
+        printf("Failed to send Read UID command\n");
+        return -1;
+    }
+
+    /* Copy UID data from response buffer */
+    memcpy(uid, &resp[cmd_len], uid_len);
+
+    return uid_len;
+}
+
 /* End of [ch341a_spi.c] package */

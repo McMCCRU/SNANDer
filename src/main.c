@@ -53,7 +53,7 @@ extern int org;
 #define EHELP	""
 #endif
 
-#define _VER	"1.7.9.3"
+#define _VER	"1.7.9.5"
 
 void title(void)
 {
@@ -75,6 +75,7 @@ void usage(void)
 		" -k             Skip BAD pages, try read or write in to next page\n"\
 		" -L             print list support chips\n"\
 		" -i             read the chip ID info\n"\
+	    " -u             read Unique ID (UID) of SPI NOR Flash\n"\
 		"" EHELP ""\
 		" -e             erase chip(full or use with -a [-l])\n"\
 		" -l <bytes>     manually set length\n"\
@@ -84,6 +85,67 @@ void usage(void)
 		" -v             verify after write on chip\n";
 	printf(use);
 	exit(0);
+}
+
+/**
+ * Display UID in formatted hexadecimal format
+ * Supports both single-line and multi-line formats based on length
+ */
+static void display_uid_formatted(const unsigned char *uid, int uid_len)
+{
+	int i;
+	
+	if (uid_len <= 0) {
+		printf("Invalid UID length\n");
+		return;
+	}
+
+	printf("Unique ID (%d bytes): ", uid_len);
+	
+	/* Display UID in hex format */
+	for (i = 0; i < uid_len; i++) {
+		printf("%02X", uid[i]);
+		if ((i + 1) % 16 == 0 && i + 1 < uid_len)
+			printf("\n                    ");
+		else if (i + 1 < uid_len)
+			printf(" ");
+	}
+	printf("\n");
+}
+
+/**
+ * Parse and display SPI NOR Flash chip information from UID
+ * Different manufacturers use different UID formats
+ */
+static void parse_uid_info(const unsigned char *uid, int uid_len)
+{
+	if (uid_len < 1) return;
+
+	/* Display manufacturer info based on first byte of ID (if available elsewhere in chip_prob) */
+	printf("UID Format Analysis:\n");
+	printf("  Raw Data: ");
+	for (int i = 0; i < uid_len; i++) {
+		printf("%02X ", uid[i]);
+		if ((i + 1) % 16 == 0)
+			printf("\n            ");
+	}
+	printf("\n");
+
+	/* Common UID characteristics */
+	uint32_t uid_32 = 0;
+	if (uid_len >= 4) {
+		uid_32 = ((uint32_t)uid[0] << 24) | ((uint32_t)uid[1] << 16) | 
+		         ((uint32_t)uid[2] << 8) | (uint32_t)uid[3];
+		printf("  First 4 bytes as U32: 0x%08X\n", uid_32);
+	}
+
+	/* Check for common patterns */
+	int non_zero_count = 0;
+	for (int i = 0; i < uid_len; i++) {
+		if (uid[i] != 0 && uid[i] != 0xFF)
+			non_zero_count++;
+	}
+	printf("  Valid bits: %d/%d bytes\n", non_zero_count, uid_len);
 }
 
 int main(int argc, char* argv[])
@@ -97,9 +159,9 @@ int main(int argc, char* argv[])
 	title();
 
 #ifdef EEPROM_SUPPORT
-	while ((c = getopt(argc, argv, "diIhveLkl:a:w:r:o:s:E:f:8")) != -1)
+	while ((c = getopt(argc, argv, "diIhveLkl:a:w:r:o:s:E:f:8u")) != -1)
 #else
-	while ((c = getopt(argc, argv, "diIhveLkl:a:w:r:o:s:")) != -1)
+	while ((c = getopt(argc, argv, "diIhveLkl:a:w:r:o:s:u")) != -1)
 #endif
 	{
 		switch(c)
@@ -184,6 +246,9 @@ int main(int argc, char* argv[])
 			case 'v':
 				vr = 1;
 				break;
+			case 'u':                    
+                op = 'u';
+                break;
 			case 'i':
 			case 'e':
 				if(!op)
@@ -222,7 +287,35 @@ int main(int argc, char* argv[])
 
 	if((flen = flash_cmd_init(&prog)) <= 0)
 		goto out;
+    
+    /* Handle UID read operation */
+    if (op == 'u') {
+        unsigned char uid[32] = {0};
+        int uid_len = 16;  /* Default: read 16 bytes */
 
+        printf("\n========== Reading Unique ID (UID) ==========\n");
+        ret = snor_read_uid(uid, uid_len);
+
+        if (ret > 0) {
+            printf("Status: \033[92mSUCCESS\033[0m\n");
+            printf("\n");
+            
+            /* Display formatted UID */
+            display_uid_formatted(uid, ret);
+            printf("\n");
+            
+            /* Parse and display chip information */
+            parse_uid_info(uid, ret);
+            printf("\n");
+            printf("==========================================\n");
+            printf("\nNote: Use this UID for chip identification and tracking.\n");
+        } else {
+            printf("Status: \033[91mFAILED\033[0m\n");
+            printf("Error: Could not read UID from chip\n");
+        }
+        goto okout;
+    }
+	
 #ifdef EEPROM_SUPPORT
 	if ((eepromsize || mw_eepromsize || seepromsize) && op == 'i') {
 		printf("Programmer not supported auto detect EEPROM!\n\n");

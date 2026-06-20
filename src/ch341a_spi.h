@@ -28,8 +28,10 @@
 int ch341a_spi_init(void);
 int ch341a_spi_shutdown(void);
 int ch341a_spi_send_command(unsigned int writecnt, unsigned int readcnt, const unsigned char *writearr, unsigned char *readarr);
+int ch341a_spi_read_uid(unsigned char *uid, unsigned int uid_len);
 int enable_pins(bool enable);
 int config_stream(unsigned int speed);
+
 
 #endif /* __CH341_SPI_H__ */
 /* End of [ch341a_spi.h] package */

@@ -1,4 +1,4 @@
-SNANDer - Serial Nor/nAND/Eeprom programmeR v.1.7.9.3 by McMCC <mcmcc_at_mail.ru>
+SNANDer - Serial Nor/nAND/Eeprom programmeR v.1.7.9.4 by McMCC <mcmcc_at_mail.ru>
 
   Usage:
  -h             display this message
@@ -8,6 +8,7 @@ SNANDer - Serial Nor/nAND/Eeprom programmeR v.1.7.9.3 by McMCC <mcmcc_at_mail.ru
  -k             Skip BAD pages, try read or write in to next page
  -L             print list support chips
  -i             read the chip ID info
+ -u             read Unique ID (UID) of SPI NOR Flash
  -E             select I2C EEPROM {24c01|24c02|24c04|24c08|24c16|24c32|24c64|24c128|24c256|24c512|24c1024|24c2048}
                 select Microwire EEPROM {93c06|93c16|93c46|93c56|93c66|93c76|93c86|93c96} (need SPI-to-MW adapter)
                 select SPI EEPROM 25xxx {25010|25020|25040|25080|25160|25320|25640|25128|25256|25512|251024}
