@@ -502,31 +502,47 @@ close_handle:
 	return -1;
 }
 
+/**
+ * Read SPI NOR Flash Unique ID (UID)
+ * 
+ * Parameters:
+ *   uid: Buffer to store UID data (recommended size 8-16 bytes)
+ *   uid_len: Number of bytes to read
+ * 
+ * Returns:
+ *   Number of bytes read on success, -1 on failure
+ */
 int ch341a_spi_read_uid(unsigned char *uid, unsigned int uid_len)
 {
-    if (handle == NULL || uid == NULL || uid_len == 0)
+    if (handle == NULL || uid == NULL || uid_len == 0) {
+        printf("Invalid parameters for UID read\n");
         return -1;
+    }
 
-    const unsigned int cmd_len = 5;  // CMD + 4 dummy bytes
+    if (uid_len > 255) {
+        printf("UID length too large (max 255 bytes)\n");
+        return -1;
+    }
+
+    const unsigned int cmd_len = 5;  /* CMD + 4 dummy bytes */
     uint8_t cmd[cmd_len + uid_len];
     uint8_t resp[cmd_len + uid_len];
 
+    /* Initialize command buffer */
+    memset(cmd, 0, sizeof(cmd));
     cmd[0] = CH341A_CMD_SPI_UID;
-    memset(&cmd[1], 0x00, cmd_len - 1);  // 4 个 dummy bytes
 
+    /* Send command and receive response */
     int ret = ch341a_spi_send_command(cmd_len, uid_len, cmd, resp);
     if (ret < 0) {
         printf("Failed to send Read UID command\n");
         return -1;
     }
+
+    /* Copy UID data from response buffer */
     memcpy(uid, &resp[cmd_len], uid_len);
 
-    printf("Read UID (%d bytes): ", uid_len);
-    for (unsigned int i = 0; i < uid_len; i++) {
-        printf("%02X ", uid[i]);
-    }
-    printf("\n");
-
-    return 0;
+    return uid_len;
 }
+
 /* End of [ch341a_spi.c] package */
