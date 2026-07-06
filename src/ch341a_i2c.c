@@ -117,7 +117,7 @@ int32_t ch341readEEPROM(uint8_t *buffer, uint32_t bytestoread, struct EEPROM *ee
 	xferBulkOut = libusb_alloc_transfer(0);
 
 	if (!xferBulkIn || !xferBulkOut) {
-		printf("Couldnt allocate USB transfer structures\n");
+		printf("Couldn't allocate USB transfer structures\n");
 		return -1;
 	}
 

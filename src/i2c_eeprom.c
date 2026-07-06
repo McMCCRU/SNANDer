@@ -34,7 +34,7 @@ int i2c_eeprom_read(unsigned char *buf, unsigned long from, unsigned long len)
 	pbuf = ebuf;
 
 	if (ch341readEEPROM(pbuf, eepromsize, &eeprom_info) < 0) {
-		printf("Couldnt read [%d] bytes from [%s] EEPROM address 0x%08lu\n", (int)len, eepromname, from);
+		printf("Couldn't read [%d] bytes from [%s] EEPROM address 0x%08lu\n", (int)len, eepromname, from);
 		return -1;
 	}
 
@@ -59,7 +59,7 @@ int i2c_eeprom_erase(unsigned long offs, unsigned long len)
 
 	if (offs || len < eepromsize) {
 		if (ch341readEEPROM(pbuf, eepromsize, &eeprom_info) < 0) {
-			printf("Couldnt read [%d] bytes from [%s] EEPROM\n", eepromsize, eepromname);
+			printf("Couldn't read [%d] bytes from [%s] EEPROM\n", eepromsize, eepromname);
 			return -1;
 		}
 		memset(pbuf + offs, 0xff, len);
@@ -89,7 +89,7 @@ int i2c_eeprom_write(unsigned char *buf, unsigned long to, unsigned long len)
 
 	if (to || len < eepromsize) {
 		if (ch341readEEPROM(pbuf, eepromsize, &eeprom_info) < 0) {
-			printf("Couldnt read [%d] bytes from [%s] EEPROM\n", (int)len, eepromname);
+			printf("Couldn't read [%d] bytes from [%s] EEPROM\n", (int)len, eepromname);
 			return -1;
 		}
 	}
